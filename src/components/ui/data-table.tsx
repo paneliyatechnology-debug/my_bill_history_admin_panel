@@ -314,7 +314,11 @@ export function DataTable<T>({
         >
           <input
             type="checkbox"
-            className="w-4 h-4 rounded border-slate-300 text-[#F47721] focus:ring-[#F47721] cursor-pointer accent-[#F47721]"
+            className={`w-4 h-4 rounded border-slate-300 cursor-pointer ${
+              themeColor === "purple"
+                ? "text-[#7C3AED] focus:ring-[#7C3AED] accent-[#7C3AED]"
+                : "text-[#F47721] focus:ring-[#F47721] accent-[#F47721]"
+            }`}
             checked={isAllPageSelected}
             ref={(el) => {
               if (el) el.indeterminate = isSomePageSelected;
@@ -336,7 +340,11 @@ export function DataTable<T>({
           >
             <input
               type="checkbox"
-              className="w-4 h-4 rounded border-slate-300 text-[#F47721] focus:ring-[#F47721] cursor-pointer accent-[#F47721]"
+              className={`w-4 h-4 rounded border-slate-300 cursor-pointer ${
+                themeColor === "purple"
+                  ? "text-[#7C3AED] focus:ring-[#7C3AED] accent-[#7C3AED]"
+                  : "text-[#F47721] focus:ring-[#F47721] accent-[#F47721]"
+              }`}
               checked={isChecked}
               onChange={() => handleToggleRow(rowKey)}
               aria-label={`Select row ${rowKey}`}
@@ -799,7 +807,9 @@ export function DataTable<T>({
       {selectable && effectiveSelectedIds.size > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#1E293B]/95 backdrop-blur-md text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700/80 flex flex-wrap items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-5 duration-200 min-w-[320px] max-w-[95vw]">
           <div className="flex items-center gap-3">
-            <span className="bg-[#F47721] text-white text-xs px-2.5 py-1 rounded-full font-bold shadow-sm">
+            <span className={`text-white text-xs px-2.5 py-1 rounded-full font-bold shadow-sm ${
+              themeColor === "purple" ? "bg-[#7C3AED]" : "bg-[#F47721]"
+            }`}>
               {effectiveSelectedIds.size}
             </span>
             <span className="text-xs sm:text-sm font-semibold tracking-wide">
