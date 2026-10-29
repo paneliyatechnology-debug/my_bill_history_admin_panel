@@ -11,6 +11,7 @@ import { TenantDeleteModal, TenantDeleteItem } from "../../components/tenants/te
 import { TenantActionsMenu } from "../../components/tenants/tenant-actions-menu";
 import { TenantEditModal, EditTenantPayload } from "../../components/tenants/tenant-edit-modal";
 import { InvoiceDetailsModal, DetailedInvoiceData } from "../../components/invoice/invoice-details-modal";
+import { InvoiceThemesManagement } from "../../components/superadmin/invoice-themes-management";
 
 interface SystemStats {
   tenants: {
@@ -143,7 +144,7 @@ interface DiagnosticsData {
   };
 }
 
-type NavSectionId = "overview" | "tenants" | "plans" | "invoices" | "users" | "audit" | "health";
+type NavSectionId = "overview" | "tenants" | "plans" | "invoices" | "users" | "audit" | "health" | "themes";
 
 const INDIAN_STATES = [
   { code: "24", name: "Gujarat (24)" },
@@ -1663,6 +1664,17 @@ export default function SuperAdminPortalPage() {
         </svg>
       ),
     },
+    {
+      id: "themes" as NavSectionId,
+      name: "Invoice Themes Store",
+      nameGujarati: "થીમ સ્ટોર મેનેજમેન્ટ",
+      badge: "LIVE",
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+        </svg>
+      ),
+    },
   ];
 
   return (
@@ -3093,6 +3105,11 @@ export default function SuperAdminPortalPage() {
                 </div>
               </div>
             </div>
+          )}
+        
+          {/* ================= SECTION 8: INVOICE THEMES STORE ================= */}
+          {activeSection === "themes" && (
+            <InvoiceThemesManagement lang={lang} />
           )}
         </main>
       </div>

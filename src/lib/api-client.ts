@@ -181,10 +181,6 @@ async function request<T>(
     clearTimeout(timeoutId);
   }
 
-  if (response.status === 401 && typeof window !== "undefined" && !options.skipAuthRedirect) {
-    handleUnauthorized();
-  }
-
   if (!response.ok) {
     let errBody: any = null;
     try {
@@ -197,6 +193,25 @@ async function request<T>(
       }
     } catch {
       errBody = { message: response.statusText || `HTTP ${response.status}` };
+    }
+
+    let profileRole: string | undefined;
+    try {
+      const raw = localStorage.getItem("billing_user_profile");
+      profileRole = raw ? JSON.parse(raw)?.role : undefined;
+    } catch {
+      profileRole = undefined;
+    }
+    const suspendOfAnotherAccount =
+      profileRole === "SUPER_ADMIN" && errBody?.error === "TENANT_SUSPENDED";
+
+    if (
+      !suspendOfAnotherAccount &&
+      response.status === 401 &&
+      typeof window !== "undefined" &&
+      !options.skipAuthRedirect
+    ) {
+      handleUnauthorized();
     }
 
     const message = Array.isArray(errBody?.message)
