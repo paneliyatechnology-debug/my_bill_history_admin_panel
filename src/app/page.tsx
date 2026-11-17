@@ -1,1 +1,5 @@
-export { default } from "./superadmin/page";
+import { redirect } from "next/navigation";
+
+export default function RootPage() {
+  redirect("/superadmin");
+}
