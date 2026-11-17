@@ -525,24 +525,22 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 )}
 
                 {/* Preview Thumbnail Box */}
-                <div className="relative h-44 w-full overflow-hidden rounded-xl border border-slate-100 bg-[#FAF8F5] shadow-2xs">
+                <div className="relative h-44 w-full overflow-hidden rounded-xl border border-slate-100 bg-[#FAF8F5] shadow-2xs flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center justify-center bg-slate-100 text-slate-400 text-xs font-bold uppercase tracking-wider p-2 text-center select-none">
+                    {theme.name || "Theme"}
+                  </div>
                   {theme.thumbnail ? (
                     <img
                       src={theme.thumbnail.startsWith("/") || theme.thumbnail.startsWith("http") || theme.thumbnail.startsWith("data:") ? theme.thumbnail : `/${theme.thumbnail}`}
                       alt={theme.name}
-                      className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
+                      className="relative z-1 h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
                       onError={(e) => {
-                        if (theme.variants && theme.variants[0]) {
-                          const v0 = theme.variants[0];
-                          e.currentTarget.src = v0.startsWith("/") || v0.startsWith("http") ? v0 : `/${v0}`;
-                        }
+                        const target = e.currentTarget;
+                        target.onerror = null;
+                        target.style.display = "none";
                       }}
                     />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-slate-100 text-slate-400 text-xs font-semibold">
-                      Standard Layout
-                    </div>
-                  )}
+                  ) : null}
 
                   {/* Primary Color Indicator */}
                   <div
