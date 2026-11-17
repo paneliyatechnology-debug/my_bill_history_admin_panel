@@ -66,40 +66,53 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
   });
 
   // ---- Client-side Image Compressor to Data URL (Reliable on Vercel & all domains) ----
-  const compressImageToDataUrl = (file: File, maxDim = 1200, quality = 0.85): Promise<string> => {
+  const compressImageToDataUrl = (
+    source: File | string,
+    maxDim = 1200,
+    quality = 0.82
+  ): Promise<string> => {
     return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          let { width, height } = img;
-          if (width > maxDim || height > maxDim) {
-            if (width > height) {
-              height = Math.round((height * maxDim) / width);
-              width = maxDim;
-            } else {
-              width = Math.round((width * maxDim) / height);
-              height = maxDim;
-            }
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
           }
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          if (!ctx) {
-            resolve(e.target?.result as string);
-            return;
-          }
-          ctx.drawImage(img, 0, 0, width, height);
-          const mime = file.type === "image/png" ? "image/png" : "image/jpeg";
-          const resultUrl = canvas.toDataURL(mime, quality);
-          resolve(resultUrl);
-        };
-        img.onerror = () => resolve(e.target?.result as string || "");
-        img.src = e.target?.result as string;
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, width);
+        canvas.height = Math.max(1, height);
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(typeof source === "string" ? source : "");
+          return;
+        }
+        // Fill white background so transparent PNGs don't produce black background in JPEG
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        // Using image/jpeg ensures true lossy compression and tiny payload (< 80KB)
+        const resultUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(resultUrl);
       };
-      reader.onerror = () => resolve("");
-      reader.readAsDataURL(file);
+      img.onerror = () => resolve(typeof source === "string" ? source : "");
+
+      if (typeof source === "string") {
+        img.src = source;
+      } else {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          img.src = (e.target?.result as string) || "";
+        };
+        reader.onerror = () => resolve("");
+        reader.readAsDataURL(source);
+      }
     });
   };
 
@@ -114,36 +127,59 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
       alert(`Invalid file type "${file.type}". Only JPG, PNG, WebP are allowed.`);
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      alert(`File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum: 5MB`);
+    if (file.size > 10 * 1024 * 1024) {
+      alert(`File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum: 10MB`);
       return;
     }
 
     setUploadingField(fieldName);
     try {
-      // 1. Immediately create optimized Data URL (100% immune to Vercel/serverless 404s)
-      const maxDim = fieldName === "thumbnail" ? 600 : 1400;
-      const dataUrl = await compressImageToDataUrl(file, maxDim, 0.85);
+      // 1. Immediately create optimized lightweight JPEG (< 70KB)
+      const maxDim = fieldName === "thumbnail" ? 400 : 1200;
+      const quality = fieldName === "thumbnail" ? 0.75 : 0.82;
+      const optimizedDataUrl = await compressImageToDataUrl(file, maxDim, quality);
 
-      if (dataUrl) {
-        setFormData((prev) => {
-          const updated = { ...prev, [fieldName]: dataUrl };
-          if (fieldName === "variant1" && !prev.thumbnail) {
-            updated.thumbnail = dataUrl;
+      let chosenUrl = optimizedDataUrl;
+
+      // 2. Try to upload to backend server to get a real clean `/themes/...` URL
+      try {
+        const blob = await fetch(optimizedDataUrl).then((r) => r.blob());
+        const safeName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+        const uploadData = new FormData();
+        uploadData.append("file", blob, safeName);
+
+        const res: any = await apiClient.post(
+          "/invoice-settings/superadmin/themes/upload",
+          uploadData
+        );
+        if (res?.url) {
+          chosenUrl = res.url;
+        }
+      } catch (uploadErr) {
+        // Fallback to local upload route if running locally
+        try {
+          const uploadData = new FormData();
+          uploadData.append("file", file);
+          const localRes = await fetch("/api/upload-theme", {
+            method: "POST",
+            body: uploadData,
+          });
+          const localJson = await localRes.json();
+          if (localJson?.publicUrl) {
+            chosenUrl = localJson.publicUrl;
           }
-          return updated;
-        });
+        } catch {
+          // If upload fails, keep the compressed data URL (~50-80KB) which is safe for Nginx
+        }
       }
 
-      // 2. Also try API route for filesystem copy if running in local dev
-      try {
-        const uploadData = new FormData();
-        uploadData.append("file", file);
-        await fetch("/api/upload-theme", {
-          method: "POST",
-          body: uploadData,
-        });
-      } catch {}
+      setFormData((prev) => {
+        const updated = { ...prev, [fieldName]: chosenUrl };
+        if (fieldName === "variant1" && !prev.thumbnail) {
+          updated.thumbnail = chosenUrl;
+        }
+        return updated;
+      });
     } catch (err: any) {
       alert("Upload failed: " + (err?.message || "Unknown error"));
     } finally {
@@ -283,30 +319,66 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
       return `/${t}`;
     };
 
-    const variants: string[] = [];
-    const v1 = normalizeUrl(formData.variant1);
-    const v2 = normalizeUrl(formData.variant2);
-    if (v1) variants.push(v1);
-    if (v2) variants.push(v2);
-
-    const isFestive = formData.category === "festive" || formData.category === "branding";
-    const defaultThumb = isFestive ? "/themes/navaratri_1.jpg" : "";
-    const thumbnail = normalizeUrl(formData.thumbnail) || variants[0] || defaultThumb;
-
-    const payload = {
-      name: formData.name.trim(),
-      category: formData.category,
-      festivalName: formData.festivalName.trim() || formData.name.trim(),
-      description: formData.description.trim(),
-      primaryColor: formData.primaryColor,
-      badge: formData.badge.trim() || null,
-      thumbnail,
-      variants: variants.length > 0 ? variants : (isFestive ? ["/themes/navaratri_1.jpg"] : []),
-      isActive: formData.isActive,
-      sortOrder: Number(formData.sortOrder) || 1,
+    // Auto-optimize and convert any oversized data URLs before payload creation
+    const optimizeUrlIfNeeded = async (
+      rawUrl: string,
+      maxDim: number,
+      quality: number
+    ): Promise<string> => {
+      const clean = normalizeUrl(rawUrl);
+      if (!clean) return "";
+      // If it's a huge base64 data URL (> 60KB), compress it
+      if (clean.startsWith("data:") && clean.length > 60000) {
+        try {
+          const compressed = await compressImageToDataUrl(clean, maxDim, quality);
+          // Also try uploading to backend to convert to a real lightweight file URL
+          try {
+            const blob = await fetch(compressed).then((r) => r.blob());
+            const uploadData = new FormData();
+            uploadData.append("file", blob, `theme_opt_${Date.now()}.jpg`);
+            const res: any = await apiClient.post(
+              "/invoice-settings/superadmin/themes/upload",
+              uploadData
+            );
+            if (res?.url) return res.url;
+          } catch {
+            // Keep compressed data URL
+          }
+          return compressed;
+        } catch {
+          return clean;
+        }
+      }
+      return clean;
     };
 
+    setLoading(true);
     try {
+      const v1 = await optimizeUrlIfNeeded(formData.variant1, 1200, 0.82);
+      const v2 = await optimizeUrlIfNeeded(formData.variant2, 1200, 0.82);
+
+      const variants: string[] = [];
+      if (v1) variants.push(v1);
+      if (v2) variants.push(v2);
+
+      const isFestive = formData.category === "festive" || formData.category === "branding";
+      const defaultThumb = isFestive ? "/themes/navaratri_1.jpg" : "";
+      const rawThumb = formData.thumbnail || variants[0] || defaultThumb;
+      const thumbnail = await optimizeUrlIfNeeded(rawThumb, 400, 0.75);
+
+      const payload = {
+        name: formData.name.trim(),
+        category: formData.category,
+        festivalName: formData.festivalName.trim() || formData.name.trim(),
+        description: formData.description.trim(),
+        primaryColor: formData.primaryColor,
+        badge: formData.badge.trim() || null,
+        thumbnail,
+        variants: variants.length > 0 ? variants : (isFestive ? ["/themes/navaratri_1.jpg"] : []),
+        isActive: formData.isActive,
+        sortOrder: Number(formData.sortOrder) || 1,
+      };
+
       if (editingTheme) {
         const updated: any = await apiClient.put(
           `/invoice-settings/superadmin/themes/${editingTheme.id}`,
@@ -324,7 +396,9 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
       setIsModalOpen(false);
       setTimeout(() => setBanner(null), 3000);
     } catch (err: any) {
-      alert("Failed to save theme: " + err?.message);
+      alert("Failed to save theme: " + (err?.message || "Unknown error"));
+    } finally {
+      setLoading(false);
     }
   };
 
