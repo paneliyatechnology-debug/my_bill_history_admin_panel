@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useSuperAdmin } from "../../context/superadmin-context";
 import { apiClient } from "../../lib/api-client";
 import { TAB_ROUTE_MAP } from "../../lib/superadmin-constants";
@@ -12,7 +12,6 @@ import type { InvoiceItem } from "../../shared-types/superadmin";
 
 function SuperAdminOverviewContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const {
     stats,
     refetchStats,
@@ -31,18 +30,19 @@ function SuperAdminOverviewContent() {
 
   // 1. Client-Side Legacy ?tab=... URL Compatibility Redirect
   useEffect(() => {
-    const tab = searchParams.get("tab");
+    if (typeof window === "undefined") return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const tab = urlParams.get("tab");
     if (tab) {
       const normalizedTab = tab.trim().toLowerCase();
       const targetRoute = TAB_ROUTE_MAP[normalizedTab];
       if (targetRoute) {
-        const remainingParams = new URLSearchParams(searchParams.toString());
-        remainingParams.delete("tab");
-        const qs = remainingParams.toString() ? `?${remainingParams.toString()}` : "";
+        urlParams.delete("tab");
+        const qs = urlParams.toString() ? `?${urlParams.toString()}` : "";
         router.replace(`${targetRoute}${qs}`);
       }
     }
-  }, [searchParams, router]);
+  }, [router]);
 
   // Fetch Recent Invoices for Live Feed
   const fetchRecentInvoices = useCallback(async () => {
