@@ -66,7 +66,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
     sortOrder: 1,
   });
 
-  // ---- Client-side Image Compressor to Data URL (Reliable on Vercel & all domains) ----
+  // Client-side Image Compressor to Data URL
   const compressImageToDataUrl = (
     source: File | string,
     maxDim = 1200,
@@ -94,16 +94,14 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
           resolve(typeof source === "string" ? source : "");
           return;
         }
-        // Fill white background so transparent PNGs don't produce black background in JPEG
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, width, height);
         ctx.drawImage(img, 0, 0, width, height);
-        // Using image/jpeg ensures true lossy compression and tiny payload (< 80KB)
-        const resultUrl = canvas.toDataURL("image/jpeg", quality);
-        resolve(resultUrl);
+        resolve(canvas.toDataURL("image/jpeg", quality));
       };
-      img.onerror = () => resolve(typeof source === "string" ? source : "");
-
+      img.onerror = () => {
+        resolve(typeof source === "string" ? source : "");
+      };
       if (typeof source === "string") {
         img.src = source;
       } else {
@@ -117,72 +115,42 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
     });
   };
 
-  // ---- Image Upload Handler ----
-  const handleFileUpload = async (
-    file: File,
-    fieldName: "variant1" | "variant2" | "thumbnail"
-  ) => {
-    // Validate on client side
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
-    if (!allowedTypes.includes(file.type)) {
-      alert(`Invalid file type "${file.type}". Only JPG, PNG, WebP are allowed.`);
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      alert(`File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum: 10MB`);
-      return;
-    }
-
-    setUploadingField(fieldName);
+  const handleFileUpload = async (file: File, field: "variant1" | "variant2" | "thumbnail") => {
+    setUploadingField(field);
     try {
-      // 1. Immediately create optimized lightweight JPEG (< 70KB)
-      const maxDim = fieldName === "thumbnail" ? 400 : 1200;
-      const quality = fieldName === "thumbnail" ? 0.75 : 0.82;
-      const optimizedDataUrl = await compressImageToDataUrl(file, maxDim, quality);
+      const compressedDataUrl = await compressImageToDataUrl(
+        file,
+        field === "thumbnail" ? 400 : 1200,
+        field === "thumbnail" ? 0.75 : 0.82
+      );
 
-      let chosenUrl = optimizedDataUrl;
-
-      // 2. Try to upload to backend server to get a real clean `/themes/...` URL
+      let publicUrl = "";
       try {
-        const blob = await fetch(optimizedDataUrl).then((r) => r.blob());
-        const safeName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
-        const uploadData = new FormData();
-        uploadData.append("file", blob, safeName);
-
-        const res: any = await apiClient.post(
-          "/invoice-settings/superadmin/themes/upload",
-          uploadData
-        );
-        if (res?.url) {
-          chosenUrl = res.url;
+        const formDataPayload = new FormData();
+        formDataPayload.append("file", file);
+        const uploadRes = await fetch("/api/upload-theme", {
+          method: "POST",
+          body: formDataPayload,
+        });
+        if (uploadRes.ok) {
+          const json = await uploadRes.json();
+          if (json?.url) publicUrl = json.url;
         }
-      } catch (uploadErr) {
-        // Fallback to local upload route if running locally
-        try {
-          const uploadData = new FormData();
-          uploadData.append("file", file);
-          const localRes = await fetch("/api/upload-theme", {
-            method: "POST",
-            body: uploadData,
-          });
-          const localJson = await localRes.json();
-          if (localJson?.publicUrl) {
-            chosenUrl = localJson.publicUrl;
-          }
-        } catch {
-          // If upload fails, keep the compressed data URL (~50-80KB) which is safe for Nginx
-        }
+      } catch {
+        // Fallback
       }
 
+      const finalUrl = publicUrl || compressedDataUrl;
+
       setFormData((prev) => {
-        const updated = { ...prev, [fieldName]: chosenUrl };
-        if (fieldName === "variant1" && !prev.thumbnail) {
-          updated.thumbnail = chosenUrl;
+        const updated = { ...prev, [field]: finalUrl };
+        if (field === "variant1" && !prev.thumbnail) {
+          updated.thumbnail = finalUrl;
         }
         return updated;
       });
     } catch (err: any) {
-      alert("Upload failed: " + (err?.message || "Unknown error"));
+      alert("Failed to process image: " + err?.message);
     } finally {
       setUploadingField(null);
     }
@@ -190,13 +158,12 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
 
   const onFileInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    fieldName: "variant1" | "variant2" | "thumbnail"
+    field: "variant1" | "variant2" | "thumbnail"
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      handleFileUpload(file, fieldName);
+      handleFileUpload(file, field);
     }
-    // Reset input so same file can be re-selected
     e.target.value = "";
   };
 
@@ -320,43 +287,10 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
       return `/${t}`;
     };
 
-    // Auto-optimize and convert any oversized data URLs before payload creation
-    const optimizeUrlIfNeeded = async (
-      rawUrl: string,
-      maxDim: number,
-      quality: number
-    ): Promise<string> => {
-      const clean = normalizeUrl(rawUrl);
-      if (!clean) return "";
-      // If it's a huge base64 data URL (> 60KB), compress it
-      if (clean.startsWith("data:") && clean.length > 60000) {
-        try {
-          const compressed = await compressImageToDataUrl(clean, maxDim, quality);
-          // Also try uploading to backend to convert to a real lightweight file URL
-          try {
-            const blob = await fetch(compressed).then((r) => r.blob());
-            const uploadData = new FormData();
-            uploadData.append("file", blob, `theme_opt_${Date.now()}.jpg`);
-            const res: any = await apiClient.post(
-              "/invoice-settings/superadmin/themes/upload",
-              uploadData
-            );
-            if (res?.url) return res.url;
-          } catch {
-            // Keep compressed data URL
-          }
-          return compressed;
-        } catch {
-          return clean;
-        }
-      }
-      return clean;
-    };
-
     setLoading(true);
     try {
-      const v1 = await optimizeUrlIfNeeded(formData.variant1, 1200, 0.82);
-      const v2 = await optimizeUrlIfNeeded(formData.variant2, 1200, 0.82);
+      const v1 = normalizeUrl(formData.variant1);
+      const v2 = normalizeUrl(formData.variant2);
 
       const variants: string[] = [];
       if (v1) variants.push(v1);
@@ -365,7 +299,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
       const isFestive = formData.category === "festive" || formData.category === "branding";
       const defaultThumb = isFestive ? "/themes/navaratri_1.jpg" : "";
       const rawThumb = formData.thumbnail || variants[0] || defaultThumb;
-      const thumbnail = await optimizeUrlIfNeeded(rawThumb, 400, 0.75);
+      const thumbnail = normalizeUrl(rawThumb);
 
       const payload = {
         name: formData.name.trim(),
@@ -413,54 +347,68 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
     <div className="space-y-6 animate-fadeIn">
       {/* Banner Notice */}
       {banner && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-semibold text-emerald-800 flex items-center justify-between shadow-xs">
-          <span>{banner}</span>
-          <button onClick={() => setBanner(null)} className="text-emerald-600 hover:text-emerald-900">✕</button>
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800 flex items-center justify-between shadow-xs animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <span>✓</span>
+            <span>{banner}</span>
+          </div>
+          <button onClick={() => setBanner(null)} className="text-emerald-600 hover:text-emerald-900 cursor-pointer">
+            ✕
+          </button>
         </div>
       )}
 
-      {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">🎁</span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              {lang === "gu" ? "ઇન્વૉઇસ થીમ સ્ટોર મેનેજમેન્ટ" : "Invoice Themes & Festive Store"}
+      {/* Page Header */}
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-7 text-white shadow-lg border border-indigo-900/40 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                GST Invoice Art Studio
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                {themes.filter((t) => t.isActive).length} Active Live
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
+              <span>🎁</span>
+              <span>{lang === "gu" ? "ઇન્વૉઇસ થીમ સ્ટોર મેનેજમેન્ટ" : "Invoice Themes & Festive Store"}</span>
             </h1>
+            <p className="text-xs text-slate-300 mt-1 max-w-xl">
+              {lang === "gu"
+                ? "તહેવારોની સ્પેશિયલ બેકગ્રાઉન્ડ ઇમેજીસ, રંગો અને થીમ્સ સુપર એડમિનથી લાઇવ મેનેજ કરો. અહીંથી કરેલા ફેરફારો બધા યુઝર્સના ઇન્વૉઇસ સેટિંગ્સમાં તરત જ દેખાશે."
+                : "Manage seasonal festival backgrounds, letterhead stationery artwork, and GST invoice themes in real-time. Changes configured here instantly appear in all tenants' invoice live preview studios."}
+            </p>
           </div>
-          <p className="text-xs text-slate-500 mt-1 max-w-2xl">
-            {lang === "gu"
-              ? "તહેવારોની સ્પેશિયલ બેકગ્રાઉન્ડ ઇમેજીસ, રંગો અને થીમ્સ સુપર એડમિનથી લાઇવ મેનેજ કરો. અહીંથી કરેલા ફેરફારો બધા યુઝર્સના ઇન્વૉઇસ સેટિંગ્સમાં તરત જ દેખાશે."
-              : "Manage seasonal festival backgrounds, letterhead stationery artwork, and GST invoice themes in real-time. Changes configured here instantly appear in all tenants' invoice live preview studios."}
-          </p>
-        </div>
 
-        <div className="flex items-center gap-2.5">
-          <button
-            type="button"
-            onClick={handleResetDefaults}
-            className="py-2.5 px-3.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
-            title="Restore default festive themes (Navaratri, Durga Puja, Dussehra, Dhanteras, Diwali)"
-          >
-            <svg className="w-3.5 h-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            <span>{lang === "gu" ? "ડિફોલ્ટ પુનઃસ્થાપિત કરો" : "Reset Defaults"}</span>
-          </button>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <button
+              type="button"
+              onClick={handleResetDefaults}
+              className="py-2.5 px-3.5 bg-white/10 hover:bg-white/15 text-white border border-white/10 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer backdrop-blur-md"
+              title="Restore default festive themes (Navaratri, Durga Puja, Dussehra, Dhanteras, Diwali)"
+            >
+              <svg className="w-4 h-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>{lang === "gu" ? "ડિફોલ્ટ પુનઃસ્થાપિત કરો" : "Reset Defaults"}</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={handleOpenAdd}
-            className="py-2.5 px-4 bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
-          >
-            <span className="text-sm">+</span>
-            <span>{lang === "gu" ? "નવી થીમ ઉમેરો" : "Add New Theme"}</span>
-          </button>
+            <button
+              type="button"
+              onClick={handleOpenAdd}
+              className="py-2.5 px-4 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-500/25 flex items-center gap-1.5 cursor-pointer"
+            >
+              <span className="text-sm">+</span>
+              <span>{lang === "gu" ? "નવી થીમ ઉમેરો" : "Add New Theme"}</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Tabs Filter Bar */}
-      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-xs">
         <div className="flex items-center gap-2">
           {[
             { id: "all", label: "All Themes", count: themes.length },
@@ -470,15 +418,15 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === tab.id
-                  ? "bg-[#7C3AED] text-white shadow-xs"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200/80"
+                  ? "bg-purple-600 text-white shadow-xs"
+                  : "bg-slate-100/70 text-slate-600 hover:bg-slate-100"
               }`}
             >
               <span>{tab.label}</span>
-              <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
-                activeTab === tab.id ? "bg-white/25 text-white" : "bg-slate-200 text-slate-700"
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${
+                activeTab === tab.id ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"
               }`}>
                 {tab.count}
               </span>
@@ -488,7 +436,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
 
         <button
           onClick={fetchThemes}
-          className="text-xs font-semibold text-slate-500 hover:text-slate-800 flex items-center gap-1"
+          className="text-xs font-bold text-slate-600 hover:text-purple-700 flex items-center gap-1 px-3 py-1.5 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
         >
           <span>↻ Refresh</span>
         </button>
@@ -496,15 +444,15 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
 
       {/* Themes Grid */}
       {loading ? (
-        <div className="py-20 text-center text-xs text-slate-400 font-medium">
+        <div className="py-24 text-center text-xs text-slate-400 font-bold animate-pulse">
           Loading invoice themes catalogue...
         </div>
       ) : error ? (
-        <div className="py-12 text-center text-xs text-rose-600 bg-rose-50 rounded-2xl border border-rose-200">
+        <div className="py-12 text-center text-xs text-rose-600 bg-rose-50 rounded-2xl border border-rose-200 font-bold">
           {error}
         </div>
       ) : filteredThemes.length === 0 ? (
-        <div className="py-16 text-center text-xs text-slate-400">
+        <div className="py-20 text-center text-xs text-slate-400 font-medium bg-white rounded-2xl border border-slate-200/80">
           No themes found under this filter.
         </div>
       ) : (
@@ -514,19 +462,19 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
             return (
               <div
                 key={theme.id}
-                className={`group relative flex flex-col rounded-2xl border bg-white p-3.5 shadow-xs transition-all hover:shadow-md ${
-                  theme.isActive ? "border-slate-200" : "border-slate-200 bg-slate-50/60 opacity-65"
+                className={`group relative flex flex-col rounded-3xl border bg-white p-4 shadow-xs transition-all hover:shadow-lg ${
+                  theme.isActive ? "border-slate-200/80 hover:border-purple-300" : "border-slate-200 bg-slate-50/60 opacity-60"
                 }`}
               >
                 {/* Badge on top right */}
                 {theme.badge && (
-                  <span className="absolute top-2.5 right-2.5 z-10 rounded-full bg-[#7C3AED] px-2 py-0.5 text-[8.5px] font-black uppercase text-white shadow-xs">
+                  <span className="absolute top-3 right-3 z-10 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-2.5 py-0.5 text-[9px] font-black uppercase text-white shadow-xs font-mono">
                     {theme.badge}
                   </span>
                 )}
 
                 {/* Preview Thumbnail Box */}
-                <div className="relative h-44 w-full overflow-hidden rounded-xl border border-slate-100 bg-[#FAF8F5] shadow-2xs flex items-center justify-center">
+                <div className="relative h-48 w-full overflow-hidden rounded-2xl border border-slate-100 bg-[#FAF8F5] shadow-2xs flex items-center justify-center">
                   <div className="absolute inset-0 flex items-center justify-center bg-slate-100 text-slate-400 text-xs font-bold uppercase tracking-wider p-2 text-center select-none">
                     {theme.name || "Theme"}
                   </div>
@@ -568,7 +516,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
 
                   {/* Primary Color Indicator */}
                   <div
-                    className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md bg-white/90 px-1.5 py-0.5 shadow-2xs backdrop-blur-xs text-[10px] font-bold text-slate-800"
+                    className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-lg bg-white/95 px-2 py-0.5 shadow-2xs backdrop-blur-xs text-[10px] font-mono font-bold text-slate-800"
                   >
                     <span
                       className="h-2.5 w-2.5 rounded-full border border-black/10"
@@ -578,20 +526,20 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                   </div>
 
                   {hasMultipleVariants && (
-                    <div className="absolute bottom-2 right-2 rounded-md bg-black/75 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-2xs">
+                    <div className="absolute bottom-2 right-2 rounded-lg bg-slate-900/80 backdrop-blur-xs px-2 py-0.5 text-[9px] font-mono font-bold text-white shadow-2xs">
                       {theme.variants.length} Variants
                     </div>
                   )}
                 </div>
 
                 {/* Theme Info */}
-                <div className="mt-3 flex-1 flex flex-col justify-between">
+                <div className="mt-4 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#7C3AED] transition-colors truncate">
+                      <h3 className="text-sm font-black text-slate-900 group-hover:text-purple-700 transition-colors truncate">
                         {theme.name}
                       </h3>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
                         {theme.category}
                       </span>
                     </div>
@@ -602,12 +550,11 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                   </div>
 
                   {/* Action Controls */}
-                  <div className="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between">
-                    {/* Active/Inactive Switch */}
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
                     <button
                       type="button"
                       onClick={() => handleToggleActive(theme)}
-                      className={`text-[10.5px] font-bold px-2 py-0.5 rounded-md border transition-all ${
+                      className={`text-[10.5px] font-bold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
                         theme.isActive
                           ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
                           : "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200"
@@ -616,21 +563,21 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                       {theme.isActive ? "● Active" : "○ Inactive"}
                     </button>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => handleOpenEdit(theme)}
-                        className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs"
+                        className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-50 shadow-2xs cursor-pointer"
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(theme)}
-                        className="rounded-lg border border-rose-200 bg-white px-1.5 py-1 text-[11px] font-semibold text-rose-600 hover:bg-rose-50 shadow-2xs"
+                        className="rounded-lg border border-rose-200 bg-white px-2 py-1 text-[11px] font-bold text-rose-600 hover:bg-rose-50 shadow-2xs cursor-pointer"
                         title="Delete theme"
                       >
-                        🗑
+                        🗑️
                       </button>
                     </div>
                   </div>
@@ -643,11 +590,11 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
 
       {/* Add / Edit Theme Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-fadeIn">
-          <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-fadeIn">
+          <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-6 sm:p-7 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
               <div>
-                <h3 className="text-lg font-bold text-slate-900">
+                <h3 className="text-lg font-black text-slate-900">
                   {editingTheme ? "Edit Invoice Theme" : "Add New Invoice Theme"}
                 </h3>
                 <p className="text-xs text-slate-500">
@@ -657,7 +604,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 text-base font-bold"
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 cursor-pointer"
               >
                 ✕
               </button>
@@ -666,36 +613,36 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Theme Name *</label>
+                  <label className="block font-bold text-slate-700 mb-1.5">Theme Name *</label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g. Holi Special, Diwali 2026"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
+                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Festival / Tag Name</label>
+                  <label className="block font-bold text-slate-700 mb-1.5">Festival / Tag Name</label>
                   <input
                     type="text"
                     value={formData.festivalName}
                     onChange={(e) => setFormData({ ...formData, festivalName: e.target.value })}
                     placeholder="e.g. Navaratri, Diwali"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
+                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Category</label>
+                  <label className="block font-bold text-slate-700 mb-1.5">Category</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs bg-white focus:border-[#7C3AED] focus:outline-none"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold bg-slate-50 focus:bg-white focus:border-purple-600 focus:outline-none cursor-pointer"
                   >
                     <option value="festive">Festive / Seasonal</option>
                     <option value="standard">Standard GST</option>
@@ -704,18 +651,18 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Badge</label>
+                  <label className="block font-bold text-slate-700 mb-1.5">Badge</label>
                   <input
                     type="text"
                     value={formData.badge}
                     onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
                     placeholder="e.g. NEW, FESTIVE"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Accent Color</label>
+                  <label className="block font-bold text-slate-700 mb-1.5">Accent Color</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
@@ -727,14 +674,14 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                       type="text"
                       value={formData.primaryColor}
                       onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
-                      className="w-full rounded-xl border border-slate-200 px-2 py-1.5 font-mono text-xs focus:border-[#7C3AED] focus:outline-none"
+                      className="w-full rounded-xl border border-slate-200 px-2 py-1.5 font-mono text-xs focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white font-bold"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">
+                <label className="block font-bold text-slate-700 mb-1.5">
                   Variant 1 Background Image URL *
                 </label>
                 <div className="flex items-center gap-2">
@@ -744,7 +691,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     value={formData.variant1}
                     onChange={(e) => setFormData({ ...formData, variant1: e.target.value, thumbnail: formData.thumbnail || e.target.value })}
                     placeholder="/themes/navaratri_1.jpg or https://..."
-                    className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
+                    className="flex-1 rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
                   />
                   <input
                     ref={variant1FileRef}
@@ -757,46 +704,28 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     type="button"
                     onClick={() => variant1FileRef.current?.click()}
                     disabled={uploadingField === "variant1"}
-                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-[#7C3AED] bg-[#7C3AED]/5 hover:bg-[#7C3AED]/15 px-3 py-2 text-xs font-semibold text-[#7C3AED] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-purple-600 bg-purple-50 hover:bg-purple-100 px-3.5 py-2.5 text-xs font-bold text-purple-700 transition-all disabled:opacity-50 cursor-pointer"
                     title="Upload image file (JPG, PNG, WebP — max 5MB)"
                   >
-                    {uploadingField === "variant1" ? (
-                      <>
-                        <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                        </svg>
-                        <span>Uploading…</span>
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
-                        <span>Upload</span>
-                      </>
-                    )}
+                    {uploadingField === "variant1" ? "Uploading…" : "Upload"}
                   </button>
                 </div>
                 {/* Image Preview */}
                 {formData.variant1 && (
-                  <div className="mt-2 relative group/preview">
+                  <div className="mt-2.5">
                     <img
                       src={resolveThemeAssetUrl(formData.variant1)}
                       alt="Variant 1 preview"
-                      className="h-20 w-auto max-w-full rounded-lg border border-slate-200 object-cover shadow-xs"
+                      className="h-20 w-auto max-w-full rounded-xl border border-slate-200 object-cover shadow-xs"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                       onLoad={(e) => { (e.target as HTMLImageElement).style.display = "block"; }}
                     />
                   </div>
                 )}
-                <p className="text-[10.5px] text-slate-400 mt-0.5">
-                  Upload an image or enter URL. Available presets: /themes/navaratri_1.jpg, /themes/navaratri_2.jpg, /themes/durga_puja_1.jpg, /themes/dussehra_1.jpg, /themes/dhanteras_1.jpg, /themes/diwali_1.jpg
-                </p>
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">
+                <label className="block font-bold text-slate-700 mb-1.5">
                   Variant 2 Background Image URL (Optional)
                 </label>
                 <div className="flex items-center gap-2">
@@ -805,7 +734,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     value={formData.variant2}
                     onChange={(e) => setFormData({ ...formData, variant2: e.target.value })}
                     placeholder="/themes/navaratri_2.jpg or https://..."
-                    className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
+                    className="flex-1 rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
                   />
                   <input
                     ref={variant2FileRef}
@@ -818,34 +747,19 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     type="button"
                     onClick={() => variant2FileRef.current?.click()}
                     disabled={uploadingField === "variant2"}
-                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-[#7C3AED] bg-[#7C3AED]/5 hover:bg-[#7C3AED]/15 px-3 py-2 text-xs font-semibold text-[#7C3AED] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                    title="Upload image file (JPG, PNG, WebP — max 5MB)"
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-purple-600 bg-purple-50 hover:bg-purple-100 px-3.5 py-2.5 text-xs font-bold text-purple-700 transition-all disabled:opacity-50 cursor-pointer"
+                    title="Upload image file"
                   >
-                    {uploadingField === "variant2" ? (
-                      <>
-                        <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                        </svg>
-                        <span>Uploading…</span>
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
-                        <span>Upload</span>
-                      </>
-                    )}
+                    {uploadingField === "variant2" ? "Uploading…" : "Upload"}
                   </button>
                 </div>
                 {/* Image Preview */}
                 {formData.variant2 && (
-                  <div className="mt-2">
+                  <div className="mt-2.5">
                     <img
                       src={resolveThemeAssetUrl(formData.variant2)}
                       alt="Variant 2 preview"
-                      className="h-20 w-auto max-w-full rounded-lg border border-slate-200 object-cover shadow-xs"
+                      className="h-20 w-auto max-w-full rounded-xl border border-slate-200 object-cover shadow-xs"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                       onLoad={(e) => { (e.target as HTMLImageElement).style.display = "block"; }}
                     />
@@ -854,7 +768,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">
+                <label className="block font-bold text-slate-700 mb-1.5">
                   Thumbnail Preview Image URL
                 </label>
                 <div className="flex items-center gap-2">
@@ -863,7 +777,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     value={formData.thumbnail}
                     onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
                     placeholder="Defaults to Variant 1 if left empty"
-                    className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
+                    className="flex-1 rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
                   />
                   <input
                     ref={thumbnailFileRef}
@@ -876,34 +790,19 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     type="button"
                     onClick={() => thumbnailFileRef.current?.click()}
                     disabled={uploadingField === "thumbnail"}
-                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-[#7C3AED] bg-[#7C3AED]/5 hover:bg-[#7C3AED]/15 px-3 py-2 text-xs font-semibold text-[#7C3AED] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                    title="Upload image file (JPG, PNG, WebP — max 5MB)"
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-purple-600 bg-purple-50 hover:bg-purple-100 px-3.5 py-2.5 text-xs font-bold text-purple-700 transition-all disabled:opacity-50 cursor-pointer"
+                    title="Upload image file"
                   >
-                    {uploadingField === "thumbnail" ? (
-                      <>
-                        <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                        </svg>
-                        <span>Uploading…</span>
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
-                        <span>Upload</span>
-                      </>
-                    )}
+                    {uploadingField === "thumbnail" ? "Uploading…" : "Upload"}
                   </button>
                 </div>
                 {/* Thumbnail Preview */}
                 {formData.thumbnail && (
-                  <div className="mt-2">
+                  <div className="mt-2.5">
                     <img
                       src={resolveThemeAssetUrl(formData.thumbnail)}
                       alt="Thumbnail preview"
-                      className="h-20 w-auto max-w-full rounded-lg border border-slate-200 object-cover shadow-xs"
+                      className="h-20 w-auto max-w-full rounded-xl border border-slate-200 object-cover shadow-xs"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                       onLoad={(e) => { (e.target as HTMLImageElement).style.display = "block"; }}
                     />
@@ -912,25 +811,25 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Description</label>
+                <label className="block font-bold text-slate-700 mb-1.5">Description</label>
                 <textarea
                   rows={2}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Short description of this theme..."
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
+                  className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
                 />
               </div>
 
               <div className="flex items-center gap-3 pt-2">
-                <label className="flex items-center gap-2 cursor-pointer font-semibold text-slate-800">
+                <label className="flex items-center gap-2 cursor-pointer font-bold text-slate-800">
                   <input
                     type="checkbox"
                     checked={formData.isActive}
                     onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="h-4 w-4 rounded text-[#7C3AED] focus:ring-[#7C3AED]"
+                    className="h-4 w-4 rounded text-purple-600 focus:ring-purple-600"
                   />
-                  <span>Active & Visible to all users</span>
+                  <span>Active & Visible to all business tenants</span>
                 </label>
               </div>
 
@@ -938,13 +837,13 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-xl border border-slate-200 px-4 py-2 font-semibold text-slate-600 hover:bg-slate-50"
+                  className="rounded-xl border border-slate-200 px-4 py-2 font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] px-5 py-2 font-bold text-white shadow-xs"
+                  className="rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 px-6 py-2.5 font-bold text-white shadow-md shadow-purple-500/20 cursor-pointer"
                 >
                   {editingTheme ? "Update Theme" : "Create Theme"}
                 </button>
