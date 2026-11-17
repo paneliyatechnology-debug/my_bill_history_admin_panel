@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { apiClient } from "../../lib/api-client";
+import { resolveThemeAssetUrl, getBackendOrigin } from "../../lib/theme-asset-helper";
 
 export interface InvoiceThemeItem {
   id: string;
@@ -531,13 +532,36 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                   </div>
                   {theme.thumbnail ? (
                     <img
-                      src={theme.thumbnail.startsWith("/") || theme.thumbnail.startsWith("http") || theme.thumbnail.startsWith("data:") ? theme.thumbnail : `/${theme.thumbnail}`}
+                      src={resolveThemeAssetUrl(theme.thumbnail)}
                       alt={theme.name}
                       className="relative z-1 h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
                       onError={(e) => {
                         const target = e.currentTarget;
+                        const currentSrc = target.getAttribute("src") || "";
+                        const backendOrigin = getBackendOrigin();
+                        if (backendOrigin && currentSrc.startsWith(backendOrigin)) {
+                          const localPath = currentSrc.slice(backendOrigin.length);
+                          target.onerror = () => {
+                            target.onerror = null;
+                            target.style.display = "none";
+                          };
+                          target.src = localPath;
+                          return;
+                        }
+                        if (backendOrigin && !currentSrc.startsWith("http") && !currentSrc.startsWith("data:")) {
+                          const backendPath = `${backendOrigin}${currentSrc.startsWith("/") ? currentSrc : `/${currentSrc}`}`;
+                          target.onerror = () => {
+                            target.onerror = null;
+                            target.style.display = "none";
+                          };
+                          target.src = backendPath;
+                          return;
+                        }
                         target.onerror = null;
                         target.style.display = "none";
+                      }}
+                      onLoad={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = "block";
                       }}
                     />
                   ) : null}
@@ -758,7 +782,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 {formData.variant1 && (
                   <div className="mt-2 relative group/preview">
                     <img
-                      src={formData.variant1}
+                      src={resolveThemeAssetUrl(formData.variant1)}
                       alt="Variant 1 preview"
                       className="h-20 w-auto max-w-full rounded-lg border border-slate-200 object-cover shadow-xs"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
@@ -819,7 +843,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 {formData.variant2 && (
                   <div className="mt-2">
                     <img
-                      src={formData.variant2}
+                      src={resolveThemeAssetUrl(formData.variant2)}
                       alt="Variant 2 preview"
                       className="h-20 w-auto max-w-full rounded-lg border border-slate-200 object-cover shadow-xs"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
@@ -877,7 +901,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 {formData.thumbnail && (
                   <div className="mt-2">
                     <img
-                      src={formData.thumbnail}
+                      src={resolveThemeAssetUrl(formData.thumbnail)}
                       alt="Thumbnail preview"
                       className="h-20 w-auto max-w-full rounded-lg border border-slate-200 object-cover shadow-xs"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
