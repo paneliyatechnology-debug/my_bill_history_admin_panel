@@ -807,29 +807,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </svg>
       ),
     },
-    // {
-    //   id: "ai_collections",
-    //   name: "Payment Reminders",
-    //   nameGujarati: "ઓટો ઉઘરાણી (Follow-ups)",
-    //   group: "BUSINESS TOOLS",
-    //   badge: "Smart",
-    //   href: "/finance/ai-collections",
-    //   icon: (
-    //     <svg
-    //       className="w-5 h-5"
-    //       fill="none"
-    //       viewBox="0 0 24 24"
-    //       stroke="currentColor"
-    //     >
-    //       <path
-    //         strokeLinecap="round"
-    //         strokeLinejoin="round"
-    //         strokeWidth={1.8}
-    //         d="M13 10V3L4 14h7v7l9-11h-7z"
-    //       />
-    //     </svg>
-    //   ),
-    // },
+    {
+      id: "ai_collections",
+      name: "Payment Reminders",
+      nameGujarati: "ઓટો ઉઘરાણી (Follow-ups)",
+      group: "BUSINESS TOOLS",
+      badge: "Smart",
+      href: "/finance/ai-collections",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.8}
+            d="M13 10V3L4 14h7v7l9-11h-7z"
+          />
+        </svg>
+      ),
+    },
     {
       id: "payroll",
       name: "Staff Attendance & Payroll",
@@ -1498,8 +1498,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   type="button"
                   onClick={() => setLang("en")}
                   className={`px-2 py-1 text-xs sm:text-[13px] font-bold rounded-md transition-all ${lang === "en"
-                      ? "bg-white text-slate-900 shadow-xs"
-                      : "text-slate-600 hover:text-slate-900"
+                    ? "bg-white text-slate-900 shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
                     }`}
                 >
                   EN
@@ -1508,8 +1508,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   type="button"
                   onClick={() => setLang("gu")}
                   className={`px-2 py-1 text-xs sm:text-[13px] font-bold rounded-md transition-all ${lang === "gu"
-                      ? "bg-white text-slate-900 shadow-xs"
-                      : "text-slate-600 hover:text-slate-900"
+                    ? "bg-white text-slate-900 shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
                     }`}
                 >
                   ગુજરાતી
