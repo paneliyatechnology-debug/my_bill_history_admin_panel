@@ -239,9 +239,22 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
       return;
     }
 
+    const normalizeUrl = (u: string) => {
+      const t = (u || "").trim();
+      if (!t) return "";
+      if (t.startsWith("/") || t.startsWith("http://") || t.startsWith("https://") || t.startsWith("data:")) return t;
+      return `/${t}`;
+    };
+
     const variants: string[] = [];
-    if (formData.variant1.trim()) variants.push(formData.variant1.trim());
-    if (formData.variant2.trim()) variants.push(formData.variant2.trim());
+    const v1 = normalizeUrl(formData.variant1);
+    const v2 = normalizeUrl(formData.variant2);
+    if (v1) variants.push(v1);
+    if (v2) variants.push(v2);
+
+    const isFestive = formData.category === "festive" || formData.category === "branding";
+    const defaultThumb = isFestive ? "/themes/navaratri_1.jpg" : "";
+    const thumbnail = normalizeUrl(formData.thumbnail) || variants[0] || defaultThumb;
 
     const payload = {
       name: formData.name.trim(),
@@ -250,8 +263,8 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
       description: formData.description.trim(),
       primaryColor: formData.primaryColor,
       badge: formData.badge.trim() || null,
-      thumbnail: formData.thumbnail.trim() || variants[0] || "/themes/navaratri_1.jpg",
-      variants: variants.length > 0 ? variants : ["/themes/navaratri_1.jpg"],
+      thumbnail,
+      variants: variants.length > 0 ? variants : (isFestive ? ["/themes/navaratri_1.jpg"] : []),
       isActive: formData.isActive,
       sortOrder: Number(formData.sortOrder) || 1,
     };
@@ -404,9 +417,15 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 <div className="relative h-44 w-full overflow-hidden rounded-xl border border-slate-100 bg-[#FAF8F5] shadow-2xs">
                   {theme.thumbnail ? (
                     <img
-                      src={theme.thumbnail}
+                      src={theme.thumbnail.startsWith("/") || theme.thumbnail.startsWith("http") || theme.thumbnail.startsWith("data:") ? theme.thumbnail : `/${theme.thumbnail}`}
                       alt={theme.name}
                       className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        if (theme.variants && theme.variants[0]) {
+                          const v0 = theme.variants[0];
+                          e.currentTarget.src = v0.startsWith("/") || v0.startsWith("http") ? v0 : `/${v0}`;
+                        }
+                      }}
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-slate-100 text-slate-400 text-xs font-semibold">
