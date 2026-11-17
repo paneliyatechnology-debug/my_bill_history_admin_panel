@@ -807,29 +807,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </svg>
       ),
     },
-    {
-      id: "ai_collections",
-      name: "Payment Reminders",
-      nameGujarati: "ઓટો ઉઘરાણી (Follow-ups)",
-      group: "BUSINESS TOOLS",
-      badge: "Smart",
-      href: "/finance/ai-collections",
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.8}
-            d="M13 10V3L4 14h7v7l9-11h-7z"
-          />
-        </svg>
-      ),
-    },
+    // {
+    //   id: "ai_collections",
+    //   name: "Payment Reminders",
+    //   nameGujarati: "ઓટો ઉઘરાણી (Follow-ups)",
+    //   group: "BUSINESS TOOLS",
+    //   badge: "Smart",
+    //   href: "/finance/ai-collections",
+    //   icon: (
+    //     <svg
+    //       className="w-5 h-5"
+    //       fill="none"
+    //       viewBox="0 0 24 24"
+    //       stroke="currentColor"
+    //     >
+    //       <path
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //         strokeWidth={1.8}
+    //         d="M13 10V3L4 14h7v7l9-11h-7z"
+    //       />
+    //     </svg>
+    //   ),
+    // },
     {
       id: "payroll",
       name: "Staff Attendance & Payroll",
@@ -946,8 +946,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div
             style={{ backgroundColor: SIDEBAR_BG }}
             className={`shrink-0 flex items-center border-b border-slate-700/50 transition-all relative ${isSidebarCollapsed
-                ? "justify-center px-2 py-4"
-                : "justify-between px-4 py-3.5"
+              ? "justify-center px-2 py-4"
+              : "justify-between px-4 py-3.5"
               }`}
           >
             <Link
@@ -985,8 +985,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <button
               onClick={toggleSidebarCollapse}
               className={`transition-colors ${isSidebarCollapsed
-                  ? "absolute -right-3 top-5 w-6 h-6 bg-[#1E293B] border border-slate-700 shadow-xs rounded-full flex items-center justify-center text-slate-300 hover:text-white z-40"
-                  : "p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg shrink-0"
+                ? "absolute -right-3 top-5 w-6 h-6 bg-[#1E293B] border border-slate-700 shadow-xs rounded-full flex items-center justify-center text-slate-300 hover:text-white z-40"
+                : "p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg shrink-0"
                 }`}
               title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               aria-label={
@@ -1046,14 +1046,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       <Link
                         href={section.href}
                         className={`flex items-center transition-all ${isSidebarCollapsed
-                            ? `w-11 h-11 mx-auto justify-center rounded-xl ${isActive
-                              ? "text-white font-bold shadow-xs"
-                              : "text-slate-300 hover:text-white hover:bg-white/10"
-                            }`
-                            : `gap-3 px-3 py-2 rounded-xl text-xs font-semibold ${isActive
-                              ? "text-white shadow-xs font-bold"
-                              : "text-slate-300 hover:text-white hover:bg-white/10"
-                            }`
+                          ? `w-11 h-11 mx-auto justify-center rounded-xl ${isActive
+                            ? "text-white font-bold shadow-xs"
+                            : "text-slate-300 hover:text-white hover:bg-white/10"
+                          }`
+                          : `gap-3 px-3 py-2 rounded-xl text-xs font-semibold ${isActive
+                            ? "text-white shadow-xs font-bold"
+                            : "text-slate-300 hover:text-white hover:bg-white/10"
+                          }`
                           }`}
                         style={{ backgroundColor: isActive ? ACTIVE_MENU_BG : undefined, color: isActive ? TEXT_COLOR : undefined }}
                         title={
@@ -1093,8 +1093,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       <Link
                         href={section.items?.[0]?.href || "#"}
                         className={`w-11 h-11 mx-auto flex items-center justify-center rounded-xl text-xs font-medium transition-all ${hasActiveChild
-                            ? "text-white font-bold shadow-xs"
-                            : "text-slate-300 hover:text-white hover:bg-white/10"
+                          ? "text-white font-bold shadow-xs"
+                          : "text-slate-300 hover:text-white hover:bg-white/10"
                           }`}
                         style={{ backgroundColor: hasActiveChild ? ACTIVE_MENU_BG : undefined, color: hasActiveChild ? TEXT_COLOR : undefined }}
                         title={
@@ -1146,8 +1146,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                                 key={`${item.name}-${item.href}`}
                                 href={item.href}
                                 className={`block px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${isSubActive
-                                    ? "text-white font-bold"
-                                    : "text-slate-300 hover:text-white hover:bg-white/10"
+                                  ? "text-white font-bold"
+                                  : "text-slate-300 hover:text-white hover:bg-white/10"
                                   }`}
                                 style={{ backgroundColor: isSubActive ? ACTIVE_MENU_BG : undefined, color: isSubActive ? TEXT_COLOR : undefined }}
                               >
@@ -1179,8 +1179,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         type="button"
                         onClick={() => toggleSection(section.id)}
                         className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${hasActiveChild
-                            ? "text-white font-bold shadow-xs"
-                            : "text-slate-300 hover:text-white hover:bg-white/10"
+                          ? "text-white font-bold shadow-xs"
+                          : "text-slate-300 hover:text-white hover:bg-white/10"
                           }`}
                         style={{ backgroundColor: hasActiveChild ? ACTIVE_MENU_BG : undefined, color: hasActiveChild ? TEXT_COLOR : undefined }}
                         title={section.name}
@@ -1241,8 +1241,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                                 key={`${item.name}-${item.href}`}
                                 href={item.href}
                                 className={`block py-1.5 px-2.5 rounded-lg text-xs font-medium transition-colors ${isItemActive
-                                    ? "text-white font-bold shadow-2xs"
-                                    : "text-slate-400 hover:text-white hover:bg-white/10"
+                                  ? "text-white font-bold shadow-2xs"
+                                  : "text-slate-400 hover:text-white hover:bg-white/10"
                                   }`}
                                 style={{ backgroundColor: isItemActive ? ACTIVE_MENU_BG : undefined, color: isItemActive ? TEXT_COLOR : undefined }}
                               >
@@ -1269,8 +1269,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link
               href="/settings/account"
               className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${pathname.startsWith("/settings")
-                  ? "text-white shadow-xs font-bold"
-                  : "text-slate-300 hover:text-white hover:bg-white/10"
+                ? "text-white shadow-xs font-bold"
+                : "text-slate-300 hover:text-white hover:bg-white/10"
                 }`}
               style={{ backgroundColor: pathname.startsWith("/settings") ? ACTIVE_MENU_BG : undefined, color: pathname.startsWith("/settings") ? TEXT_COLOR : undefined }}
               title="Settings"
@@ -1497,22 +1497,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <button
                   type="button"
                   onClick={() => setLang("en")}
-                  className={`px-2 py-1 text-xs sm:text-[13px] font-bold rounded-md transition-all ${
-                    lang === "en"
+                  className={`px-2 py-1 text-xs sm:text-[13px] font-bold rounded-md transition-all ${lang === "en"
                       ? "bg-white text-slate-900 shadow-xs"
                       : "text-slate-600 hover:text-slate-900"
-                  }`}
+                    }`}
                 >
                   EN
                 </button>
                 <button
                   type="button"
                   onClick={() => setLang("gu")}
-                  className={`px-2 py-1 text-xs sm:text-[13px] font-bold rounded-md transition-all ${
-                    lang === "gu"
+                  className={`px-2 py-1 text-xs sm:text-[13px] font-bold rounded-md transition-all ${lang === "gu"
                       ? "bg-white text-slate-900 shadow-xs"
                       : "text-slate-600 hover:text-slate-900"
-                  }`}
+                    }`}
                 >
                   ગુજરાતી
                 </button>
@@ -1548,20 +1546,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           id="main-content"
           tabIndex={-1}
           className={`flex-1 min-w-0 min-h-0 overflow-y-auto overflow-x-hidden relative z-10 ${pathname === "/" ||
-              pathname.startsWith("/purchases") ||
-              pathname.startsWith("/sales") ||
-              isCashBankPage
-              ? "p-2 sm:p-3 lg:p-4"
-              : "p-3 sm:p-6 lg:p-8"
+            pathname.startsWith("/purchases") ||
+            pathname.startsWith("/sales") ||
+            isCashBankPage
+            ? "p-2 sm:p-3 lg:p-4"
+            : "p-3 sm:p-6 lg:p-8"
             } pb-24 lg:pb-8 overscroll-y-contain focus:outline-none print:p-0 print:m-0 print:overflow-visible print:h-auto print:w-full print:block`}
         >
           <div
             className={`${pathname === "/" ||
-                pathname.startsWith("/purchases") ||
-                pathname.startsWith("/sales") ||
-                isCashBankPage
-                ? "w-full min-w-0 max-w-none"
-                : "max-w-7xl w-full min-w-0 mx-auto"
+              pathname.startsWith("/purchases") ||
+              pathname.startsWith("/sales") ||
+              isCashBankPage
+              ? "w-full min-w-0 max-w-none"
+              : "max-w-7xl w-full min-w-0 mx-auto"
               } print:max-w-none print:w-full print:p-0 print:m-0`}
           >
             {children}
@@ -1639,11 +1637,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                           href={sec.href}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className={`flex items-center gap-3 px-3 py-2.5 rounded-button text-sm font-medium transition-colors ${pathname === sec.href ||
-                              (sec.href !== "/" && pathname.startsWith(sec.href)) ||
-                              (sec.id === "payroll" && (pathname === "/payroll" || pathname.startsWith("/app/sam"))) ||
-                              (sec.id === "users" && (pathname === "/settings/user-management" || pathname.startsWith("/app/settings/user-management")))
-                              ? "bg-[#3B404A] text-[#F1F3F5] font-bold border-l-2 border-[#E87536]"
-                              : "text-[#D0D5DD] hover:text-[#FFFFFF] hover:bg-[#252932]"
+                            (sec.href !== "/" && pathname.startsWith(sec.href)) ||
+                            (sec.id === "payroll" && (pathname === "/payroll" || pathname.startsWith("/app/sam"))) ||
+                            (sec.id === "users" && (pathname === "/settings/user-management" || pathname.startsWith("/app/settings/user-management")))
+                            ? "bg-[#3B404A] text-[#F1F3F5] font-bold border-l-2 border-[#E87536]"
+                            : "text-[#D0D5DD] hover:text-[#FFFFFF] hover:bg-[#252932]"
                             }`}
                         >
                           {sec.icon}
@@ -1661,17 +1659,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                                 href={item.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className={`flex items-center gap-2.5 px-3 py-2 rounded-button text-sm transition-colors ${pathname === item.href ||
-                                    (item.href === "/sales/payment-in" &&
-                                      pathname.startsWith("/sales/payment-in")) ||
-                                    (item.href === "/sales/delivery-challan" &&
-                                      pathname.startsWith("/sales/delivery-challan")) ||
-                                    (item.href === "/sales/proforma" &&
-                                      pathname.startsWith("/sales/proforma")) ||
-                                    (item.href === "/sales/returns" &&
-                                      pathname.startsWith("/sales/returns") &&
-                                      !pathname.includes("credit-note"))
-                                    ? "bg-[#3B404A] text-[#F1F3F5] font-bold border-l-2 border-[#E87536]"
-                                    : "text-[#D0D5DD] hover:text-[#FFFFFF] hover:bg-[#252932]"
+                                  (item.href === "/sales/payment-in" &&
+                                    pathname.startsWith("/sales/payment-in")) ||
+                                  (item.href === "/sales/delivery-challan" &&
+                                    pathname.startsWith("/sales/delivery-challan")) ||
+                                  (item.href === "/sales/proforma" &&
+                                    pathname.startsWith("/sales/proforma")) ||
+                                  (item.href === "/sales/returns" &&
+                                    pathname.startsWith("/sales/returns") &&
+                                    !pathname.includes("credit-note"))
+                                  ? "bg-[#3B404A] text-[#F1F3F5] font-bold border-l-2 border-[#E87536]"
+                                  : "text-[#D0D5DD] hover:text-[#FFFFFF] hover:bg-[#252932]"
                                   }`}
                               >
                                 <span>
@@ -1775,8 +1773,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link
             href="/"
             className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg text-[10px] font-bold transition-colors ${pathname === "/"
-                ? "text-[#C24E1D]"
-                : "text-[#667085] hover:text-[#202124]"
+              ? "text-[#C24E1D]"
+              : "text-[#667085] hover:text-[#202124]"
               }`}
           >
             <svg
@@ -1798,8 +1796,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link
             href="/sales/invoices"
             className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg text-[10px] font-bold transition-colors ${pathname.startsWith("/sales/invoices")
-                ? "text-[#C24E1D]"
-                : "text-[#667085] hover:text-[#202124]"
+              ? "text-[#C24E1D]"
+              : "text-[#667085] hover:text-[#202124]"
               }`}
           >
             <svg
@@ -1821,8 +1819,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link
             href="/sales/pos"
             className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg text-[10px] font-bold transition-colors ${pathname === "/sales/pos"
-                ? "text-[#C24E1D]"
-                : "text-[#667085] hover:text-[#202124]"
+              ? "text-[#C24E1D]"
+              : "text-[#667085] hover:text-[#202124]"
               }`}
           >
             <div className="w-8 h-8 -mt-3 rounded-full bg-[#C24E1D] text-white flex items-center justify-center shadow-saffron">
@@ -1846,8 +1844,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link
             href="/purchases"
             className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg text-[10px] font-bold transition-colors ${pathname.startsWith("/purchases")
-                ? "text-[#C24E1D]"
-                : "text-[#667085] hover:text-[#202124]"
+              ? "text-[#C24E1D]"
+              : "text-[#667085] hover:text-[#202124]"
               }`}
           >
             <svg
