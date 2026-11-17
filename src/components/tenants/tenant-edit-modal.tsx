@@ -112,7 +112,7 @@ export function TenantEditModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
       <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
-      
+
       <div className="relative z-10 bg-white rounded-2xl w-full max-w-xl max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-purple-50/60 via-white to-slate-50">
@@ -153,7 +153,7 @@ export function TenantEditModal({
             </div>
           )}
 
-          {/* Master HQ Warning banner if applicable */}
+          {/* Master Warning banner if applicable */}
           {isMasterTenant && (
             <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center gap-2">
               <span className="text-base">🛡️</span>
@@ -329,11 +329,10 @@ export function TenantEditModal({
 
             <div className="grid grid-cols-2 gap-3">
               <label
-                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                  formData.isActive
+                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${formData.isActive
                     ? "bg-emerald-50/50 border-emerald-300 ring-2 ring-emerald-500/20 text-emerald-800"
                     : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
-                }`}
+                  }`}
               >
                 <input
                   type="radio"
@@ -354,13 +353,12 @@ export function TenantEditModal({
               </label>
 
               <label
-                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
-                  isMasterTenant
+                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${isMasterTenant
                     ? "opacity-50 cursor-not-allowed bg-slate-50 border-slate-200 text-slate-400"
                     : !formData.isActive
-                    ? "bg-rose-50/50 border-rose-300 ring-2 ring-rose-500/20 text-rose-800 cursor-pointer"
-                    : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 cursor-pointer"
-                }`}
+                      ? "bg-rose-50/50 border-rose-300 ring-2 ring-rose-500/20 text-rose-800 cursor-pointer"
+                      : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 cursor-pointer"
+                  }`}
               >
                 <input
                   type="radio"

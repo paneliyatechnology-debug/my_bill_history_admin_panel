@@ -407,7 +407,7 @@ export default function SuperAdminPortalPage() {
           localStorage.removeItem("billing_auth_token");
           localStorage.removeItem("billing_user_profile");
           localStorage.removeItem("billing_tenant_context");
-        } catch {}
+        } catch { }
         window.location.replace("/login?redirect=/superadmin");
         return;
       }
@@ -431,7 +431,7 @@ export default function SuperAdminPortalPage() {
           localStorage.removeItem("billing_auth_token");
           localStorage.removeItem("billing_user_profile");
           localStorage.removeItem("billing_tenant_context");
-        } catch {}
+        } catch { }
         window.location.replace("/login?redirect=/superadmin&reason=session_expired");
       } else if (err?.statusCode === 403) {
         setAuthStatus("forbidden");
@@ -769,7 +769,7 @@ export default function SuperAdminPortalPage() {
     if (targetItems.length === 0) {
       setActionError(
         lang === "gu"
-          ? "પસંદ કરેલ ટેનન્ટ મુખ્ય HQ સુપરએડમિન ખાતું છે જેને કાઢી શકાતું નથી."
+          ? "પસંદ કરેલ ટેનન્ટ મુખ્ય સુપરએડમિન ખાતું છે જેને કાઢી શકાતું નથી."
           : "The selected tenant is the Master SuperAdmin Platform account and cannot be deleted."
       );
       return;
@@ -878,7 +878,7 @@ export default function SuperAdminPortalPage() {
           .then((data: any) => {
             if (data) setEditingTenant(data);
           })
-          .catch(() => {});
+          .catch(() => { });
       }
     }
   }, [tenants, editingTenant]);
@@ -1083,8 +1083,8 @@ export default function SuperAdminPortalPage() {
             ? "સમાપ્ત (Expired)"
             : "Expired"
           : lang === "gu"
-          ? `${daysLeft} દિવસ બાકી`
-          : `${daysLeft} days left`;
+            ? `${daysLeft} દિવસ બાકી`
+            : `${daysLeft} days left`;
 
         return (
           <div>
@@ -1092,9 +1092,8 @@ export default function SuperAdminPortalPage() {
               {formattedDate}
             </div>
             <div
-              className={`text-[11px] font-medium mt-0.5 ${
-                isExpired ? "text-rose-500" : daysLeft <= 15 ? "text-amber-600" : "text-slate-400"
-              }`}
+              className={`text-[11px] font-medium mt-0.5 ${isExpired ? "text-rose-500" : daysLeft <= 15 ? "text-amber-600" : "text-slate-400"
+                }`}
             >
               {subtitle}
             </div>
@@ -1128,8 +1127,8 @@ export default function SuperAdminPortalPage() {
               ? "કંપની"
               : "Company"
             : lang === "gu"
-            ? "કંપનીઓ"
-            : "Companies";
+              ? "કંપનીઓ"
+              : "Companies";
 
         const invoiceLabel = lang === "gu" ? "ઇન્વૉઇસ" : "Invoices";
         const userLabel = lang === "gu" ? "વપરાશકર્તા" : "User(s)";
@@ -1157,11 +1156,10 @@ export default function SuperAdminPortalPage() {
             e.stopPropagation();
             handleToggleTenantStatus(t);
           }}
-          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${
-            t.isActive
+          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${t.isActive
               ? "bg-[#ECFDF5] text-[#059669] border-[#A7F3D0] hover:bg-[#D1FAE5]"
               : "bg-[#FFF1F2] text-[#E11D48] border-[#FECDD3] hover:bg-[#FFE4E6]"
-          }`}
+            }`}
           title="Click to toggle Active / Suspended status"
         >
           <span className={`w-1.5 h-1.5 rounded-full ${t.isActive ? "bg-emerald-500" : "bg-rose-500"}`} />
@@ -1278,10 +1276,10 @@ export default function SuperAdminPortalPage() {
           status === "PAID"
             ? "bg-emerald-50 text-emerald-700 border-emerald-300"
             : status === "PARTIALLY_PAID"
-            ? "bg-amber-50 text-amber-700 border-amber-300"
-            : status === "ISSUED"
-            ? "bg-blue-50 text-blue-700 border-blue-300"
-            : "bg-slate-100 text-slate-700 border-slate-300";
+              ? "bg-amber-50 text-amber-700 border-amber-300"
+              : status === "ISSUED"
+                ? "bg-blue-50 text-blue-700 border-blue-300"
+                : "bg-slate-100 text-slate-700 border-slate-300";
         return (
           <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border uppercase font-mono ${color}`}>
             {status}
@@ -1354,13 +1352,12 @@ export default function SuperAdminPortalPage() {
       accessorKey: "role",
       cell: (u) => (
         <span
-          className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
-            u.role === "SUPER_ADMIN"
+          className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${u.role === "SUPER_ADMIN"
               ? "bg-purple-100 text-purple-800 border border-purple-300"
               : u.role === "COMPANY_ADMIN"
-              ? "bg-orange-100 text-orange-800 border border-orange-300"
-              : "bg-slate-100 text-slate-700 border border-slate-200"
-          }`}
+                ? "bg-orange-100 text-orange-800 border border-orange-300"
+                : "bg-slate-100 text-slate-700 border border-slate-200"
+            }`}
         >
           {u.role}
         </span>
@@ -1386,9 +1383,8 @@ export default function SuperAdminPortalPage() {
       accessorFn: (u) => (u.isActive ? "Active" : "Inactive"),
       cell: (u) => (
         <span
-          className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
-            u.isActive ? "text-emerald-700 bg-emerald-50 border border-emerald-200" : "text-rose-700 bg-rose-50 border border-rose-200"
-          }`}
+          className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${u.isActive ? "text-emerald-700 bg-emerald-50 border border-emerald-200" : "text-rose-700 bg-rose-50 border border-rose-200"
+            }`}
         >
           {u.isActive ? (lang === "gu" ? "સક્રિય" : "Active") : (lang === "gu" ? "નિષ્ક્રિય" : "Inactive")}
         </span>
@@ -1681,9 +1677,8 @@ export default function SuperAdminPortalPage() {
     <div className="min-h-screen bg-[#F8FAFC] text-[#1E293B] flex">
       {/* ===================== 1. DEDICATED LEFT SIDEBAR ===================== */}
       <aside
-        className={`fixed inset-y-0 left-0 z-30 flex flex-col justify-between bg-white border-r border-[#E2E8F0] transition-all duration-200 h-screen shadow-xs ${
-          isSidebarCollapsed ? "w-20" : "w-[280px]"
-        } hidden lg:flex`}
+        className={`fixed inset-y-0 left-0 z-30 flex flex-col justify-between bg-white border-r border-[#E2E8F0] transition-all duration-200 h-screen shadow-xs ${isSidebarCollapsed ? "w-20" : "w-[280px]"
+          } hidden lg:flex`}
       >
         <div className="flex flex-col min-h-0 flex-1 overflow-y-auto">
           {/* Brand Header */}
@@ -1703,9 +1698,7 @@ export default function SuperAdminPortalPage() {
                     <span className="font-extrabold text-[15px] tracking-tight text-slate-900 truncate">
                       SuperAdmin
                     </span>
-                    <span className="text-[10px] bg-[#F5F0FF] text-[#7C3AED] font-bold px-1.5 py-0.2 rounded-md font-mono uppercase">
-                      HQ
-                    </span>
+
                   </div>
                   <span className="text-[11px] text-slate-400 truncate font-medium">
                     Platform Master Console
@@ -1769,11 +1762,10 @@ export default function SuperAdminPortalPage() {
                   key={item.id}
                   onClick={() => navigateSection(item.id)}
                   title={isSidebarCollapsed ? (lang === "gu" ? item.nameGujarati : item.name) : undefined}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-left cursor-pointer ${
-                    isActive
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-left cursor-pointer ${isActive
                       ? "bg-[#F5F0FF] text-[#7C3AED] border border-[#EDE4FF] shadow-xs"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                  } ${isSidebarCollapsed ? "justify-center px-0" : ""}`}
+                    } ${isSidebarCollapsed ? "justify-center px-0" : ""}`}
                 >
                   <span className={`shrink-0 ${isActive ? "text-[#7e3dee]" : "text-slate-500"}`}>
                     {item.icon}
@@ -1782,9 +1774,8 @@ export default function SuperAdminPortalPage() {
                     <div className="flex-1 flex items-center justify-between truncate">
                       <span className="truncate">{lang === "gu" ? item.nameGujarati : item.name}</span>
                       {item.badge && (
-                        <span className={`text-[11px] px-2 py-0.5 rounded-md font-mono font-medium ${
-                          isActive ? "bg-purple-100 text-[#7C3AED]" : "bg-slate-100 text-slate-500"
-                        }`}>
+                        <span className={`text-[11px] px-2 py-0.5 rounded-md font-mono font-medium ${isActive ? "bg-purple-100 text-[#7C3AED]" : "bg-slate-100 text-slate-500"
+                          }`}>
                           {item.badge}
                         </span>
                       )}
@@ -1844,9 +1835,8 @@ export default function SuperAdminPortalPage() {
 
       {/* ===================== 2. MAIN APPLICATION WORKSPACE ===================== */}
       <div
-        className={`flex-1 flex flex-col min-w-0 min-h-screen bg-gradient-to-br from-[#F8FAFC] via-[#F6F8FC] to-[#F5F2FC] relative transition-all duration-200 ${
-          isSidebarCollapsed ? "lg:pl-20" : "lg:pl-[280px]"
-        }`}
+        className={`flex-1 flex flex-col min-w-0 min-h-screen bg-gradient-to-br from-[#F8FAFC] via-[#F6F8FC] to-[#F5F2FC] relative transition-all duration-200 ${isSidebarCollapsed ? "lg:pl-20" : "lg:pl-[280px]"
+          }`}
       >
         <div className="absolute top-0 right-0 w-[550px] h-[350px] bg-gradient-to-bl from-purple-100/40 via-indigo-50/20 to-transparent pointer-events-none rounded-full blur-3xl" />
 
@@ -1919,9 +1909,8 @@ export default function SuperAdminPortalPage() {
                       setLang("en");
                       setIsLangDropdownOpen(false);
                     }}
-                    className={`w-full px-3 py-1.5 text-left text-xs font-semibold flex items-center justify-between cursor-pointer ${
-                      lang === "en" ? "bg-purple-50 text-purple-700" : "text-slate-700 hover:bg-slate-50"
-                    }`}
+                    className={`w-full px-3 py-1.5 text-left text-xs font-semibold flex items-center justify-between cursor-pointer ${lang === "en" ? "bg-purple-50 text-purple-700" : "text-slate-700 hover:bg-slate-50"
+                      }`}
                   >
                     <span>English</span>
                     {lang === "en" && <span>✓</span>}
@@ -1931,9 +1920,8 @@ export default function SuperAdminPortalPage() {
                       setLang("gu");
                       setIsLangDropdownOpen(false);
                     }}
-                    className={`w-full px-3 py-1.5 text-left text-xs font-semibold flex items-center justify-between cursor-pointer ${
-                      lang === "gu" ? "bg-purple-50 text-purple-700" : "text-slate-700 hover:bg-slate-50"
-                    }`}
+                    className={`w-full px-3 py-1.5 text-left text-xs font-semibold flex items-center justify-between cursor-pointer ${lang === "gu" ? "bg-purple-50 text-purple-700" : "text-slate-700 hover:bg-slate-50"
+                      }`}
                   >
                     <span>ગુજરાતી</span>
                     {lang === "gu" && <span>✓</span>}
@@ -2040,7 +2028,7 @@ export default function SuperAdminPortalPage() {
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                        <span>{lang === "gu" ? "HQ સિસ્ટમ ઓનલાઇન" : "HQ Telemetry Online"}</span>
+                        <span>{lang === "gu" ? "સિસ્ટમ ઓનલાઇન" : "Telemetry Online"}</span>
                       </span>
                       <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">
                         {stats.systemHealth.databaseStatus || "PostgreSQL Ready"}
@@ -2358,13 +2346,12 @@ export default function SuperAdminPortalPage() {
                                   </td>
                                   <td className="py-2.5 px-2 text-center">
                                     <span
-                                      className={`px-2 py-0.5 rounded text-[9px] font-bold font-mono uppercase border ${
-                                        inv.status === "PAID"
+                                      className={`px-2 py-0.5 rounded text-[9px] font-bold font-mono uppercase border ${inv.status === "PAID"
                                           ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                                           : inv.status === "PARTIALLY_PAID"
-                                          ? "bg-amber-50 text-amber-700 border-amber-200"
-                                          : "bg-blue-50 text-blue-700 border-blue-200"
-                                      }`}
+                                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                                            : "bg-blue-50 text-blue-700 border-blue-200"
+                                        }`}
                                     >
                                       {inv.status}
                                     </span>
@@ -2461,12 +2448,12 @@ export default function SuperAdminPortalPage() {
                             key === "TRIAL"
                               ? "bg-amber-400"
                               : key === "RETAIL_BASIC"
-                              ? "bg-blue-400"
-                              : key === "WHOLESALE_PRO"
-                              ? "bg-emerald-400"
-                              : key === "DISTRIBUTION_ENTERPRISE"
-                              ? "bg-orange-400"
-                              : "bg-purple-500";
+                                ? "bg-blue-400"
+                                : key === "WHOLESALE_PRO"
+                                  ? "bg-emerald-400"
+                                  : key === "DISTRIBUTION_ENTERPRISE"
+                                    ? "bg-orange-400"
+                                    : "bg-purple-500";
                           return (
                             <div
                               key={key}
@@ -2812,9 +2799,8 @@ export default function SuperAdminPortalPage() {
                   return (
                     <div
                       key={tierKey}
-                      className={`bg-white rounded-2xl p-6 space-y-4 shadow-xs relative overflow-hidden border ${
-                        isPopular ? "border-2 border-emerald-500 shadow-md" : "border-[#E5E7EB]"
-                      }`}
+                      className={`bg-white rounded-2xl p-6 space-y-4 shadow-xs relative overflow-hidden border ${isPopular ? "border-2 border-emerald-500 shadow-md" : "border-[#E5E7EB]"
+                        }`}
                     >
                       {isPopular && (
                         <div className="absolute top-0 right-0 bg-emerald-500 text-white text-[9px] font-bold uppercase px-3 py-1 rounded-bl-xl font-mono">
@@ -3106,7 +3092,7 @@ export default function SuperAdminPortalPage() {
               </div>
             </div>
           )}
-        
+
           {/* ================= SECTION 8: INVOICE THEMES STORE ================= */}
           {activeSection === "themes" && (
             <InvoiceThemesManagement lang={lang} />
@@ -3197,33 +3183,30 @@ export default function SuperAdminPortalPage() {
                   <button
                     type="button"
                     onClick={() => setExtendDays(30)}
-                    className={`py-2 px-3 rounded-xl border font-bold text-xs cursor-pointer ${
-                      extendDays === 30
+                    className={`py-2 px-3 rounded-xl border font-bold text-xs cursor-pointer ${extendDays === 30
                         ? "bg-purple-600 text-white border-purple-500"
                         : "bg-[#F8F9FB] text-[#202124] border-[#E5E7EB] hover:bg-[#F3F4F6]"
-                    }`}
+                      }`}
                   >
                     +30 Days
                   </button>
                   <button
                     type="button"
                     onClick={() => setExtendDays(90)}
-                    className={`py-2 px-3 rounded-xl border font-bold text-xs cursor-pointer ${
-                      extendDays === 90
+                    className={`py-2 px-3 rounded-xl border font-bold text-xs cursor-pointer ${extendDays === 90
                         ? "bg-purple-600 text-white border-purple-500"
                         : "bg-[#F8F9FB] text-[#202124] border-[#E5E7EB] hover:bg-[#F3F4F6]"
-                    }`}
+                      }`}
                   >
                     +90 Days
                   </button>
                   <button
                     type="button"
                     onClick={() => setExtendDays(365)}
-                    className={`py-2 px-3 rounded-xl border font-bold text-xs cursor-pointer ${
-                      extendDays === 365
+                    className={`py-2 px-3 rounded-xl border font-bold text-xs cursor-pointer ${extendDays === 365
                         ? "bg-purple-600 text-white border-purple-500"
                         : "bg-[#F8F9FB] text-[#202124] border-[#E5E7EB] hover:bg-[#F3F4F6]"
-                    }`}
+                      }`}
                   >
                     +1 Year
                   </button>
@@ -3453,11 +3436,10 @@ export default function SuperAdminPortalPage() {
                       navigateSection(item.id);
                       setIsMobileMenuOpen(false);
                     }}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
-                      activeSection === item.id
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${activeSection === item.id
                         ? "bg-purple-50 text-purple-700 border border-purple-200"
                         : "text-[#667085] hover:bg-[#F8F9FB]"
-                    }`}
+                      }`}
                   >
                     <span>{item.icon}</span>
                     <span>{lang === "gu" ? item.nameGujarati : item.name}</span>

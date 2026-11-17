@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { apiClient } from "../../lib/api-client";
 
 export interface InvoiceThemeItem {
@@ -30,6 +30,12 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
   const [activeTab, setActiveTab] = useState<"all" | "festive" | "standard">("all");
   const [banner, setBanner] = useState<string | null>(null);
 
+  // Upload state tracking
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const variant1FileRef = useRef<HTMLInputElement>(null);
+  const variant2FileRef = useRef<HTMLInputElement>(null);
+  const thumbnailFileRef = useRef<HTMLInputElement>(null);
+
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTheme, setEditingTheme] = useState<InvoiceThemeItem | null>(null);
@@ -58,6 +64,67 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
     isActive: true,
     sortOrder: 1,
   });
+
+  // ---- Image Upload Handler ----
+  const handleFileUpload = async (
+    file: File,
+    fieldName: "variant1" | "variant2" | "thumbnail"
+  ) => {
+    // Validate on client side
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+    if (!allowedTypes.includes(file.type)) {
+      alert(`Invalid file type "${file.type}". Only JPG, PNG, WebP are allowed.`);
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert(`File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum: 5MB`);
+      return;
+    }
+
+    setUploadingField(fieldName);
+    try {
+      const uploadData = new FormData();
+      uploadData.append("file", file);
+
+      const res = await fetch("/api/upload-theme", {
+        method: "POST",
+        body: uploadData,
+      });
+
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({ error: "Upload failed" }));
+        throw new Error(errBody?.error || `Upload failed (${res.status})`);
+      }
+
+      const result = await res.json();
+      if (result?.url) {
+        setFormData((prev) => {
+          const updated = { ...prev, [fieldName]: result.url };
+          // Auto-set thumbnail from variant1 if thumbnail is empty
+          if (fieldName === "variant1" && !prev.thumbnail) {
+            updated.thumbnail = result.url;
+          }
+          return updated;
+        });
+      }
+    } catch (err: any) {
+      alert("Upload failed: " + (err?.message || "Unknown error"));
+    } finally {
+      setUploadingField(null);
+    }
+  };
+
+  const onFileInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    fieldName: "variant1" | "variant2" | "thumbnail"
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileUpload(file, fieldName);
+    }
+    // Reset input so same file can be re-selected
+    e.target.value = "";
+  };
 
   const fetchThemes = useCallback(async () => {
     setLoading(true);
@@ -518,16 +585,61 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 <label className="block font-bold text-slate-700 mb-1">
                   Variant 1 Background Image URL *
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.variant1}
-                  onChange={(e) => setFormData({ ...formData, variant1: e.target.value, thumbnail: formData.thumbnail || e.target.value })}
-                  placeholder="/themes/navaratri_1.jpg or https://..."
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
-                />
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    required
+                    value={formData.variant1}
+                    onChange={(e) => setFormData({ ...formData, variant1: e.target.value, thumbnail: formData.thumbnail || e.target.value })}
+                    placeholder="/themes/navaratri_1.jpg or https://..."
+                    className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
+                  />
+                  <input
+                    ref={variant1FileRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={(e) => onFileInputChange(e, "variant1")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => variant1FileRef.current?.click()}
+                    disabled={uploadingField === "variant1"}
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-[#7C3AED] bg-[#7C3AED]/5 hover:bg-[#7C3AED]/15 px-3 py-2 text-xs font-semibold text-[#7C3AED] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    title="Upload image file (JPG, PNG, WebP — max 5MB)"
+                  >
+                    {uploadingField === "variant1" ? (
+                      <>
+                        <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        <span>Uploading…</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        <span>Upload</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                {/* Image Preview */}
+                {formData.variant1 && (
+                  <div className="mt-2 relative group/preview">
+                    <img
+                      src={formData.variant1}
+                      alt="Variant 1 preview"
+                      className="h-20 w-auto max-w-full rounded-lg border border-slate-200 object-cover shadow-xs"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      onLoad={(e) => { (e.target as HTMLImageElement).style.display = "block"; }}
+                    />
+                  </div>
+                )}
                 <p className="text-[10.5px] text-slate-400 mt-0.5">
-                  Full sheet letterhead stationery background artwork. Available presets: /themes/navaratri_1.jpg, /themes/navaratri_2.jpg, /themes/durga_puja_1.jpg, /themes/dussehra_1.jpg, /themes/dhanteras_1.jpg, /themes/diwali_1.jpg
+                  Upload an image or enter URL. Available presets: /themes/navaratri_1.jpg, /themes/navaratri_2.jpg, /themes/durga_puja_1.jpg, /themes/dussehra_1.jpg, /themes/dhanteras_1.jpg, /themes/diwali_1.jpg
                 </p>
               </div>
 
@@ -535,26 +647,116 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 <label className="block font-bold text-slate-700 mb-1">
                   Variant 2 Background Image URL (Optional)
                 </label>
-                <input
-                  type="text"
-                  value={formData.variant2}
-                  onChange={(e) => setFormData({ ...formData, variant2: e.target.value })}
-                  placeholder="/themes/navaratri_2.jpg or https://..."
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
-                />
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={formData.variant2}
+                    onChange={(e) => setFormData({ ...formData, variant2: e.target.value })}
+                    placeholder="/themes/navaratri_2.jpg or https://..."
+                    className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
+                  />
+                  <input
+                    ref={variant2FileRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={(e) => onFileInputChange(e, "variant2")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => variant2FileRef.current?.click()}
+                    disabled={uploadingField === "variant2"}
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-[#7C3AED] bg-[#7C3AED]/5 hover:bg-[#7C3AED]/15 px-3 py-2 text-xs font-semibold text-[#7C3AED] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    title="Upload image file (JPG, PNG, WebP — max 5MB)"
+                  >
+                    {uploadingField === "variant2" ? (
+                      <>
+                        <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        <span>Uploading…</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        <span>Upload</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                {/* Image Preview */}
+                {formData.variant2 && (
+                  <div className="mt-2">
+                    <img
+                      src={formData.variant2}
+                      alt="Variant 2 preview"
+                      className="h-20 w-auto max-w-full rounded-lg border border-slate-200 object-cover shadow-xs"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      onLoad={(e) => { (e.target as HTMLImageElement).style.display = "block"; }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div>
                 <label className="block font-bold text-slate-700 mb-1">
                   Thumbnail Preview Image URL
                 </label>
-                <input
-                  type="text"
-                  value={formData.thumbnail}
-                  onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
-                  placeholder="Defaults to Variant 1 if left empty"
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
-                />
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={formData.thumbnail}
+                    onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                    placeholder="Defaults to Variant 1 if left empty"
+                    className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-[#7C3AED] focus:outline-none"
+                  />
+                  <input
+                    ref={thumbnailFileRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={(e) => onFileInputChange(e, "thumbnail")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => thumbnailFileRef.current?.click()}
+                    disabled={uploadingField === "thumbnail"}
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-[#7C3AED] bg-[#7C3AED]/5 hover:bg-[#7C3AED]/15 px-3 py-2 text-xs font-semibold text-[#7C3AED] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    title="Upload image file (JPG, PNG, WebP — max 5MB)"
+                  >
+                    {uploadingField === "thumbnail" ? (
+                      <>
+                        <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        <span>Uploading…</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        <span>Upload</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                {/* Thumbnail Preview */}
+                {formData.thumbnail && (
+                  <div className="mt-2">
+                    <img
+                      src={formData.thumbnail}
+                      alt="Thumbnail preview"
+                      className="h-20 w-auto max-w-full rounded-lg border border-slate-200 object-cover shadow-xs"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      onLoad={(e) => { (e.target as HTMLImageElement).style.display = "block"; }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div>
