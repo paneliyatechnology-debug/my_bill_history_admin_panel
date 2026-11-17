@@ -65,6 +65,44 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
     sortOrder: 1,
   });
 
+  // ---- Client-side Image Compressor to Data URL (Reliable on Vercel & all domains) ----
+  const compressImageToDataUrl = (file: File, maxDim = 1200, quality = 0.85): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(e.target?.result as string);
+            return;
+          }
+          ctx.drawImage(img, 0, 0, width, height);
+          const mime = file.type === "image/png" ? "image/png" : "image/jpeg";
+          const resultUrl = canvas.toDataURL(mime, quality);
+          resolve(resultUrl);
+        };
+        img.onerror = () => resolve(e.target?.result as string || "");
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => resolve("");
+      reader.readAsDataURL(file);
+    });
+  };
+
   // ---- Image Upload Handler ----
   const handleFileUpload = async (
     file: File,
@@ -83,30 +121,29 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
 
     setUploadingField(fieldName);
     try {
-      const uploadData = new FormData();
-      uploadData.append("file", file);
+      // 1. Immediately create optimized Data URL (100% immune to Vercel/serverless 404s)
+      const maxDim = fieldName === "thumbnail" ? 600 : 1400;
+      const dataUrl = await compressImageToDataUrl(file, maxDim, 0.85);
 
-      const res = await fetch("/api/upload-theme", {
-        method: "POST",
-        body: uploadData,
-      });
-
-      if (!res.ok) {
-        const errBody = await res.json().catch(() => ({ error: "Upload failed" }));
-        throw new Error(errBody?.error || `Upload failed (${res.status})`);
-      }
-
-      const result = await res.json();
-      if (result?.url) {
+      if (dataUrl) {
         setFormData((prev) => {
-          const updated = { ...prev, [fieldName]: result.url };
-          // Auto-set thumbnail from variant1 if thumbnail is empty
+          const updated = { ...prev, [fieldName]: dataUrl };
           if (fieldName === "variant1" && !prev.thumbnail) {
-            updated.thumbnail = result.url;
+            updated.thumbnail = dataUrl;
           }
           return updated;
         });
       }
+
+      // 2. Also try API route for filesystem copy if running in local dev
+      try {
+        const uploadData = new FormData();
+        uploadData.append("file", file);
+        await fetch("/api/upload-theme", {
+          method: "POST",
+          body: uploadData,
+        });
+      } catch {}
     } catch (err: any) {
       alert("Upload failed: " + (err?.message || "Unknown error"));
     } finally {

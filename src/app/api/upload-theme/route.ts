@@ -64,12 +64,18 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Return the public URL path
+    // Generate Data URL for serverless/Vercel zero-404 compatibility
+    const mime = file.type || "image/jpeg";
+    const dataUrl = `data:${mime};base64,${buffer.toString("base64")}`;
+
+    // Return both Data URL and public URL path
     const publicUrl = `/themes/${uniqueName}`;
 
     return Response.json({
       success: true,
-      url: publicUrl,
+      url: dataUrl,
+      dataUrl,
+      publicUrl,
       fileName: uniqueName,
       size: file.size,
       type: file.type,
