@@ -1,51 +1,33 @@
 import type { SubscriptionPlanItem } from "../shared-types/superadmin";
+import { apiClient } from "./api-client";
 
 export async function fetchAllPlans(): Promise<SubscriptionPlanItem[]> {
-  const res = await fetch("/api/superadmin/plans", { cache: "no-store" });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch plans: ${res.statusText}`);
+  try {
+    const res = await apiClient.get<any>("/super-admin/plans");
+    if (Array.isArray(res)) return res;
+    if (res?.data && Array.isArray(res.data)) return res.data;
+    return [];
+  } catch (err: any) {
+    console.error("Failed to fetch plans from backend:", err);
+    throw err;
   }
-  const json = await res.json();
-  return json?.data || [];
 }
 
 export async function createNewPlan(
   payload: Partial<SubscriptionPlanItem>
 ): Promise<SubscriptionPlanItem> {
-  const res = await fetch("/api/superadmin/plans", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  const json = await res.json();
-  if (!res.ok || !json.success) {
-    throw new Error(json?.error || "Failed to create new plan");
-  }
-  return json.data;
+  const res = await apiClient.post<any>("/super-admin/plans", payload);
+  return res?.data || res;
 }
 
 export async function updateExistingPlan(
   id: string,
   payload: Partial<SubscriptionPlanItem>
 ): Promise<SubscriptionPlanItem> {
-  const res = await fetch(`/api/superadmin/plans/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  const json = await res.json();
-  if (!res.ok || !json.success) {
-    throw new Error(json?.error || "Failed to update plan");
-  }
-  return json.data;
+  const res = await apiClient.patch<any>(`/super-admin/plans/${id}`, payload);
+  return res?.data || res;
 }
 
 export async function deleteExistingPlan(id: string): Promise<void> {
-  const res = await fetch(`/api/superadmin/plans/${id}`, {
-    method: "DELETE",
-  });
-  const json = await res.json();
-  if (!res.ok || !json.success) {
-    throw new Error(json?.error || "Failed to delete plan");
-  }
+  await apiClient.delete(`/super-admin/plans/${id}`);
 }
