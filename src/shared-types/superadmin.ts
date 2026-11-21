@@ -26,6 +26,39 @@ export interface SystemStats {
     totalTaxableAmount: number;
     totalGstAmount: number;
   };
+  subscribers?: {
+    total: number;
+    active: number;
+    trial: number;
+    expired: number;
+  };
+  revenue?: {
+    mrr: number;
+    arr: number;
+    monthlyRevenue: number;
+    yearlyRevenue: number;
+    subscriptionRevenue: number;
+    oneTimeRevenue: number;
+    refunds: number;
+    netRevenue: number;
+  };
+  subscriptionAnalytics?: {
+    active: number;
+    trial: number;
+    expired: number;
+    cancelled: number;
+    pastDue: number;
+    pending: number;
+  };
+  paymentAnalytics?: {
+    successful: number;
+    pending: number;
+    failed: number;
+    refunded: number;
+    totalAmount: number;
+    successRate: number;
+  };
+  recentActivity?: any[];
   systemHealth: {
     databaseStatus: string;
     rlsStatus: string;
@@ -129,6 +162,48 @@ export interface DiagnosticsData {
     environment: string;
     timestamp: string;
   };
+}
+
+export interface SubscriptionPlanItem {
+  id: string;
+  tier: string;
+  name: string;
+  nameGujarati: string;
+  subtitle: string;
+  subtitleGujarati: string;
+  monthlyPrice: number;
+  yearlyPrice: number;
+  annualTotal: number;
+  discountPercent?: number;
+  monthlyPaise?: number;
+  yearlyPaise?: number;
+  maxCompanies: number;
+  maxInvoicesPerYear: number;
+  maxUsers: number;
+  maxGodowns: number;
+  features: string[];
+  featuresGujarati: string[];
+  entitlements?: {
+    posBilling?: boolean;
+    gstReports?: boolean;
+    barcodeThermal?: boolean;
+    doubleEntryLedgers?: boolean;
+    eInvoiceEwaybill?: boolean;
+    stockTransfers?: boolean;
+    manufacturingBom?: boolean;
+    whatsAppReminders?: boolean;
+    customThemes?: boolean;
+    prioritySupport?: boolean;
+    [key: string]: boolean | undefined;
+  };
+  isActive: boolean;
+  isPopular?: boolean;
+  badge?: string | null;
+  badgeColor?: string;
+  accentColor?: string;
+  isDefault?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type NavSectionId =

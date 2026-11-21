@@ -47,7 +47,7 @@ export interface DataTableProps<T> {
   exportFilename?: string;
   exportTitle?: string;
   onCustomExport?: (format: ExportFormat, rows: T[]) => Promise<void> | void;
-  themeColor?: "saffron" | "purple";
+  themeColor?: "saffron" | "purple" | "blue";
   mobileCardRender?: (row: T, index: number) => React.ReactNode;
   selectable?: boolean;
   selectedIds?: Set<string>;
@@ -315,7 +315,9 @@ export function DataTable<T>({
           <input
             type="checkbox"
             className={`w-4 h-4 rounded border-slate-300 cursor-pointer ${
-              themeColor === "purple"
+              themeColor === "blue"
+                ? "text-[#1677E8] focus:ring-[#1677E8] accent-[#1677E8]"
+                : themeColor === "purple"
                 ? "text-[#7C3AED] focus:ring-[#7C3AED] accent-[#7C3AED]"
                 : "text-[#F47721] focus:ring-[#F47721] accent-[#F47721]"
             }`}
@@ -341,7 +343,9 @@ export function DataTable<T>({
             <input
               type="checkbox"
               className={`w-4 h-4 rounded border-slate-300 cursor-pointer ${
-                themeColor === "purple"
+                themeColor === "blue"
+                  ? "text-[#1677E8] focus:ring-[#1677E8] accent-[#1677E8]"
+                  : themeColor === "purple"
                   ? "text-[#7C3AED] focus:ring-[#7C3AED] accent-[#7C3AED]"
                   : "text-[#F47721] focus:ring-[#F47721] accent-[#F47721]"
               }`}
@@ -472,10 +476,27 @@ export function DataTable<T>({
   };
 
   const isSaffron = themeColor === "saffron";
-  const focusRingClass = isSaffron ? "focus:ring-[#F47721]" : "focus:ring-purple-500";
-  const activePageClass = isSaffron ? "bg-[#F47721] text-white shadow-sm" : "bg-[#7C3AED] text-white shadow-sm";
-  const sortedHeaderClass = isSaffron ? "bg-[#FFF3E8] text-[#F47721]" : "bg-purple-50/70 text-purple-700";
-  const spinnerClass = isSaffron ? "border-[#F47721]" : "border-purple-600";
+  const isBlue = themeColor === "blue";
+  const focusRingClass = isBlue
+    ? "focus:ring-[#1677E8]"
+    : isSaffron
+    ? "focus:ring-[#F47721]"
+    : "focus:ring-purple-500";
+  const activePageClass = isBlue
+    ? "bg-[#1677E8] text-white shadow-sm"
+    : isSaffron
+    ? "bg-[#F47721] text-white shadow-sm"
+    : "bg-[#7C3AED] text-white shadow-sm";
+  const sortedHeaderClass = isBlue
+    ? "bg-blue-50/70 text-[#1677E8]"
+    : isSaffron
+    ? "bg-[#FFF3E8] text-[#F47721]"
+    : "bg-purple-50/70 text-purple-700";
+  const spinnerClass = isBlue
+    ? "border-[#1677E8]"
+    : isSaffron
+    ? "border-[#F47721]"
+    : "border-purple-600";
 
   return (
     <div className="w-full space-y-4">
@@ -524,10 +545,12 @@ export function DataTable<T>({
               {searchQuery && (
                 <button
                   onClick={() => handleSearchChange("")}
-                  className="absolute right-2.5 top-2.5 text-xs text-[#98A2B3] hover:text-[#202124]"
+                  className="absolute right-2.5 top-2.5 text-xs text-[#98A2B3] hover:text-[#202124] cursor-pointer"
                   title="Clear search"
                 >
-                  ✕
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               )}
             </div>
@@ -576,8 +599,12 @@ export function DataTable<T>({
               ) : (
                 <div className="py-12 text-center text-[#98A2B3] px-4">
                   <div className="flex flex-col items-center justify-center gap-2">
-                    <span className="text-3xl">📄</span>
-                    <p className="text-xs font-bold text-[#667085]">
+                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <p className="text-xs font-medium text-slate-600">
                       {lang === "gu" ? emptyMessageGujarati : emptyMessage}
                     </p>
                     {searchQuery && (
@@ -613,7 +640,7 @@ export function DataTable<T>({
         {/* Desktop Table Presentation (or all screen sizes if mobileCardRender is not supplied) */}
         <div ref={scrollContainerRef} className={`${mobileCardRender ? "hidden md:block" : "block"} overflow-x-auto min-h-[160px]`}>
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#FAFBFD] border-b border-[#E2E8F0] text-[#64748B] uppercase font-bold text-[11px] tracking-wider select-none">
+            <thead className="bg-[#FAFBFD] border-b border-[#E2E8F0] text-slate-500 font-semibold text-[11px] uppercase tracking-wider select-none">
               <tr>
                 {tableColumns.map((col, idx) => {
                   const colKey = col.id || (col.accessorKey ? String(col.accessorKey) : null);
@@ -630,7 +657,7 @@ export function DataTable<T>({
                     <th
                       key={colKey || idx}
                       onClick={() => handleSort(col)}
-                      className={`py-3 px-3 font-bold ${alignText} ${stickyThClass} ${col.headerClassName || ""} ${
+                      className={`py-3 px-3.5 font-semibold text-slate-500 ${alignText} ${stickyThClass} ${col.headerClassName || ""} ${
                         col.sortable ? "cursor-pointer hover:bg-slate-100/70 transition-colors" : ""
                       } ${isSorted ? sortedHeaderClass : ""}`}
                     >
@@ -656,8 +683,12 @@ export function DataTable<T>({
                       emptyState
                     ) : (
                       <div className="flex flex-col items-center justify-center gap-2">
-                        <span className="text-3xl">📄</span>
-                        <p className="text-xs font-bold text-[#667085]">
+                        <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <p className="text-xs font-medium text-slate-600">
                           {lang === "gu" ? emptyMessageGujarati : emptyMessage}
                         </p>
                         {searchQuery && (
@@ -808,7 +839,7 @@ export function DataTable<T>({
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#1E293B]/95 backdrop-blur-md text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700/80 flex flex-wrap items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-5 duration-200 min-w-[320px] max-w-[95vw]">
           <div className="flex items-center gap-3">
             <span className={`text-white text-xs px-2.5 py-1 rounded-full font-bold shadow-sm ${
-              themeColor === "purple" ? "bg-[#7C3AED]" : "bg-[#F47721]"
+              themeColor === "blue" ? "bg-[#1677E8]" : themeColor === "purple" ? "bg-[#7C3AED]" : "bg-[#F47721]"
             }`}>
               {effectiveSelectedIds.size}
             </span>

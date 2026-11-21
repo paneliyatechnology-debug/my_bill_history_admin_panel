@@ -115,15 +115,17 @@ export function TenantEditModal({
 
       <div className="relative z-10 bg-white rounded-2xl w-full max-w-xl max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-purple-50/60 via-white to-slate-50">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-blue-50/60 via-white to-slate-50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-purple-200">
-              ✏️
+            <div className="w-10 h-10 rounded-xl bg-[#1677E8] text-white flex items-center justify-center font-bold text-lg shadow-md shadow-blue-200">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
             </div>
             <div>
               <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
                 <span>{lang === "gu" ? "ટેનન્ટ વિગતો એડિટ કરો" : "Edit Tenant Details"}</span>
-                <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
+                <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-blue-100 text-[#1677E8]">
                   {tenant.id.slice(0, 8)}...
                 </span>
               </h2>
@@ -140,7 +142,9 @@ export function TenantEditModal({
             className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer text-sm font-bold"
             title="Close"
           >
-            ✕
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
@@ -148,7 +152,9 @@ export function TenantEditModal({
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4 text-xs font-sans">
           {formError && (
             <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 flex items-start gap-2 animate-in fade-in">
-              <span className="text-sm leading-none">⚠️</span>
+              <svg className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
               <span className="font-medium flex-1">{formError}</span>
             </div>
           )}
@@ -156,7 +162,9 @@ export function TenantEditModal({
           {/* Master Warning banner if applicable */}
           {isMasterTenant && (
             <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center gap-2">
-              <span className="text-base">🛡️</span>
+              <svg className="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
               <span className="font-medium">
                 {lang === "gu"
                   ? "આ મુખ્ય પ્લેટફોર્મ માસ્ટર ટેનન્ટ છે. સ્ટેટસ સક્રિય રહેશે."
@@ -168,7 +176,9 @@ export function TenantEditModal({
           {/* Section 1: Business / Organization Details */}
           <div className="space-y-3">
             <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-1">
-              <span>🏢</span>
+              <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
               <span>{lang === "gu" ? "સંસ્થા અને વેપાર વિગતો" : "Organization & Business"}</span>
             </div>
 
@@ -182,7 +192,7 @@ export function TenantEditModal({
                   value={formData.organizationName}
                   onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
                   placeholder="e.g. Shree Radhe Traders"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-medium focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-medium focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-[#1677E8] transition-all"
                   required
                 />
               </div>
@@ -196,7 +206,7 @@ export function TenantEditModal({
                   value={formData.legalName}
                   onChange={(e) => setFormData({ ...formData, legalName: e.target.value })}
                   placeholder="e.g. Shree Radhe Traders Pvt Ltd"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-medium focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-medium focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-[#1677E8] transition-all"
                 />
               </div>
             </div>
@@ -205,7 +215,9 @@ export function TenantEditModal({
           {/* Section 2: Contact Information */}
           <div className="space-y-3 pt-1">
             <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-1">
-              <span>📞</span>
+              <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
               <span>{lang === "gu" ? "સંપર્ક માહિતી" : "Primary Contact Details"}</span>
             </div>
 
@@ -219,7 +231,7 @@ export function TenantEditModal({
                   value={formData.primaryPhone}
                   onChange={(e) => setFormData({ ...formData, primaryPhone: e.target.value })}
                   placeholder="10-digit mobile number"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-mono font-medium focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-mono font-medium focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-[#1677E8] transition-all"
                   required
                 />
               </div>
@@ -233,7 +245,7 @@ export function TenantEditModal({
                   value={formData.primaryEmail}
                   onChange={(e) => setFormData({ ...formData, primaryEmail: e.target.value })}
                   placeholder="admin@company.com"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-medium focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-medium focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-[#1677E8] transition-all"
                 />
               </div>
             </div>
@@ -242,7 +254,9 @@ export function TenantEditModal({
           {/* Section 3: Subscription Plan & Validity */}
           <div className="space-y-3 pt-1">
             <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-1">
-              <span>👑</span>
+              <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
               <span>{lang === "gu" ? "સબ્સ્ક્રિપ્શન પ્લાન અને માન્યતા" : "Subscription Plan & Expiry"}</span>
             </div>
 
@@ -254,7 +268,7 @@ export function TenantEditModal({
                 <select
                   value={formData.subscriptionTier}
                   onChange={(e) => setFormData({ ...formData, subscriptionTier: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all cursor-pointer"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-[#1677E8] transition-all cursor-pointer"
                 >
                   <option value="TRIAL">Trial (30-day Free)</option>
                   <option value="RETAIL_BASIC">Retail Basic</option>
@@ -272,7 +286,7 @@ export function TenantEditModal({
                   type="date"
                   value={formData.subscriptionEnds}
                   onChange={(e) => setFormData({ ...formData, subscriptionEnds: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-mono font-medium focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-mono font-medium focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-[#1677E8] transition-all"
                 />
               </div>
             </div>
@@ -306,7 +320,7 @@ export function TenantEditModal({
               <button
                 type="button"
                 onClick={() => handleSetYear(2030)}
-                className="px-2.5 py-1 rounded-lg border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-[11px] font-semibold transition-colors cursor-pointer"
+                className="px-2.5 py-1 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100 text-[#1677E8] text-[11px] font-semibold transition-colors cursor-pointer"
               >
                 Year 2030
               </button>
@@ -323,7 +337,9 @@ export function TenantEditModal({
           {/* Section 4: Status (Active vs Suspended) */}
           <div className="space-y-3 pt-1">
             <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-1">
-              <span>⚡</span>
+              <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
               <span>{lang === "gu" ? "ટેનન્ટ સ્ટેટસ" : "Tenant Access Status"}</span>
             </div>
 
@@ -397,7 +413,7 @@ export function TenantEditModal({
             <button
               type="submit"
               disabled={isLoading}
-              className="px-5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs shadow-md shadow-purple-200 transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
+              className="px-5 py-2 rounded-xl bg-[#1677E8] hover:bg-[#1268D3] text-white font-bold text-xs shadow-md shadow-blue-200 transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
             >
               {isLoading ? (
                 <>
@@ -406,7 +422,9 @@ export function TenantEditModal({
                 </>
               ) : (
                 <>
-                  <span>💾</span>
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
                   <span>{lang === "gu" ? "ફેરફારો સાચવો" : "Save Changes"}</span>
                 </>
               )}

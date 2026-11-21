@@ -357,14 +357,14 @@ function SuperAdminTenantsContent() {
 
           return (
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-500 to-indigo-500 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-2xs">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#1677E8] to-[#1268D3] text-white font-semibold text-xs flex items-center justify-center shrink-0 shadow-2xs">
                 {initials}
               </div>
               <div className="min-w-0">
-                <div className="font-bold text-slate-900 text-xs truncate max-w-[190px] xl:max-w-[240px]" title={primaryOrgName}>
+                <div className="font-semibold text-slate-800 text-xs truncate max-w-[190px] xl:max-w-[240px]" title={primaryOrgName}>
                   <span>{primaryOrgName}</span>
                   {extraCount > 0 && (
-                    <span className="ml-1 text-[10px] text-purple-600 font-semibold">
+                    <span className="ml-1 text-[10px] text-[#1677E8] font-semibold">
                       (+{extraCount})
                     </span>
                   )}
@@ -409,7 +409,7 @@ function SuperAdminTenantsContent() {
         cell: (t) => {
           const meta = getTierInfo(t.subscriptionTier);
           return (
-            <span className={`inline-block px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold uppercase font-mono border tracking-wider shadow-2xs ${meta.badgeStyle}`}>
+            <span className={`inline-block px-2.5 py-0.5 rounded-lg text-[10px] font-medium border tracking-wider shadow-2xs ${meta.badgeStyle}`}>
               {t.subscriptionTier}
             </span>
           );
@@ -548,7 +548,7 @@ function SuperAdminTenantsContent() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             {lang === "gu" ? "સંસ્થાઓ અને સબ્સ્ક્રિપ્શન મેનેજમેન્ટ" : "Tenants & Organizations"}
           </h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -559,7 +559,7 @@ function SuperAdminTenantsContent() {
         </div>
         <button
           onClick={() => setIsCreateTenantOpen(true)}
-          className="py-2.5 px-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-500/20 flex items-center gap-2 cursor-pointer shrink-0"
+          className="py-2.5 px-4 bg-[#1677E8] hover:bg-[#1268D3] active:bg-[#0D5FC4] active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/20 flex items-center gap-2 cursor-pointer shrink-0"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
@@ -602,10 +602,12 @@ function SuperAdminTenantsContent() {
             <button
               type="button"
               onClick={handleOpenBulkDelete}
-              className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-medium transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
               title="Permanently delete all selected tenants"
             >
-              <span>🗑️</span>
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
               <span>
                 {lang === "gu"
                   ? `કાઢી નાખો (${selectedIds.size})`
@@ -644,7 +646,7 @@ function SuperAdminTenantsContent() {
           );
         }}
         lang={lang}
-        themeColor="purple"
+        themeColor="blue"
         exportable
         exportFileName="tenants_organizations"
         filtersSlot={
@@ -652,7 +654,7 @@ function SuperAdminTenantsContent() {
             <select
               value={tierFilter}
               onChange={(e) => setTierFilter(e.target.value)}
-              className="bg-white border border-slate-200 text-xs font-bold rounded-xl px-3.5 py-2 text-slate-700 focus:outline-none focus:ring-1 focus:ring-purple-500 cursor-pointer shadow-2xs"
+              className="bg-white border border-slate-200 text-xs font-bold rounded-xl px-3.5 py-2 text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#1677E8] cursor-pointer shadow-2xs"
             >
               <option value="">{lang === "gu" ? "તમામ સબ્સ્ક્રિપ્શન પ્લાન" : "All Subscription Tiers"}</option>
               {Object.keys(stats?.subscriptionTiers || TIER_META).map((tierKey) => (
@@ -665,7 +667,7 @@ function SuperAdminTenantsContent() {
             <select
               value={tenantStatusFilter}
               onChange={(e) => setTenantStatusFilter(e.target.value)}
-              className="bg-white border border-slate-200 text-xs font-bold rounded-xl px-3.5 py-2 text-slate-700 focus:outline-none focus:ring-1 focus:ring-purple-500 cursor-pointer shadow-2xs"
+              className="bg-white border border-slate-200 text-xs font-bold rounded-xl px-3.5 py-2 text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#1677E8] cursor-pointer shadow-2xs"
             >
               <option value="">{lang === "gu" ? "તમામ સ્થિતિ (Status)" : "All Status"}</option>
               <option value="active">{lang === "gu" ? "સક્રિય (Active)" : "Active"}</option>
@@ -705,22 +707,26 @@ function SuperAdminTenantsContent() {
           <div className="fixed inset-0" onClick={() => setSelectedTenant(null)} aria-hidden="true" />
           <div className="relative z-10 bg-white border border-slate-200 rounded-3xl w-full max-w-md p-6 space-y-5 text-slate-800 shadow-2xl animate-scaleUp max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
-              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                <span>🔑</span>
+              <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+                <svg className="w-4 h-4 text-[#1677E8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                </svg>
                 <span>{lang === "gu" ? "સબ્સ્ક્રિપ્શન પ્લાન અને લાયસન્સ" : "Manage Tenant Subscription"}</span>
               </h3>
               <button
                 onClick={() => setSelectedTenant(null)}
                 className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 cursor-pointer"
               >
-                ✕
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
             <div className="space-y-4 text-xs">
-              <div className="p-3 bg-purple-50/50 rounded-2xl border border-purple-100">
-                <span className="text-purple-600 font-bold block mb-0.5">Target Organization:</span>
-                <span className="font-black text-slate-900 font-mono text-sm block">
+              <div className="p-3 bg-blue-50/50 rounded-2xl border border-blue-100">
+                <span className="text-[#1677E8] font-medium block mb-0.5">Target Organization:</span>
+                <span className="font-semibold text-slate-900 text-sm block">
                   {selectedTenant.primaryPhone}
                 </span>
                 <span className="text-[11px] text-slate-500">
@@ -733,7 +739,7 @@ function SuperAdminTenantsContent() {
                 <select
                   value={editTier}
                   onChange={(e) => setEditTier(e.target.value)}
-                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold focus:outline-none focus:bg-white focus:ring-1 focus:ring-purple-500 cursor-pointer"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold focus:outline-none focus:bg-white focus:ring-1 focus:ring-[#1677E8] cursor-pointer"
                 >
                   <option value="TRIAL">Trial (30-day Free Evaluation)</option>
                   <option value="RETAIL_BASIC">Retail Basic (Single Store POS)</option>
@@ -753,7 +759,7 @@ function SuperAdminTenantsContent() {
                     onClick={() => setExtendDays(30)}
                     className={`py-2.5 px-3 rounded-xl border font-bold text-xs cursor-pointer transition-all ${
                       extendDays === 30
-                        ? "bg-purple-600 text-white border-purple-600 shadow-xs"
+                        ? "bg-[#1677E8] text-white border-[#1677E8] shadow-xs"
                         : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                     }`}
                   >
@@ -764,7 +770,7 @@ function SuperAdminTenantsContent() {
                     onClick={() => setExtendDays(90)}
                     className={`py-2.5 px-3 rounded-xl border font-bold text-xs cursor-pointer transition-all ${
                       extendDays === 90
-                        ? "bg-purple-600 text-white border-purple-600 shadow-xs"
+                        ? "bg-[#1677E8] text-white border-[#1677E8] shadow-xs"
                         : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                     }`}
                   >
@@ -775,7 +781,7 @@ function SuperAdminTenantsContent() {
                     onClick={() => setExtendDays(365)}
                     className={`py-2.5 px-3 rounded-xl border font-bold text-xs cursor-pointer transition-all ${
                       extendDays === 365
-                        ? "bg-purple-600 text-white border-purple-600 shadow-xs"
+                        ? "bg-[#1677E8] text-white border-[#1677E8] shadow-xs"
                         : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                     }`}
                   >
@@ -797,7 +803,7 @@ function SuperAdminTenantsContent() {
                 type="button"
                 disabled={isUpdatingTenant}
                 onClick={handleUpdateTenantTier}
-                className="py-2.5 px-5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-500/20 disabled:opacity-50 cursor-pointer"
+                className="py-2.5 px-5 bg-[#1677E8] hover:bg-[#1268D3] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/20 disabled:opacity-50 cursor-pointer"
               >
                 {isUpdatingTenant ? "Saving..." : "Save Changes"}
               </button>
@@ -813,7 +819,7 @@ function SuperAdminTenantsContent() {
           <div className="relative z-10 bg-white border border-slate-200 rounded-3xl w-full max-w-2xl p-6 sm:p-7 space-y-5 text-slate-800 shadow-2xl animate-scaleUp max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
               <div>
-                <h3 className="text-lg font-black text-slate-900">
+                <h3 className="text-lg font-semibold text-slate-900">
                   {viewDetailsTenant.organizations?.[0]?.name || "Tenant Profile & Infrastructure"}
                 </h3>
                 <span className="text-[11px] text-slate-400 font-mono">
@@ -824,7 +830,9 @@ function SuperAdminTenantsContent() {
                 onClick={() => setViewDetailsTenant(null)}
                 className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 cursor-pointer"
               >
-                ✕
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
@@ -842,7 +850,7 @@ function SuperAdminTenantsContent() {
                 </div>
                 <div>
                   <span className="text-slate-400 block text-[10px] font-bold uppercase tracking-wider">Plan Tier:</span>
-                  <span className="font-bold text-purple-700 uppercase font-mono text-xs">
+                  <span className="font-bold text-[#1677E8] uppercase font-mono text-xs">
                     {viewDetailsTenant.subscriptionTier}
                   </span>
                 </div>
@@ -856,8 +864,10 @@ function SuperAdminTenantsContent() {
 
               {/* Companies and Branches */}
               <div>
-                <h4 className="font-black text-xs text-slate-900 uppercase mb-3 tracking-wider flex items-center gap-1.5">
-                  <span>🏢</span>
+                <h4 className="font-semibold text-xs text-slate-900 mb-3 tracking-wider flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-[#1677E8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
                   <span>Registered Companies & Outlets</span>
                 </h4>
                 <div className="space-y-2.5">
@@ -865,10 +875,10 @@ function SuperAdminTenantsContent() {
                     org.companies?.map((comp: any) => (
                       <div
                         key={comp.id}
-                        className="p-4 bg-white border border-slate-200/80 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs hover:border-purple-300 transition-colors"
+                        className="p-4 bg-white border border-slate-200/80 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs hover:border-blue-300 transition-colors"
                       >
                         <div>
-                          <div className="font-black text-sm text-slate-900">{comp.tradeName}</div>
+                          <div className="font-semibold text-sm text-slate-900">{comp.tradeName}</div>
                           <div className="text-[11px] text-slate-500 mt-0.5">
                             Legal: {comp.legalName} • City: {comp.city || "—"} • GSTIN: <strong className="font-mono">{comp.gstin || "Unregistered"}</strong>
                           </div>
@@ -882,9 +892,11 @@ function SuperAdminTenantsContent() {
                             setViewDetailsTenant(null);
                             handleImpersonateTenant(comp.id, comp.tradeName);
                           }}
-                          className="px-3.5 py-2 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-orange-700 border border-orange-200/80 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer shadow-xs flex items-center gap-1.5"
+                          className="px-3.5 py-2 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-orange-700 border border-orange-200/80 rounded-xl text-xs font-semibold transition-all shrink-0 cursor-pointer shadow-xs flex items-center gap-1.5"
                         >
-                          <span>🚀</span>
+                          <svg className="w-3.5 h-3.5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
                           <span>Launch Portal</span>
                         </button>
                       </div>
@@ -895,8 +907,10 @@ function SuperAdminTenantsContent() {
 
               {/* Users under this organization */}
               <div>
-                <h4 className="font-black text-xs text-slate-900 uppercase mb-3 tracking-wider flex items-center gap-1.5">
-                  <span>👥</span>
+                <h4 className="font-semibold text-xs text-slate-900 mb-3 tracking-wider flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-[#1677E8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
                   <span>Associated Users ({viewDetailsTenant.organizations?.[0]?.users?.length || 0})</span>
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -904,7 +918,7 @@ function SuperAdminTenantsContent() {
                     <div key={u.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
                       <div className="font-bold text-slate-900">{u.fullName}</div>
                       <div className="text-[11px] font-mono text-slate-500 mt-0.5">
-                        {u.phone} • <span className="font-bold text-purple-700">{u.role}</span>
+                        {u.phone} • <span className="font-bold text-[#1677E8]">{u.role}</span>
                       </div>
                     </div>
                   ))}

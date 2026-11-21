@@ -25,7 +25,7 @@ export interface ExportDropdownProps {
   lang?: "en" | "gu" | string;
   className?: string;
   disabled?: boolean;
-  themeColor?: "saffron" | "purple";
+  themeColor?: "saffron" | "purple" | "blue";
   buttonVariant?: "default" | "outline" | "compact";
   align?: "left" | "right" | "auto";
 }
@@ -154,14 +154,24 @@ export function ExportDropdown({
               : "bg-rose-50 border-rose-200 text-rose-800"
           }`}
         >
-          <span>{toastMessage.type === "success" ? "✅" : "⚠️"}</span>
+          {toastMessage.type === "success" ? (
+            <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            </svg>
+          ) : (
+            <svg className="w-4 h-4 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          )}
           <span>{toastMessage.text}</span>
           <button
             type="button"
             onClick={() => setToastMessage(null)}
-            className="ml-2 text-slate-400 hover:text-slate-600 text-sm font-bold"
+            className="ml-2 text-slate-400 hover:text-slate-600 cursor-pointer"
           >
-            ✕
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
       )}
@@ -254,7 +264,9 @@ export function ExportDropdown({
             >
               <div className="flex items-center gap-2.5">
                 <span className="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
-                  📊
+                  <svg className="w-3.5 h-3.5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
                 </span>
                 <div>
                   <p className="font-semibold text-slate-800 group-hover:text-emerald-900">
@@ -278,7 +290,9 @@ export function ExportDropdown({
             >
               <div className="flex items-center gap-2.5">
                 <span className="w-6 h-6 rounded-md bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
-                  📄
+                  <svg className="w-3.5 h-3.5 text-sky-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
                 </span>
                 <div>
                   <p className="font-semibold text-slate-800 group-hover:text-sky-900">
@@ -302,7 +316,9 @@ export function ExportDropdown({
             >
               <div className="flex items-center gap-2.5">
                 <span className="w-6 h-6 rounded-md bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
-                  📑
+                  <svg className="w-3.5 h-3.5 text-rose-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
                 </span>
                 <div>
                   <p className="font-semibold text-slate-800 group-hover:text-rose-900">

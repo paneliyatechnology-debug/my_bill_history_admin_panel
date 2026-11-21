@@ -1,11 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, DM_Mono } from "next/font/google";
+import { Inter, Manrope, DM_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../context/auth-context";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
   display: "swap",
 });
 
@@ -37,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${dmMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${manrope.variable} ${dmMono.variable}`}>
       <body className="antialiased min-h-screen bg-[#F8F9FB] text-[#202124]">
         <AuthProvider>
           {children}

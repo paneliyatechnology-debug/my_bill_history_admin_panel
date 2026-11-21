@@ -14,13 +14,15 @@ import { apiClient } from "../lib/api-client";
 import type {
   SystemStats,
   DiagnosticsData,
+  SubscriptionPlanItem,
 } from "../shared-types/superadmin";
 import {
   INDIAN_STATES,
   TIER_META,
-  getTierInfo,
+  getTierInfo as defaultGetTierInfo,
   formatInr,
 } from "../lib/superadmin-constants";
+import { fetchAllPlans } from "../lib/plans-api";
 import type { CreateTenantPayload } from "../components/tenants/tenant-create-wizard-modal";
 
 export type AuthStatus =
@@ -49,6 +51,11 @@ interface SuperAdminContextType {
   refetchStats: () => Promise<void>;
   diagnostics: DiagnosticsData | null;
   refetchDiagnostics: () => Promise<void>;
+
+  // Subscription Plans Dynamic Management
+  plans: SubscriptionPlanItem[];
+  isLoadingPlans: boolean;
+  refetchPlans: () => Promise<void>;
 
   // Notification Banners
   actionSuccess: string | null;
@@ -108,6 +115,64 @@ export function SuperAdminProvider({ children }: { children: React.ReactNode }) 
   // Tenant Creation Wizard Modal
   const [isCreateTenantOpen, setIsCreateTenantOpen] = useState(false);
   const [isCreatingTenant, setIsCreatingTenant] = useState(false);
+
+  // Dynamic Subscription Plans State
+  const [plans, setPlans] = useState<SubscriptionPlanItem[]>([]);
+  const [isLoadingPlans, setIsLoadingPlans] = useState(false);
+
+  const refetchPlans = useCallback(async () => {
+    try {
+      setIsLoadingPlans(true);
+      const data = await fetchAllPlans();
+      if (Array.isArray(data) && data.length > 0) {
+        setPlans(data);
+      }
+    } catch (err) {
+      console.warn("Failed to load dynamic plans:", err);
+    } finally {
+      setIsLoadingPlans(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    refetchPlans();
+  }, [refetchPlans]);
+
+  // Dynamic Tier Info resolution (combines custom plans + default tiers)
+  const getTierInfo = useCallback(
+    (tierKey: string) => {
+      if (!tierKey) return defaultGetTierInfo("TRIAL");
+      const matchedPlan = plans.find(
+        (p) =>
+          p.tier.toUpperCase() === tierKey.toUpperCase() ||
+          p.id.toLowerCase() === tierKey.toLowerCase()
+      );
+
+      if (matchedPlan) {
+        return {
+          name: matchedPlan.name,
+          nameGujarati: matchedPlan.nameGujarati,
+          subtitle: matchedPlan.subtitle,
+          subtitleGujarati: matchedPlan.subtitleGujarati,
+          style: matchedPlan.isPopular
+            ? "bg-white border-2 border-emerald-500/80 shadow-md ring-2 ring-emerald-500/10"
+            : "bg-white border-slate-200/80 hover:border-blue-400",
+          badgeStyle: matchedPlan.badgeColor || "bg-blue-50 text-blue-700 border-blue-200",
+          icon: () => (
+            <svg className="w-6 h-6 text-[#1677E8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          ),
+          features: matchedPlan.features,
+          featuresGujarati: matchedPlan.featuresGujarati,
+          planData: matchedPlan,
+        };
+      }
+
+      return defaultGetTierInfo(tierKey);
+    },
+    [plans]
+  );
 
   // Cross-page event signal
   const [tenantRefreshTrigger, setTenantRefreshTrigger] = useState(0);
@@ -300,6 +365,9 @@ export function SuperAdminProvider({ children }: { children: React.ReactNode }) 
       refetchStats,
       diagnostics,
       refetchDiagnostics,
+      plans,
+      isLoadingPlans,
+      refetchPlans,
       actionSuccess,
       actionError,
       setActionSuccess,
@@ -334,6 +402,9 @@ export function SuperAdminProvider({ children }: { children: React.ReactNode }) 
       refetchStats,
       diagnostics,
       refetchDiagnostics,
+      plans,
+      isLoadingPlans,
+      refetchPlans,
       actionSuccess,
       actionError,
       isSidebarCollapsed,
@@ -344,6 +415,7 @@ export function SuperAdminProvider({ children }: { children: React.ReactNode }) 
       handleImpersonateTenant,
       tenantRefreshTrigger,
       triggerTenantRefresh,
+      getTierInfo,
     ]
   );
 

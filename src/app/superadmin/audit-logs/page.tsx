@@ -67,7 +67,7 @@ export default function SuperAdminAuditLogsPage() {
         accessorKey: "action",
         cell: (log) => {
           const act = log.action || "";
-          let badgeColor = "bg-purple-50 text-purple-700 border-purple-200/80";
+          let badgeColor = "bg-blue-50 text-[#1677E8] border-blue-200/80";
           if (act.includes("LOGIN") || act.includes("AUTH")) {
             badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200/80";
           } else if (act.includes("INVOICE") || act.includes("VOUCHER")) {
@@ -79,7 +79,7 @@ export default function SuperAdminAuditLogsPage() {
           }
 
           return (
-            <span className={`inline-flex items-center px-2.5 py-1 rounded-lg border font-mono text-[11px] font-bold tracking-tight shadow-2xs ${badgeColor}`}>
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-lg border text-[11px] font-medium shadow-2xs ${badgeColor}`}>
               {act}
             </span>
           );
@@ -87,18 +87,18 @@ export default function SuperAdminAuditLogsPage() {
       },
       {
         id: "entityName",
-        header: lang === "gu" ? "એન્ટિટી (ENTITY)" : "ENTITY",
+        header: lang === "gu" ? "એન્ટિટી" : "Entity",
         sortable: true,
         accessorKey: "entityName",
         cell: (log) => (
-          <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200/70">
+          <span className="text-xs font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200/70">
             {log.entityName || "Platform"}
           </span>
         ),
       },
       {
         id: "actor",
-        header: lang === "gu" ? "વપરાશકર્તા (ACTOR USER)" : "ACTOR USER",
+        header: lang === "gu" ? "વપરાશકર્તા" : "Actor User",
         sortable: true,
         accessorFn: (log) =>
           log.user?.fullName ||
@@ -109,15 +109,15 @@ export default function SuperAdminAuditLogsPage() {
           const initials = actorName.slice(0, 2).toUpperCase();
           return (
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-700 font-bold text-[10px] flex items-center justify-center shrink-0 border border-purple-200">
+              <div className="w-6 h-6 rounded-full bg-blue-100 text-[#1677E8] font-semibold text-[10px] flex items-center justify-center shrink-0 border border-blue-200">
                 {initials}
               </div>
               <div className="truncate max-w-[150px]">
-                <div className="font-bold text-slate-900 text-xs truncate" title={actorName}>
+                <div className="font-medium text-slate-800 text-xs truncate" title={actorName}>
                   {actorName}
                 </div>
                 {log.user?.role && (
-                  <div className="text-[10px] text-slate-400 font-mono">
+                  <div className="text-[10px] text-slate-400">
                     {log.user.role}
                   </div>
                 )}
@@ -128,7 +128,7 @@ export default function SuperAdminAuditLogsPage() {
       },
       {
         id: "company",
-        header: lang === "gu" ? "કંપની સંદર્ભ (COMPANY)" : "COMPANY CONTEXT",
+        header: lang === "gu" ? "કંપની સંદર્ભ" : "Company Context",
         sortable: true,
         accessorFn: (log) =>
           log.company?.tradeName ||
@@ -137,7 +137,7 @@ export default function SuperAdminAuditLogsPage() {
         cell: (log) => {
           const compName = log.company?.tradeName || log.company?.legalName || "Platform Global";
           return (
-            <div className="font-medium text-slate-700 text-xs truncate max-w-[160px]" title={compName}>
+            <div className="font-normal text-slate-600 text-xs truncate max-w-[160px]" title={compName}>
               {compName}
             </div>
           );
@@ -145,7 +145,7 @@ export default function SuperAdminAuditLogsPage() {
       },
       {
         id: "hash",
-        header: lang === "gu" ? "ક્રિપ્ટોગ્રાફિક હેશ (SHA-256)" : "CRYPTOGRAPHIC HASH",
+        header: lang === "gu" ? "ક્રિપ્ટોગ્રાફિક હેશ" : "Cryptographic Hash",
         sortable: false,
         className: "min-w-[190px]",
         cell: (log) => {
@@ -166,12 +166,20 @@ export default function SuperAdminAuditLogsPage() {
                 onClick={() => handleCopyHash(hash)}
                 className={`p-1 rounded-md text-xs transition-colors cursor-pointer ${
                   isCopied
-                    ? "bg-emerald-100 text-emerald-700 font-bold"
-                    : "bg-slate-100 text-slate-500 hover:text-purple-700 hover:bg-purple-50"
+                    ? "bg-emerald-50 text-emerald-700"
+                    : "bg-slate-100 text-slate-500 hover:text-[#1677E8] hover:bg-blue-50"
                 }`}
                 title="Copy Full SHA-256 Hash"
               >
-                {isCopied ? "✓" : "📋"}
+                {isCopied ? (
+                  <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                )}
               </button>
             </div>
           );
@@ -182,40 +190,39 @@ export default function SuperAdminAuditLogsPage() {
   );
 
   return (
-    <div className="space-y-6 animate-fadeIn">
-      {/* Page Header with Cryptographic Security Status */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-7 text-white shadow-lg border border-indigo-900/40 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                100% Tamper-Evident Ledger
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                SHA-256 Cryptographic Chain
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              {lang === "gu" ? "વૈશ્વિક ઓડિટ ટ્રેઇલ & સુરક્ષા" : "Global Audit Trail & Security"}
-            </h1>
-            <p className="text-xs text-slate-300 mt-1 max-w-xl">
-              {lang === "gu"
-                ? "તમામ એડમિનિસ્ટ્રેટિવ અને વેપારી વ્યવહારો પર ક્રિપ્ટોગ્રાફિક SHA-256 ટેમ્પર-એવિડન્ટ લોગ સ્ટ્રીમ."
-                : "Cryptographically verified, immutable event ledger tracking tenant alterations, auth logins, and billing vouchers across all organizations."}
-            </p>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            {lang === "gu" ? "વૈશ્વિક ઓડિટ ટ્રેઇલ & સુરક્ષા" : "Global Audit Trail & Security"}
+          </h1>
+          <p className="text-xs text-slate-500 mt-1 max-w-xl">
+            {lang === "gu"
+              ? "તમામ એડમિનિસ્ટ્રેટિવ અને વેપારી વ્યવહારો પર ક્રિપ્ટોગ્રાફિક SHA-256 ટેમ્પર-એવિડન્ટ લોગ સ્ટ્રીમ."
+              : "Cryptographically verified, immutable event ledger tracking tenant alterations, auth logins, and billing vouchers across all organizations."}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 self-start sm:self-auto">
+          <div className="bg-white border border-slate-200/90 px-3.5 py-2 rounded-xl text-right shadow-2xs">
+            <span className="text-[10px] font-medium uppercase text-slate-400 block tracking-wider">
+              Audited Stream
+            </span>
+            <span className="text-sm font-semibold text-slate-900">
+              {auditLogs.length} Events
+            </span>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10 text-right">
-              <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wider">
-                Audited Stream
-              </span>
-              <span className="text-lg font-black font-mono text-purple-300">
-                {auditLogs.length} Events
-              </span>
-            </div>
-          </div>
+          <button
+            onClick={fetchAuditLogs}
+            className="flex items-center gap-2 bg-white border border-slate-200/90 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-700 shadow-2xs hover:bg-slate-50 cursor-pointer"
+          >
+            <svg className={`w-4 h-4 text-slate-500 ${isLoading ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Refresh</span>
+          </button>
         </div>
       </div>
 
@@ -243,7 +250,7 @@ export default function SuperAdminAuditLogsPage() {
           );
         }}
         lang={lang}
-        themeColor="purple"
+        themeColor="blue"
         exportable
         exportFileName="global_audit_trail"
         filtersSlot={
@@ -251,7 +258,7 @@ export default function SuperAdminAuditLogsPage() {
             <select
               value={auditActionFilter}
               onChange={(e) => setAuditActionFilter(e.target.value)}
-              className="bg-white border border-slate-200 text-xs font-bold rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-1 focus:ring-purple-500 shadow-2xs cursor-pointer"
+              className="bg-white border border-slate-200 text-xs font-bold rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#1677E8] shadow-2xs cursor-pointer"
             >
               <option value="">{lang === "gu" ? "તમામ ક્રિયાઓ (All Actions)" : "All Actions"}</option>
               <option value="AUTH_LOGIN">AUTH_LOGIN</option>

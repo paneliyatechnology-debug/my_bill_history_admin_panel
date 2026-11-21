@@ -1,0 +1,137 @@
+[
+  {
+    "id": "coup_mbbfirst50",
+    "code": "MBBFIRST50",
+    "description": "Flat 50% discount on first-time subscription for startups and retail stores.",
+    "discountType": "PERCENTAGE",
+    "discountValue": 50,
+    "validTiers": [
+      "RETAIL_BASIC",
+      "WHOLESALE_PRO",
+      "DISTRIBUTION_ENTERPRISE",
+      "MANUFACTURING_SUITE"
+    ],
+    "minAmount": 4000,
+    "maxDiscount": 5000,
+    "validUntil": "2027-12-31T23:59:59.000Z",
+    "usageLimit": 500,
+    "usedCount": 15,
+    "isActive": true,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-11-21T10:52:23.916Z"
+  },
+  {
+    "id": "coup_save20",
+    "code": "SAVE20",
+    "description": "Save 20% discount on any annual subscription plan.",
+    "discountType": "PERCENTAGE",
+    "discountValue": 20,
+    "validTiers": [
+      "RETAIL_BASIC",
+      "WHOLESALE_PRO",
+      "DISTRIBUTION_ENTERPRISE",
+      "MANUFACTURING_SUITE"
+    ],
+    "minAmount": 1000,
+    "maxDiscount": 4000,
+    "validUntil": "2027-12-31T23:59:59.000Z",
+    "usageLimit": 1000,
+    "usedCount": 25,
+    "isActive": true,
+    "createdAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "coup_new50",
+    "code": "NEW50",
+    "description": "New customer introductory 50% off.",
+    "discountType": "PERCENTAGE",
+    "discountValue": 50,
+    "validTiers": [
+      "RETAIL_BASIC",
+      "WHOLESALE_PRO"
+    ],
+    "minAmount": 3000,
+    "maxDiscount": 4000,
+    "validUntil": "2027-12-31T23:59:59.000Z",
+    "usageLimit": 500,
+    "usedCount": 42,
+    "isActive": true,
+    "createdAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "coup_mbb500",
+    "code": "MBB500",
+    "description": "Flat ₹500 instant discount on checkout.",
+    "discountType": "FLAT",
+    "discountValue": 500,
+    "validTiers": [
+      "RETAIL_BASIC",
+      "WHOLESALE_PRO",
+      "DISTRIBUTION_ENTERPRISE",
+      "MANUFACTURING_SUITE"
+    ],
+    "minAmount": 2000,
+    "maxDiscount": 500,
+    "validUntil": "2027-12-31T23:59:59.000Z",
+    "usageLimit": 1000,
+    "usedCount": 78,
+    "isActive": true,
+    "createdAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "coup_diwali2026",
+    "code": "DIWALI2026",
+    "description": "Special 20% festival discount on all annual billing cycles.",
+    "discountType": "PERCENTAGE",
+    "discountValue": 20,
+    "validTiers": [
+      "WHOLESALE_PRO",
+      "DISTRIBUTION_ENTERPRISE",
+      "MANUFACTURING_SUITE"
+    ],
+    "minAmount": 8000,
+    "maxDiscount": 4000,
+    "validUntil": "2026-12-31T23:59:59.000Z",
+    "usageLimit": 500,
+    "usedCount": 88,
+    "isActive": true,
+    "createdAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "coup_startupindia",
+    "code": "STARTUPINDIA",
+    "description": "Flat ₹2,500 off on Enterprise and Manufacturing plans.",
+    "discountType": "FLAT",
+    "discountValue": 2500,
+    "validTiers": [
+      "DISTRIBUTION_ENTERPRISE",
+      "MANUFACTURING_SUITE"
+    ],
+    "minAmount": 15000,
+    "maxDiscount": 2500,
+    "validUntil": "2027-03-31T23:59:59.000Z",
+    "usageLimit": 200,
+    "usedCount": 32,
+    "isActive": true,
+    "createdAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "coup_annualsaver",
+    "code": "ANNUALSAVER",
+    "description": "25% discount on multi-year advance subscription renewals.",
+    "discountType": "PERCENTAGE",
+    "discountValue": 25,
+    "validTiers": [
+      "RETAIL_BASIC",
+      "WHOLESALE_PRO",
+      "DISTRIBUTION_ENTERPRISE"
+    ],
+    "minAmount": 7000,
+    "maxDiscount": 6000,
+    "validUntil": "2027-06-30T23:59:59.000Z",
+    "usageLimit": 50,
+    "usedCount": 19,
+    "isActive": true,
+    "createdAt": "2026-01-01T00:00:00.000Z"
+  }
+]

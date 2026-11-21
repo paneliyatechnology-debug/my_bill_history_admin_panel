@@ -8,7 +8,7 @@ export default function SuperAdminLoading() {
         </div>
         <div className="flex gap-2.5">
           <div className="h-9 w-24 bg-slate-200 rounded-xl" />
-          <div className="h-9 w-28 bg-purple-200 rounded-xl" />
+          <div className="h-9 w-28 bg-blue-200 rounded-xl" />
         </div>
       </div>
 

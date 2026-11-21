@@ -347,63 +347,60 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
     <div className="space-y-6 animate-fadeIn">
       {/* Banner Notice */}
       {banner && (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800 flex items-center justify-between shadow-xs animate-fadeIn">
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-semibold text-emerald-800 flex items-center justify-between shadow-xs animate-fadeIn">
           <div className="flex items-center gap-2">
-            <span>✓</span>
+            <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            </svg>
             <span>{banner}</span>
           </div>
           <button onClick={() => setBanner(null)} className="text-emerald-600 hover:text-emerald-900 cursor-pointer">
-            ✕
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
       )}
 
       {/* Page Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-7 text-white shadow-lg border border-indigo-900/40 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                GST Invoice Art Studio
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                {themes.filter((t) => t.isActive).length} Active Live
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
-              <span>🎁</span>
-              <span>{lang === "gu" ? "ઇન્વૉઇસ થીમ સ્ટોર મેનેજમેન્ટ" : "Invoice Themes & Festive Store"}</span>
-            </h1>
-            <p className="text-xs text-slate-300 mt-1 max-w-xl">
-              {lang === "gu"
-                ? "તહેવારોની સ્પેશિયલ બેકગ્રાઉન્ડ ઇમેજીસ, રંગો અને થીમ્સ સુપર એડમિનથી લાઇવ મેનેજ કરો. અહીંથી કરેલા ફેરફારો બધા યુઝર્સના ઇન્વૉઇસ સેટિંગ્સમાં તરત જ દેખાશે."
-                : "Manage seasonal festival backgrounds, letterhead stationery artwork, and GST invoice themes in real-time. Changes configured here instantly appear in all tenants' invoice live preview studios."}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2.5 shrink-0">
-            <button
-              type="button"
-              onClick={handleResetDefaults}
-              className="py-2.5 px-3.5 bg-white/10 hover:bg-white/15 text-white border border-white/10 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer backdrop-blur-md"
-              title="Restore default festive themes (Navaratri, Durga Puja, Dussehra, Dhanteras, Diwali)"
-            >
-              <svg className="w-4 h-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
+            <span className="w-8 h-8 rounded-lg bg-blue-50 text-[#1677E8] flex items-center justify-center shrink-0">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4 5 5 0 015-5c.966 0 1.867.324 2.593.874.34.257.77.376 1.196.326.685-.08 1.25-.563 1.436-1.228A6.993 6.993 0 0114 7c3.866 0 7 3.134 7 7 0 2.21-1.007 4.186-2.585 5.5" />
               </svg>
-              <span>{lang === "gu" ? "ડિફોલ્ટ પુનઃસ્થાપિત કરો" : "Reset Defaults"}</span>
-            </button>
+            </span>
+            <span>{lang === "gu" ? "ઇન્વૉઇસ થીમ સ્ટોર મેનેજમેન્ટ" : "Invoice Themes & Festive Store"}</span>
+          </h1>
+          <p className="text-xs text-slate-500 mt-1 max-w-xl">
+            {lang === "gu"
+              ? "તહેવારોની સ્પેશિયલ બેકગ્રાઉન્ડ ઇમેજીસ, રંગો અને થીમ્સ સુપર એડમિનથી લાઇવ મેનેજ કરો. અહીંથી કરેલા ફેરફારો બધા યુઝર્સના ઇન્વૉઇસ સેટિંગ્સમાં તરત જ દેખાશે."
+              : "Manage seasonal festival backgrounds, letterhead stationery artwork, and GST invoice themes in real-time. Changes configured here instantly appear in all tenants' invoice live preview studios."}
+          </p>
+        </div>
 
-            <button
-              type="button"
-              onClick={handleOpenAdd}
-              className="py-2.5 px-4 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-500/25 flex items-center gap-1.5 cursor-pointer"
-            >
-              <span className="text-sm">+</span>
-              <span>{lang === "gu" ? "નવી થીમ ઉમેરો" : "Add New Theme"}</span>
-            </button>
-          </div>
+        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={handleResetDefaults}
+            className="py-2 px-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 rounded-xl text-xs font-medium transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+            title="Restore default festive themes (Navaratri, Durga Puja, Dussehra, Dhanteras, Diwali)"
+          >
+            <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>{lang === "gu" ? "ડિફોલ્ટ પુનઃસ્થાપિત કરો" : "Reset Defaults"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleOpenAdd}
+            className="py-2 px-3.5 bg-[#1677E8] hover:bg-[#1268D3] text-white rounded-xl text-xs font-semibold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+          >
+            <span className="text-sm">+</span>
+            <span>{lang === "gu" ? "નવી થીમ ઉમેરો" : "Add New Theme"}</span>
+          </button>
         </div>
       </div>
 
@@ -420,7 +417,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === tab.id
-                  ? "bg-purple-600 text-white shadow-xs"
+                  ? "bg-[#1677E8] text-white shadow-xs"
                   : "bg-slate-100/70 text-slate-600 hover:bg-slate-100"
               }`}
             >
@@ -436,7 +433,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
 
         <button
           onClick={fetchThemes}
-          className="text-xs font-bold text-slate-600 hover:text-purple-700 flex items-center gap-1 px-3 py-1.5 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+          className="text-xs font-bold text-slate-600 hover:text-[#1677E8] flex items-center gap-1 px-3 py-1.5 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
         >
           <span>↻ Refresh</span>
         </button>
@@ -463,12 +460,12 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
               <div
                 key={theme.id}
                 className={`group relative flex flex-col rounded-3xl border bg-white p-4 shadow-xs transition-all hover:shadow-lg ${
-                  theme.isActive ? "border-slate-200/80 hover:border-purple-300" : "border-slate-200 bg-slate-50/60 opacity-60"
+                  theme.isActive ? "border-slate-200/80 hover:border-blue-300" : "border-slate-200 bg-slate-50/60 opacity-60"
                 }`}
               >
                 {/* Badge on top right */}
                 {theme.badge && (
-                  <span className="absolute top-3 right-3 z-10 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-2.5 py-0.5 text-[9px] font-black uppercase text-white shadow-xs font-mono">
+                  <span className="absolute top-3 right-3 z-10 rounded-full bg-[#1677E8] px-2.5 py-0.5 text-[9px] font-semibold uppercase text-white shadow-xs">
                     {theme.badge}
                   </span>
                 )}
@@ -536,15 +533,15 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 <div className="mt-4 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-black text-slate-900 group-hover:text-purple-700 transition-colors truncate">
+                      <h3 className="text-sm font-semibold text-slate-800 group-hover:text-[#1677E8] transition-colors truncate">
                         {theme.name}
                       </h3>
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                      <span className="text-[10px] font-medium text-slate-400">
                         {theme.category}
                       </span>
                     </div>
 
-                    <p className="mt-1 line-clamp-2 text-[11px] text-slate-500 leading-tight">
+                    <p className="mt-1 line-clamp-2 text-[11px] text-slate-500 leading-tight font-normal">
                       {theme.description || "Invoice stationery background template"}
                     </p>
                   </div>
@@ -554,7 +551,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     <button
                       type="button"
                       onClick={() => handleToggleActive(theme)}
-                      className={`text-[10.5px] font-bold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
+                      className={`text-[10.5px] font-medium px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
                         theme.isActive
                           ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
                           : "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200"
@@ -567,17 +564,19 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                       <button
                         type="button"
                         onClick={() => handleOpenEdit(theme)}
-                        className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-50 shadow-2xs cursor-pointer"
+                        className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50 shadow-2xs cursor-pointer"
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(theme)}
-                        className="rounded-lg border border-rose-200 bg-white px-2 py-1 text-[11px] font-bold text-rose-600 hover:bg-rose-50 shadow-2xs cursor-pointer"
+                        className="rounded-lg border border-rose-200 bg-white p-1.5 text-rose-600 hover:bg-rose-50 shadow-2xs cursor-pointer flex items-center justify-center"
                         title="Delete theme"
                       >
-                        🗑️
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                       </button>
                     </div>
                   </div>
@@ -594,7 +593,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
           <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-6 sm:p-7 shadow-2xl space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
               <div>
-                <h3 className="text-lg font-black text-slate-900">
+                <h3 className="text-lg font-semibold text-slate-900">
                   {editingTheme ? "Edit Invoice Theme" : "Add New Invoice Theme"}
                 </h3>
                 <p className="text-xs text-slate-500">
@@ -606,7 +605,9 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 onClick={() => setIsModalOpen(false)}
                 className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 cursor-pointer"
               >
-                ✕
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
@@ -620,7 +621,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g. Holi Special, Diwali 2026"
-                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
+                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-[#1677E8] focus:ring-2 focus:ring-blue-500/20 focus:outline-none bg-slate-50 focus:bg-white"
                   />
                 </div>
 
@@ -631,7 +632,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     value={formData.festivalName}
                     onChange={(e) => setFormData({ ...formData, festivalName: e.target.value })}
                     placeholder="e.g. Navaratri, Diwali"
-                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
+                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-[#1677E8] focus:ring-2 focus:ring-blue-500/20 focus:outline-none bg-slate-50 focus:bg-white"
                   />
                 </div>
               </div>
@@ -642,7 +643,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold bg-slate-50 focus:bg-white focus:border-purple-600 focus:outline-none cursor-pointer"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold bg-slate-50 focus:bg-white focus:border-[#1677E8] focus:ring-2 focus:ring-blue-500/20 focus:outline-none cursor-pointer"
                   >
                     <option value="festive">Festive / Seasonal</option>
                     <option value="standard">Standard GST</option>
@@ -657,7 +658,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     value={formData.badge}
                     onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
                     placeholder="e.g. NEW, FESTIVE"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:border-[#1677E8] focus:ring-2 focus:ring-blue-500/20 focus:outline-none bg-slate-50 focus:bg-white"
                   />
                 </div>
 
@@ -674,7 +675,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                       type="text"
                       value={formData.primaryColor}
                       onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
-                      className="w-full rounded-xl border border-slate-200 px-2 py-1.5 font-mono text-xs focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white font-bold"
+                      className="w-full rounded-xl border border-slate-200 px-2 py-1.5 font-mono text-xs focus:border-[#1677E8] focus:ring-2 focus:ring-blue-500/20 focus:outline-none bg-slate-50 focus:bg-white font-bold"
                     />
                   </div>
                 </div>
@@ -691,7 +692,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     value={formData.variant1}
                     onChange={(e) => setFormData({ ...formData, variant1: e.target.value, thumbnail: formData.thumbnail || e.target.value })}
                     placeholder="/themes/navaratri_1.jpg or https://..."
-                    className="flex-1 rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
+                    className="flex-1 rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-[#1677E8] focus:ring-2 focus:ring-blue-500/20 focus:outline-none bg-slate-50 focus:bg-white"
                   />
                   <input
                     ref={variant1FileRef}
@@ -704,7 +705,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     type="button"
                     onClick={() => variant1FileRef.current?.click()}
                     disabled={uploadingField === "variant1"}
-                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-purple-600 bg-purple-50 hover:bg-purple-100 px-3.5 py-2.5 text-xs font-bold text-purple-700 transition-all disabled:opacity-50 cursor-pointer"
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-blue-600 bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 text-xs font-bold text-[#1677E8] transition-all disabled:opacity-50 cursor-pointer"
                     title="Upload image file (JPG, PNG, WebP — max 5MB)"
                   >
                     {uploadingField === "variant1" ? "Uploading…" : "Upload"}
@@ -734,7 +735,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     value={formData.variant2}
                     onChange={(e) => setFormData({ ...formData, variant2: e.target.value })}
                     placeholder="/themes/navaratri_2.jpg or https://..."
-                    className="flex-1 rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
+                    className="flex-1 rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-[#1677E8] focus:ring-2 focus:ring-blue-500/20 focus:outline-none bg-slate-50 focus:bg-white"
                   />
                   <input
                     ref={variant2FileRef}
@@ -747,7 +748,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     type="button"
                     onClick={() => variant2FileRef.current?.click()}
                     disabled={uploadingField === "variant2"}
-                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-purple-600 bg-purple-50 hover:bg-purple-100 px-3.5 py-2.5 text-xs font-bold text-purple-700 transition-all disabled:opacity-50 cursor-pointer"
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-blue-600 bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 text-xs font-bold text-[#1677E8] transition-all disabled:opacity-50 cursor-pointer"
                     title="Upload image file"
                   >
                     {uploadingField === "variant2" ? "Uploading…" : "Upload"}
@@ -777,7 +778,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     value={formData.thumbnail}
                     onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
                     placeholder="Defaults to Variant 1 if left empty"
-                    className="flex-1 rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
+                    className="flex-1 rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold focus:border-[#1677E8] focus:ring-2 focus:ring-blue-500/20 focus:outline-none bg-slate-50 focus:bg-white"
                   />
                   <input
                     ref={thumbnailFileRef}
@@ -790,7 +791,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     type="button"
                     onClick={() => thumbnailFileRef.current?.click()}
                     disabled={uploadingField === "thumbnail"}
-                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-purple-600 bg-purple-50 hover:bg-purple-100 px-3.5 py-2.5 text-xs font-bold text-purple-700 transition-all disabled:opacity-50 cursor-pointer"
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-blue-600 bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 text-xs font-bold text-[#1677E8] transition-all disabled:opacity-50 cursor-pointer"
                     title="Upload image file"
                   >
                     {uploadingField === "thumbnail" ? "Uploading…" : "Upload"}
@@ -817,7 +818,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Short description of this theme..."
-                  className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-purple-600 focus:outline-none bg-slate-50 focus:bg-white"
+                  className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-[#1677E8] focus:ring-2 focus:ring-blue-500/20 focus:outline-none bg-slate-50 focus:bg-white"
                 />
               </div>
 
@@ -827,7 +828,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     type="checkbox"
                     checked={formData.isActive}
                     onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="h-4 w-4 rounded text-purple-600 focus:ring-purple-600"
+                    className="h-4 w-4 rounded text-[#1677E8] focus:ring-blue-500"
                   />
                   <span>Active & Visible to all business tenants</span>
                 </label>
@@ -843,7 +844,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 px-6 py-2.5 font-bold text-white shadow-md shadow-purple-500/20 cursor-pointer"
+                  className="rounded-xl bg-[#1677E8] hover:bg-[#1268D3] px-6 py-2.5 font-bold text-white shadow-md shadow-blue-500/20 cursor-pointer"
                 >
                   {editingTheme ? "Update Theme" : "Create Theme"}
                 </button>
