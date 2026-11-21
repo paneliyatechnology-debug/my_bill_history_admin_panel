@@ -4,8 +4,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "../../context/auth-context";
 import { apiClient } from "../../lib/api-client";
-import { WaveBackground } from "../../components/ui/wave-background";
-import Image from "next/image";
+import Link from "next/link";
 
 function LoginContent() {
   const router = useRouter();
@@ -64,14 +63,17 @@ function LoginContent() {
     }
   }, [modeParam, searchParams]);
 
-  // If already logged in, redirect accordingly — but never if redirected due to expired session
+  // If already logged in, redirect accordingly
   useEffect(() => {
     if (!authLoading && isAuthenticated && user && !reasonParam) {
       if (user.role === "SUPER_ADMIN") {
         const dest = redirectParam && redirectParam.startsWith("/") ? redirectParam : "/superadmin";
         router.replace(dest);
       } else {
-        const dest = redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("/superadmin") ? redirectParam : "/";
+        const dest =
+          redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("/superadmin")
+            ? redirectParam
+            : "/";
         router.replace(dest);
       }
     }
@@ -100,7 +102,10 @@ function LoginContent() {
           const dest = redirectParam && redirectParam.startsWith("/") ? redirectParam : "/superadmin";
           router.push(dest);
         } else {
-          const dest = redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("/superadmin") ? redirectParam : "/";
+          const dest =
+            redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("/superadmin")
+              ? redirectParam
+              : "/";
           router.push(dest);
         }
       } else {
@@ -147,10 +152,10 @@ function LoginContent() {
           otpRes?.delivered
             ? lang === "gu"
               ? "ચકાસણી કોડ ઈમેલ પર મોકલ્યો. કોડ દાખલ કરીને નોંધણી પૂર્ણ કરો."
-              : "Verification code sent. Enter it to finish registration."
+              : "Verification code sent to your email. Enter it to finish registration."
             : lang === "gu"
-              ? "ઈમેલ સર્વર ગોઠવેલું નથી. નીચેનો કોડ વાપરીને નોંધણી પૂર્ણ કરો, અથવા SMTP સેટ કરો."
-              : "Email server is not configured. Use the code shown below to finish, or set SMTP so codes arrive in the inbox."
+              ? "ઈમેલ સર્વર ગોઠવેલું નથી. નીચેનો કોડ વાપરીને નોંધણી પૂર્ણ કરો."
+              : "Email server not configured. Use the code shown below to finish registration."
         );
         return;
       }
@@ -263,44 +268,40 @@ function LoginContent() {
     }
   };
 
-  const handleFillDemoBusiness = () => {
-    setMode("login");
-    setIdentifier("9898990001");
-    setPassword("Password123#");
-    setError(null);
-  };
-
+  // Dedicated SuperAdmin auto-fill helper (Phone: 9999900000 / Password123#)
   const handleFillDemoSuperAdmin = () => {
     setMode("login");
-    setIdentifier("superadmin@billing.local");
+    setIdentifier("9999900000");
     setPassword("Password123#");
     setError(null);
   };
 
   return (
-    <div className="h-full min-h-[100dvh] w-full bg-[#F3EBDD] flex flex-col justify-center items-center p-4 relative overflow-y-auto">
-      {/* Minimalist Abstract Wave Lines Background */}
-      <WaveBackground variant="login" />
+    <div className="h-full min-h-[100dvh] w-full bg-[#F8FAFC] flex flex-col justify-center items-center p-4 relative overflow-y-auto selection:bg-blue-100 selection:text-[#1677E8]">
+      {/* Subtle Background Pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
 
-      {/* Back to Home / Landing link */}
+      {/* Top Left Navigation Link */}
       <div className="absolute top-5 left-5 z-10">
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-[#FFF8F3] text-xs font-bold text-[#667085] hover:text-[#C24E1D] rounded-xl border border-[#E5E7EB] shadow-xs transition-all"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-600 hover:text-slate-900 rounded-xl border border-slate-200/90 shadow-2xs transition-all cursor-pointer"
         >
-          <span>←</span>
-          <span>{lang === "gu" ? "મુખ્ય પૃષ્ઠ" : "Home"}</span>
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span>{lang === "gu" ? "મુખ્ય પૃષ્ઠ" : "Main App"}</span>
         </button>
       </div>
 
-      {/* Language Switcher in top corner */}
-      <div className="absolute top-5 right-5 z-10 flex items-center bg-white p-1 rounded-xl border border-[#E5E7EB] shadow-xs">
+      {/* Language Switcher in Top Right */}
+      <div className="absolute top-5 right-5 z-10 flex items-center bg-white p-1 rounded-xl border border-slate-200/90 shadow-2xs">
         <button
           type="button"
           onClick={() => setLang("en")}
-          className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
-            lang === "en" ? "bg-[#FFF3E8] text-[#C24E1D]" : "text-[#667085] hover:text-[#202124]"
+          className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+            lang === "en" ? "bg-blue-50 text-[#1677E8] font-bold" : "text-slate-500 hover:text-slate-900"
           }`}
         >
           English
@@ -308,50 +309,53 @@ function LoginContent() {
         <button
           type="button"
           onClick={() => setLang("gu")}
-          className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all font-gujarati ${
-            lang === "gu" ? "bg-[#FFF3E8] text-[#C24E1D]" : "text-[#667085] hover:text-[#202124]"
+          className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all font-gujarati cursor-pointer ${
+            lang === "gu" ? "bg-blue-50 text-[#1677E8] font-bold" : "text-slate-500 hover:text-slate-900"
           }`}
         >
           ગુજરાતી
         </button>
       </div>
 
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-[#E5E7EB] p-6 sm:p-8 space-y-5 relative z-10 border-t-4 border-t-[#C24E1D] my-8">
-        {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="w-16 h-16 relative mx-auto flex items-center justify-center">
-            <Image
-              src="/logo-icon.png"
-              alt="myownbillbook"
-              width={64}
-              height={64}
-              className="object-contain"
-              priority
-            />
+      {/* Main Authentication Card */}
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-200/90 p-6 sm:p-8 space-y-6 relative z-10 my-8 animate-fadeIn">
+        {/* Official Brand Header */}
+        <div className="text-center space-y-2.5">
+          <div className="w-12 h-12 rounded-2xl bg-[#1677E8] text-white flex items-center justify-center shadow-md shadow-blue-500/25 mx-auto">
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4 4a2 2 0 012-2h12a2 2 0 012 2v16l-7-3.5L4 20V4z" />
+            </svg>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-            <span className="text-[#1E589D]">myown</span>
-            <span className="text-[#EA580C]">billbook</span>
-          </h1>
-          <p className="text-xs text-[#667085] font-medium max-w-xs mx-auto">
+
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              MyOwn BillBook
+            </h1>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#1677E8] text-[10px] font-bold uppercase tracking-wider mt-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1677E8]" />
+              Super Admin Console
+            </div>
+          </div>
+
+          <p className="text-xs text-slate-500 max-w-xs mx-auto">
             {lang === "gu"
-              ? "ભારતીય જીએસટી વેપાર અને દેશી નામા પ્લેટફોર્મ"
-              : "Indian GST Billing, Inventory & Double-Entry Accounting"}
+              ? "પ્લેટફોર્મ મલ્ટી-ટેનન્ટ આર્કિટેક્ચર અને બિલિંગ મેનેજમેન્ટ"
+              : "Sign in to access platform telemetry, multi-tenant fleet & billing controls."}
           </p>
         </div>
 
-        {/* Tab Switcher: Sign In | Sign Up */}
-        <div className="flex bg-[#F3F4F6] p-1 rounded-xl border border-[#E5E7EB]">
+        {/* Tab Switcher: Sign In | Tenant Account */}
+        <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200/80">
           <button
             type="button"
             onClick={() => {
               setMode("login");
               setError(null);
             }}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+            className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
               mode === "login"
-                ? "bg-white text-[#C24E1D] shadow-xs"
-                : "text-[#667085] hover:text-[#202124]"
+                ? "bg-white text-[#1677E8] font-bold shadow-2xs"
+                : "text-slate-500 hover:text-slate-900"
             }`}
           >
             {lang === "gu" ? "પ્રવેશ કરો (Sign In)" : "Sign In"}
@@ -362,19 +366,22 @@ function LoginContent() {
               setMode("signup");
               setError(null);
             }}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+            className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
               mode === "signup"
-                ? "bg-white text-[#C24E1D] shadow-xs"
-                : "text-[#667085] hover:text-[#202124]"
+                ? "bg-white text-[#1677E8] font-bold shadow-2xs"
+                : "text-slate-500 hover:text-slate-900"
             }`}
           >
-            {lang === "gu" ? "નવું ખાતું બનાવો (Register)" : "Create Account"}
+            {lang === "gu" ? "ટેનન્ટ રજીસ્ટ્રેશન" : "Tenant Registration"}
           </button>
         </div>
 
+        {/* Session Expired Notice */}
         {reasonParam === "session_expired" && !error && (
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 font-semibold flex items-center gap-2 animate-fadeIn">
-            <span className="text-base">🔒</span>
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 font-medium flex items-center gap-2 animate-fadeIn">
+            <svg className="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v2m0-2h2m-2 0H10m4-8V5a2 2 0 00-2-2H8a2 2 0 00-2 2v4m10 0H6m12 0v10a2 2 0 01-2 2H8a2 2 0 01-2-2V9" />
+            </svg>
             <span>
               {lang === "gu"
                 ? "તમારું સત્ર સમાપ્ત થઈ ગયું છે. કૃપા કરીને ફરીથી લોગિન કરો."
@@ -383,16 +390,22 @@ function LoginContent() {
           </div>
         )}
 
+        {/* Success Notice */}
         {successMsg && (
-          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 font-semibold flex items-center gap-2 animate-fadeIn">
-            <span className="text-base">✓</span>
+          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 font-medium flex items-center gap-2 animate-fadeIn">
+            <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
             <span>{successMsg}</span>
           </div>
         )}
 
+        {/* Error Notice */}
         {error && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 font-semibold flex items-center gap-2 animate-fadeIn">
-            <span className="text-base">⚠️</span>
+          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 font-medium flex items-center gap-2 animate-fadeIn">
+            <svg className="w-4 h-4 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
             <span>{error}</span>
           </div>
         )}
@@ -401,40 +414,44 @@ function LoginContent() {
         {mode === "login" ? (
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-[#202124] uppercase mb-1.5 tracking-wider">
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                 {lang === "gu" ? "મોબાઇલ નંબર અથવા ઇમેઇલ *" : "Phone Number or Email *"}
               </label>
               <div className="relative">
-                <span className="absolute left-3.5 top-2.5 text-xs font-semibold text-[#98A2B3]">
-                  📱
+                <span className="absolute left-3.5 top-3 text-slate-400">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
                 </span>
                 <input
                   type="text"
                   required
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder={lang === "gu" ? "98989 90001 અથવા email" : "98989 90001 or email@domain.com"}
-                  className="w-full pl-10 pr-3 py-2.5 bg-[#F8F9FB] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#202124] focus:bg-white focus:ring-2 focus:ring-[#C24E1D] focus:border-transparent focus:outline-none transition-all"
+                  placeholder={lang === "gu" ? "9999900000 અથવા email" : "9999900000 or email@domain.com"}
+                  className="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:border-[#1677E8] focus:ring-2 focus:ring-blue-100 outline-none transition-all"
                 />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-bold text-[#202124] uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-700">
                   {lang === "gu" ? "પાસવર્ડ *" : "Password *"}
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-[11px] font-semibold text-[#667085] hover:text-[#202124]"
+                  className="text-[11px] font-semibold text-slate-500 hover:text-[#1677E8] cursor-pointer transition-colors"
                 >
                   {showPassword ? (lang === "gu" ? "છુપાવો" : "Hide") : (lang === "gu" ? "બતાવો" : "Show")}
                 </button>
               </div>
               <div className="relative">
-                <span className="absolute left-3.5 top-2.5 text-xs font-semibold text-[#98A2B3]">
-                  🔒
+                <span className="absolute left-3.5 top-3 text-slate-400">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
                 </span>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -442,7 +459,7 @@ function LoginContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-10 pr-3 py-2.5 bg-[#F8F9FB] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#202124] focus:bg-white focus:ring-2 focus:ring-[#C24E1D] focus:border-transparent focus:outline-none transition-all"
+                  className="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:border-[#1677E8] focus:ring-2 focus:ring-blue-100 outline-none transition-all font-mono"
                 />
               </div>
             </div>
@@ -458,7 +475,7 @@ function LoginContent() {
                   setSuccessMsg(null);
                   setDevOtp(null);
                 }}
-                className="text-[11px] font-semibold text-[#C24E1D] hover:underline"
+                className="text-[11px] font-semibold text-[#1677E8] hover:underline cursor-pointer"
               >
                 {lang === "gu" ? "પાસવર્ડ ભૂલી ગયા?" : "Forgot password?"}
               </button>
@@ -467,7 +484,7 @@ function LoginContent() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl text-sm font-bold text-white shadow-saffron bg-[#C24E1D] hover:bg-[#D95F12] transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95 cursor-pointer"
+              className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-[#1677E8] hover:bg-[#1268D3] active:bg-[#0D5FC4] transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50"
             >
               {isLoading ? (
                 <>
@@ -478,14 +495,14 @@ function LoginContent() {
                   <span>{lang === "gu" ? "ચકાસી રહ્યું છે..." : "Signing in..."}</span>
                 </>
               ) : (
-                <span>{lang === "gu" ? "પ્રવેશ કરો (Sign In)" : "Sign In"}</span>
+                <span>{lang === "gu" ? "પ્રવેશ કરો (Sign In)" : "Sign In to SuperAdmin"}</span>
               )}
             </button>
           </form>
         ) : mode === "forgot" ? (
           <form onSubmit={resetSent ? handleResetPassword : handleSendResetOtp} className="space-y-3.5">
             <div>
-              <label className="block text-xs font-bold text-[#202124] uppercase mb-1 tracking-wider">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 {lang === "gu" ? "ખાતાનો ઈમેલ *" : "Account Email *"}
               </label>
               <input
@@ -493,14 +510,14 @@ function LoginContent() {
                 required
                 value={resetEmail}
                 onChange={(e) => setResetEmail(e.target.value)}
-                placeholder="business@gmail.com"
-                className="w-full px-3 py-2 bg-[#F8F9FB] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#202124] focus:bg-white focus:ring-2 focus:ring-[#C24E1D] focus:outline-none transition-all"
+                placeholder="superadmin@myownbillbook.com"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:border-[#1677E8] outline-none transition-all"
               />
             </div>
             {resetSent && (
               <>
                 <div>
-                  <label className="block text-xs font-bold text-[#202124] uppercase mb-1 tracking-wider">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     {lang === "gu" ? "ઈમેલ કોડ *" : "Email Code *"}
                   </label>
                   <input
@@ -511,153 +528,125 @@ function LoginContent() {
                     value={resetOtp}
                     onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                     placeholder="000000"
-                    className="w-full px-3 py-2 bg-[#F8F9FB] border border-[#E5E7EB] rounded-xl text-sm font-mono tracking-[0.3em] text-[#202124] focus:bg-white focus:ring-2 focus:ring-[#C24E1D] focus:outline-none transition-all"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono tracking-[0.3em] text-slate-900 focus:bg-white focus:border-[#1677E8] outline-none transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-[#202124] uppercase mb-1 tracking-wider">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     {lang === "gu" ? "નવો પાસવર્ડ *" : "New Password *"}
                   </label>
                   <input
                     type="password"
                     required
-                    minLength={6}
                     value={resetPassword}
                     onChange={(e) => setResetPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full px-3 py-2 bg-[#F8F9FB] border border-[#E5E7EB] rounded-xl text-sm text-[#202124] focus:bg-white focus:ring-2 focus:ring-[#C24E1D] focus:outline-none transition-all"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:border-[#1677E8] outline-none transition-all font-mono"
                   />
                 </div>
               </>
             )}
+
             {devOtp && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
-                {lang === "gu" ? "સ્થાનિક કોડ (SMTP બંધ છે): " : "Local code (SMTP is off): "}
-                <strong className="font-mono tracking-widest">{devOtp}</strong>
+              <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-xl text-xs text-[#1677E8] font-mono">
+                Development OTP: <span className="font-bold">{devOtp}</span>
               </div>
             )}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl text-sm font-bold text-white shadow-saffron bg-[#C24E1D] hover:bg-[#D95F12] transition-all disabled:opacity-50"
-            >
-              {isLoading
-                ? lang === "gu" ? "રાહ જુઓ..." : "Please wait..."
-                : resetSent
-                  ? lang === "gu" ? "પાસવર્ડ અપડેટ કરો" : "Update Password"
-                  : lang === "gu" ? "ઈમેલ પર કોડ મોકલો" : "Send Email Code"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode("login");
-                setDevOtp(null);
-                setError(null);
-              }}
-              className="w-full text-xs font-semibold text-[#667085] hover:text-[#202124]"
-            >
-              {lang === "gu" ? "પાછા સાઇન ઇન પર" : "Back to sign in"}
-            </button>
+
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setMode("login")}
+                className="flex-1 py-2 px-3 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
+              >
+                {lang === "gu" ? "રદ કરો" : "Cancel"}
+              </button>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="flex-1 py-2 px-3 text-xs font-bold text-white bg-[#1677E8] hover:bg-[#1268D3] rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50"
+              >
+                {isLoading ? "Processing..." : resetSent ? (lang === "gu" ? "પાસવર્ડ બદલો" : "Reset Password") : (lang === "gu" ? "કોડ મોકલો" : "Send OTP")}
+              </button>
+            </div>
           </form>
         ) : (
-          /* 2. SIGN UP / REGISTRATION FORM */
-          <form onSubmit={handleRegister} className="space-y-3.5">
-            <div>
-              <label className="block text-xs font-bold text-[#202124] uppercase mb-1 tracking-wider">
-                {lang === "gu" ? "તમારું પૂરું નામ *" : "Your Full Name *"}
-              </label>
-              <input
-                type="text"
-                required
-                value={signupData.fullName}
-                onChange={(e) => setSignupData({ ...signupData, fullName: e.target.value })}
-                placeholder={lang === "gu" ? "દા.ત. રમેશભાઈ પટેલ" : "e.g. Ramesh Patel"}
-                className="w-full px-3 py-2 bg-[#F8F9FB] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#202124] focus:bg-white focus:ring-2 focus:ring-[#C24E1D] focus:outline-none transition-all"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          /* Sign Up Form for Tenant */
+          <form onSubmit={handleRegister} className="space-y-3">
+            {signupStep === "details" ? (
+              <>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    {lang === "gu" ? "પૂરું નામ *" : "Full Name *"}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={signupData.fullName}
+                    onChange={(e) => setSignupData({ ...signupData, fullName: e.target.value })}
+                    placeholder="Jaydeep Khunt"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:border-[#1677E8] outline-none transition-all"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      {lang === "gu" ? "મોબાઇલ નંબર *" : "Phone *"}
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={signupData.phone}
+                      onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })}
+                      placeholder="9898000000"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:border-[#1677E8] outline-none transition-all font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      {lang === "gu" ? "ઈમેલ *" : "Email *"}
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={signupData.email}
+                      onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                      placeholder="admin@domain.com"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:border-[#1677E8] outline-none transition-all"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    {lang === "gu" ? "વેપાર / પેઢીનું નામ *" : "Business / Org Name *"}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={signupData.organizationName}
+                    onChange={(e) => setSignupData({ ...signupData, organizationName: e.target.value })}
+                    placeholder="My Enterprise"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:border-[#1677E8] outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    {lang === "gu" ? "પાસવર્ડ *" : "Password *"}
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={signupData.password}
+                    onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                    placeholder="••••••••••••"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:border-[#1677E8] outline-none transition-all font-mono"
+                  />
+                </div>
+              </>
+            ) : (
               <div>
-                <label className="block text-xs font-bold text-[#202124] uppercase mb-1 tracking-wider">
-                  {lang === "gu" ? "મોબાઇલ નંબર *" : "Phone Number *"}
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={signupData.phone}
-                  onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })}
-                  placeholder="98980 00000"
-                  className="w-full px-3 py-2 bg-[#F8F9FB] border border-[#E5E7EB] rounded-xl text-sm font-mono text-[#202124] focus:bg-white focus:ring-2 focus:ring-[#C24E1D] focus:outline-none transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[#202124] uppercase mb-1 tracking-wider">
-                  {lang === "gu" ? "ઈમેલ *" : "Email *"}
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={signupData.email}
-                  onChange={(e) => {
-                    setSignupData({ ...signupData, email: e.target.value });
-                    setSignupStep("details");
-                    setSignupOtp("");
-                    setDevOtp(null);
-                  }}
-                  placeholder="business@gmail.com"
-                  className="w-full px-3 py-2 bg-[#F8F9FB] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#202124] focus:bg-white focus:ring-2 focus:ring-[#C24E1D] focus:outline-none transition-all"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-[#202124] uppercase mb-1 tracking-wider">
-                {lang === "gu" ? "પેઢી / બિઝનેસનું નામ *" : "Business / Store Name *"}
-              </label>
-              <input
-                type="text"
-                required
-                value={signupData.organizationName}
-                onChange={(e) => setSignupData({ ...signupData, organizationName: e.target.value })}
-                placeholder={lang === "gu" ? "દા.ત. શ્રી ગણેશ ટ્રેડિંગ" : "e.g. Shree Ganesh Trading Co."}
-                className="w-full px-3 py-2 bg-[#F8F9FB] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#202124] focus:bg-white focus:ring-2 focus:ring-[#C24E1D] focus:outline-none transition-all"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-[#202124] uppercase mb-1 tracking-wider">
-                {lang === "gu" ? "જીએસટી નંબર (મરજિયાત)" : "GSTIN (Optional)"}
-              </label>
-              <input
-                type="text"
-                maxLength={15}
-                value={signupData.gstin}
-                onChange={(e) => setSignupData({ ...signupData, gstin: e.target.value.toUpperCase() })}
-                placeholder="24AAAAA0000A1Z5"
-                className="w-full px-3 py-2 bg-[#F8F9FB] border border-[#E5E7EB] rounded-xl text-sm font-mono uppercase text-[#202124] focus:bg-white focus:ring-2 focus:ring-[#C24E1D] focus:outline-none transition-all"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-[#202124] uppercase mb-1 tracking-wider">
-                {lang === "gu" ? "પાસવર્ડ સેટ કરો *" : "Create Password *"}
-              </label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                value={signupData.password}
-                onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
-                placeholder="••••••••••••"
-                className="w-full px-3 py-2 bg-[#F8F9FB] border border-[#E5E7EB] rounded-xl text-sm text-[#202124] focus:bg-white focus:ring-2 focus:ring-[#C24E1D] focus:outline-none transition-all"
-              />
-            </div>
-
-            {signupStep === "otp" && (
-              <div>
-                <label className="block text-xs font-bold text-[#202124] uppercase mb-1 tracking-wider">
-                  {lang === "gu" ? "ઈમેલ ચકાસણી કોડ *" : "Email Verification Code *"}
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  {lang === "gu" ? "ચકાસણી કોડ (OTP) *" : "Verification Code (OTP) *"}
                 </label>
                 <input
                   inputMode="numeric"
@@ -667,71 +656,44 @@ function LoginContent() {
                   value={signupOtp}
                   onChange={(e) => setSignupOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                   placeholder="000000"
-                  className="w-full px-3 py-2 bg-[#F8F9FB] border border-[#E5E7EB] rounded-xl text-sm font-mono tracking-[0.3em] text-[#202124] focus:bg-white focus:ring-2 focus:ring-[#C24E1D] focus:outline-none transition-all"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono tracking-[0.3em] text-slate-900 focus:bg-white focus:border-[#1677E8] outline-none transition-all"
                 />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSignupStep("details");
-                    setSignupOtp("");
-                  }}
-                  className="mt-1 text-[11px] font-semibold text-[#667085] hover:text-[#C24E1D]"
-                >
-                  {lang === "gu" ? "કોડ ફરી મોકલો" : "Send a new code"}
-                </button>
               </div>
             )}
 
-            {devOtp && mode === "signup" && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
-                {lang === "gu" ? "સ્થાનિક કોડ (SMTP બંધ છે): " : "Local code (SMTP is off): "}
-                <strong className="font-mono tracking-widest">{devOtp}</strong>
+            {devOtp && (
+              <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-xl text-xs text-[#1677E8] font-mono">
+                Development OTP: <span className="font-bold">{devOtp}</span>
               </div>
             )}
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl text-sm font-bold text-white shadow-saffron bg-[#C24E1D] hover:bg-[#D95F12] transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95 cursor-pointer mt-2"
+              className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-[#1677E8] hover:bg-[#1268D3] transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50"
             >
-              {isLoading ? (
-                <>
-                  <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  <span>
-                    {signupStep === "otp"
-                      ? lang === "gu" ? "ખાતું બની રહ્યું છે..." : "Creating Account..."
-                      : lang === "gu" ? "કોડ મોકલાઈ રહ્યો છે..." : "Sending code..."}
-                  </span>
-                </>
-              ) : (
-                <span>
-                  {signupStep === "otp"
-                    ? lang === "gu" ? "કોડ ચકાસો અને નોંધણી પૂર્ણ કરો" : "Verify Code & Complete Registration"
-                    : lang === "gu" ? "ઈમેલ પર કોડ મોકલો" : "Send Code to Email"}
-                </span>
-              )}
+              {isLoading ? "Processing..." : signupStep === "details" ? "Send Verification Code" : "Complete Registration"}
             </button>
           </form>
         )}
 
-        {/* Development Demo Access Pill for Authorized Testers (Hidden on Public Landing Page) */}
-        <div className="pt-3 border-t border-[#E5E7EB] flex items-center justify-between text-xs">
-          <button
-            type="button"
-            onClick={handleFillDemoBusiness}
-            className="text-[11px] text-[#667085] hover:text-[#C24E1D] hover:underline font-semibold"
-          >
-            {lang === "gu" ? "ડેમો બિઝનેસ ભરો" : "Demo Business User"}
-          </button>
+        {/* Clean SuperAdmin Quick Access Bar (Demo Business User removed) */}
+        <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+            <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>RLS Enforced</span>
+          </div>
+
           <button
             type="button"
             onClick={handleFillDemoSuperAdmin}
-            className="text-[11px] text-[#667085] hover:text-[#4F46E5] hover:underline font-semibold"
+            className="text-[11px] text-[#1677E8] hover:underline font-semibold flex items-center gap-1 cursor-pointer"
+            title="Auto-fill SuperAdmin Credentials (9999900000 / Password123#)"
           >
-            {lang === "gu" ? "સુપર એડમિન ભરો" : "Demo SuperAdmin"}
+            <span>Fill SuperAdmin Credentials</span>
+            <span>→</span>
           </button>
         </div>
       </div>
@@ -743,9 +705,11 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#F8F9FB] flex flex-col justify-center items-center p-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#C24E1D] to-[#FF9B50] flex items-center justify-center text-white font-bold text-3xl shadow-saffron animate-pulse">
-            ₹
+        <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center items-center p-4">
+          <div className="w-12 h-12 rounded-2xl bg-[#1677E8] flex items-center justify-center text-white shadow-md animate-pulse">
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4 4a2 2 0 012-2h12a2 2 0 012 2v16l-7-3.5L4 20V4z" />
+            </svg>
           </div>
         </div>
       }

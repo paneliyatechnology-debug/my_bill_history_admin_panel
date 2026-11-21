@@ -27,14 +27,24 @@ export default function AnalyticsReportsPage() {
   }, [fetchAnalytics]);
 
   const formatCurrency = (amt: number) => {
-    return "₹" + amt.toLocaleString("en-IN");
+    return "₹" + Math.round(amt || 0).toLocaleString("en-IN");
   };
 
-  const mrrVal = stats?.revenue?.mrr || 872450;
-  const arrVal = stats?.revenue?.arr || 10469400;
-  const netRevenue = stats?.revenue?.netRevenue || 960150;
-  const activeSubs = stats?.subscribers?.active || 1165;
-  const arpu = activeSubs > 0 ? Math.round(mrrVal / activeSubs) : 749;
+  const mrrVal = stats?.revenue?.mrr ?? 0;
+  const arrVal = stats?.revenue?.arr ?? (mrrVal * 12);
+  const subRevenue = stats?.revenue?.subscriptionRevenue ?? 0;
+  const oneTimeRevenue = stats?.revenue?.oneTimeRevenue ?? 0;
+  const refundsVal = stats?.revenue?.refunds ?? 0;
+  const netRevenue = stats?.revenue?.netRevenue ?? subRevenue;
+  const activeSubs = stats?.subscribers?.active ?? 0;
+  const arpu = activeSubs > 0 ? Math.round(mrrVal / activeSubs) : 0;
+  const totalTenants = stats?.tenants?.total ?? 0;
+  const trialTenants = stats?.tenants?.trial ?? 0;
+  const expiredTenants = stats?.tenants?.expired ?? 0;
+  const retentionRate =
+    totalTenants > 0 && activeSubs > 0
+      ? Math.round((activeSubs / totalTenants) * 100)
+      : 100;
 
   return (
     <div className="space-y-6">
@@ -53,7 +63,7 @@ export default function AnalyticsReportsPage() {
             onChange={(e) => setTimeframe(e.target.value)}
             className="px-3 py-2 text-xs bg-white border border-slate-200/90 rounded-xl text-slate-700 outline-none cursor-pointer shadow-2xs font-semibold"
           >
-            <option value="year">Current Fiscal Year (2026-27)</option>
+            <option value="year">Current Fiscal Year (FY 2026-27)</option>
             <option value="quarter">Last Quarter (Q2)</option>
             <option value="all">All-Time Platform History</option>
           </select>
@@ -65,17 +75,17 @@ export default function AnalyticsReportsPage() {
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs">
           <p className="text-[11px] font-medium text-slate-500">Monthly Recurring Revenue (MRR)</p>
           <p className="text-xl font-bold text-[#1677E8] mt-1">{formatCurrency(mrrVal)}</p>
-          <p className="text-[10px] text-emerald-600 font-bold mt-1">↑ +18.4% month-over-month</p>
+          <p className="text-[10px] text-emerald-600 font-bold mt-1">Settled from active subscriptions</p>
         </div>
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs">
           <p className="text-[11px] font-medium text-slate-500">Annual Run-Rate (ARR)</p>
           <p className="text-xl font-bold text-slate-900 mt-1">{formatCurrency(arrVal)}</p>
-          <p className="text-[10px] text-emerald-600 font-bold mt-1">↑ +19.1% annualized growth</p>
+          <p className="text-[10px] text-emerald-600 font-bold mt-1">Annualized from active fleet</p>
         </div>
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs">
           <p className="text-[11px] font-medium text-slate-500">ARPU (Avg Revenue Per User)</p>
           <p className="text-xl font-bold text-slate-900 mt-1">{formatCurrency(arpu)} <span className="text-xs text-slate-400 font-normal">/mo</span></p>
-          <p className="text-[10px] text-emerald-600 font-bold mt-1">Tier expansion positive</p>
+          <p className="text-[10px] text-emerald-600 font-bold mt-1">Based on paid tier tenants</p>
         </div>
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs">
           <p className="text-[11px] font-medium text-slate-500">Net Platform Revenue</p>
@@ -92,19 +102,19 @@ export default function AnalyticsReportsPage() {
           <div className="space-y-3">
             <div className="flex justify-between text-xs">
               <span className="text-slate-600">Total Subscription Billings</span>
-              <span className="font-bold text-slate-900">{formatCurrency(stats?.revenue?.subscriptionRevenue || 872450)}</span>
+              <span className="font-bold text-slate-900">{formatCurrency(subRevenue)}</span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-600">One-Time Resource Packs & Add-ons</span>
-              <span className="font-bold text-slate-900">₹1,12,000</span>
+              <span className="font-bold text-slate-900">{formatCurrency(oneTimeRevenue)}</span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-600">Total Gateway Refunds</span>
-              <span className="font-bold text-rose-600">-₹24,300</span>
+              <span className="font-bold text-slate-900">{formatCurrency(refundsVal)}</span>
             </div>
             <div className="pt-2 border-t border-slate-100 flex justify-between text-xs font-semibold">
               <span className="text-slate-800">Net Retained Revenue</span>
-              <span className="text-[#1677E8] font-semibold">{formatCurrency(netRevenue)}</span>
+              <span className="text-[#1677E8] font-bold">{formatCurrency(netRevenue)}</span>
             </div>
           </div>
         </div>
@@ -119,15 +129,15 @@ export default function AnalyticsReportsPage() {
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-600">Trial Evaluation Organizations</span>
-              <span className="font-semibold text-amber-600">{stats?.tenants?.trial || 96} orgs</span>
+              <span className="font-semibold text-amber-600">{trialTenants} orgs</span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-600">Expired / Grace Period</span>
-              <span className="font-semibold text-rose-600">{stats?.tenants?.expired || 83} orgs</span>
+              <span className="font-semibold text-rose-600">{expiredTenants} orgs</span>
             </div>
             <div className="pt-2 border-t border-slate-100 flex justify-between text-xs font-semibold">
               <span className="text-slate-800">Paid Retention Rate</span>
-              <span className="text-emerald-600 font-semibold">92.9%</span>
+              <span className="text-emerald-600 font-semibold">{retentionRate}%</span>
             </div>
           </div>
         </div>
