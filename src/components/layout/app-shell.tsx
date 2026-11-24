@@ -282,7 +282,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               fontWeight: "bold",
             }}
           >
-            {lang === "gu" ? "પુનઃ પ્રયાસ કરો (Retry)" : "Retry Connection"}
+            Retry Connection
           </button>
           <button
             onClick={() => logout()}
@@ -294,7 +294,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               borderRadius: "12px",
             }}
           >
-            {lang === "gu" ? "લોગિન પર પાછા જાઓ" : "Return to Login"}
+            Return to Login
           </button>
         </div>
       </div>

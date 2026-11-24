@@ -124,7 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isMetadataLoading, setIsMetadataLoading] = useState(false);
   const [workspaceError, setWorkspaceError] = useState<string | null>(null);
-  const [lang, setLangState] = useState<"en" | "gu">("en");
+  const [lang] = useState<"en">("en");
   const [tenantContext, setTenantContext] = useState<TenantContextState>({});
 
   const [companies, setCompanies] = useState<CompanyInfo[]>([]);
@@ -135,40 +135,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // In-flight promise ref to deduplicate concurrent refreshTenantMetadata requests
   const inFlightRefreshRef = useRef<Promise<void> | null>(null);
 
-  const setLang = (newLang: "en" | "gu") => {
-    setLangState(newLang);
+  const setLang = (_newLang?: "en" | "gu") => {
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("billing_lang", newLang);
-        document.documentElement.lang = newLang;
-        document.documentElement.setAttribute("data-lang", newLang);
-        if (newLang === "gu") {
-          document.documentElement.classList.add("lang-gu");
-          document.documentElement.classList.remove("lang-en");
-        } else {
-          document.documentElement.classList.add("lang-en");
-          document.documentElement.classList.remove("lang-gu");
-        }
+        localStorage.setItem("billing_lang", "en");
+        localStorage.removeItem("preferred_language");
+        localStorage.removeItem("billing_language");
+        document.documentElement.lang = "en";
+        document.documentElement.setAttribute("data-lang", "en");
+        document.documentElement.classList.add("lang-en");
+        document.documentElement.classList.remove("lang-gu");
       } catch {
         // Storage failover
       }
     }
   };
 
-  // Keep document element lang and class synchronized with lang state
+  // Keep document element lang and class synchronized with English-only mode
   useEffect(() => {
     if (typeof document !== "undefined") {
-      document.documentElement.lang = lang;
-      document.documentElement.setAttribute("data-lang", lang);
-      if (lang === "gu") {
-        document.documentElement.classList.add("lang-gu");
-        document.documentElement.classList.remove("lang-en");
-      } else {
-        document.documentElement.classList.add("lang-en");
-        document.documentElement.classList.remove("lang-gu");
-      }
+      document.documentElement.lang = "en";
+      document.documentElement.setAttribute("data-lang", "en");
+      document.documentElement.classList.add("lang-en");
+      document.documentElement.classList.remove("lang-gu");
     }
-  }, [lang]);
+  }, []);
 
   const refreshTenantMetadata = useCallback(async () => {
     const storedToken = typeof window !== "undefined" ? localStorage.getItem("billing_auth_token") : null;
@@ -256,11 +247,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const savedToken = localStorage.getItem("billing_auth_token");
       const savedUser = localStorage.getItem("billing_user_profile");
       const savedTenant = localStorage.getItem("billing_tenant_context");
-      const savedLang = localStorage.getItem("billing_lang") as "en" | "gu" | null;
 
-      if (savedLang === "en" || savedLang === "gu") {
-        setLangState(savedLang);
-      }
+      localStorage.removeItem("preferred_language");
+      localStorage.removeItem("billing_language");
+      localStorage.setItem("billing_lang", "en");
+      document.documentElement.lang = "en";
+      document.documentElement.setAttribute("data-lang", "en");
+      document.documentElement.classList.add("lang-en");
+      document.documentElement.classList.remove("lang-gu");
 
       if (savedToken && savedUser) {
         setToken(savedToken);
