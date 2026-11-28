@@ -141,11 +141,15 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
       }
 
       const finalUrl = publicUrl || compressedDataUrl;
+      const thumbUrl =
+        field === "variant1"
+          ? publicUrl || (await compressImageToDataUrl(file, 320, 0.68))
+          : finalUrl;
 
       setFormData((prev) => {
         const updated = { ...prev, [field]: finalUrl };
         if (field === "variant1" && !prev.thumbnail) {
-          updated.thumbnail = finalUrl;
+          updated.thumbnail = thumbUrl;
         }
         return updated;
       });
@@ -289,8 +293,16 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
 
     setLoading(true);
     try {
-      const v1 = normalizeUrl(formData.variant1);
-      const v2 = normalizeUrl(formData.variant2);
+      let v1 = normalizeUrl(formData.variant1);
+      let v2 = normalizeUrl(formData.variant2);
+
+      // Compress oversized data:image payloads so nginx/proxy body limits (1MB) are never exceeded
+      if (v1.startsWith("data:image/") && v1.length > 350_000) {
+        v1 = (await compressImageToDataUrl(v1, 1000, 0.72)) || v1;
+      }
+      if (v2.startsWith("data:image/") && v2.length > 350_000) {
+        v2 = (await compressImageToDataUrl(v2, 1000, 0.72)) || v2;
+      }
 
       const variants: string[] = [];
       if (v1) variants.push(v1);
@@ -299,7 +311,10 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
       const isFestive = formData.category === "festive" || formData.category === "branding";
       const defaultThumb = isFestive ? "/themes/navaratri_1.jpg" : "";
       const rawThumb = formData.thumbnail || variants[0] || defaultThumb;
-      const thumbnail = normalizeUrl(rawThumb);
+      let thumbnail = normalizeUrl(rawThumb);
+      if (thumbnail.startsWith("data:image/") && thumbnail.length > 80_000) {
+        thumbnail = (await compressImageToDataUrl(thumbnail, 320, 0.68)) || thumbnail;
+      }
 
       const payload = {
         name: formData.name.trim(),
