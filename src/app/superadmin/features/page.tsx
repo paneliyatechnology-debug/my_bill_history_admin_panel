@@ -76,7 +76,7 @@ export default function FeatureManagementPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Feature Management</h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-1 font-normal">
             Global catalog of platform modules and their respective entitlement availability per subscription tier.
           </p>
         </div>
@@ -90,26 +90,26 @@ export default function FeatureManagementPage() {
       </div>
 
       {/* Feature Matrix Table */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs overflow-hidden">
+      <div className="bg-white border border-[#E5E7EB] rounded-2xl shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-medium text-slate-500">
-                <th className="py-3 px-4 w-1/3 font-medium">Platform Capability / Module</th>
-                <th className="py-3 px-4 font-medium">Category</th>
+              <tr className="border-b border-[#E2E8F0] bg-[#FAFBFD] text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="py-3 px-4 w-1/3">Platform Capability / Module</th>
+                <th className="py-3 px-4">Category</th>
                 {plans.map((p) => (
-                  <th key={p.tier} className="py-3 px-3 text-center font-medium">
-                    <span className="block font-medium text-slate-700">{p.name.split(" ")[0]}</span>
-                    <span className="text-[10px] text-slate-400 font-normal">
+                  <th key={p.tier} className="py-3 px-3 text-center">
+                    <span className="block font-semibold text-slate-900">{p.name.split(" ")[0]}</span>
+                    <span className="text-[10px] text-slate-400 font-normal lowercase">
                       {p.yearlyPrice > 0 ? `₹${p.yearlyPrice}/yr` : "Free"}
                     </span>
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
+            <tbody className="divide-y divide-[#F1F5F9] text-slate-900">
               {platformModules.map((mod) => (
-                <tr key={mod.key} className="hover:bg-slate-50/70 transition-colors">
+                <tr key={mod.key} className="hover:bg-[#FAFBFD] transition-colors">
                   <td className="py-3.5 px-4">
                     <p className="font-semibold text-slate-800 text-xs">{mod.name}</p>
                     <p className="text-[11px] text-slate-400 mt-0.5 font-normal">{mod.description}</p>

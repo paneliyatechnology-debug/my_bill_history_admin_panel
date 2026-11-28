@@ -100,7 +100,7 @@ export default function AddonsManagementPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Add-ons & Quota Packs</h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-1 font-normal">
             Configure standalone resource capacity packs (staff seats, godowns, WhatsApp SMS, NIC e-Invoice credits).
           </p>
         </div>
@@ -121,11 +121,11 @@ export default function AddonsManagementPage() {
         {addons.map((item) => (
           <div
             key={item.id}
-            className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs hover:shadow-xs transition-shadow flex flex-col justify-between"
+            className="bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 rounded-2xl p-5 shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-blue-50 text-[#1677E8] border border-blue-200">
+                <span className="text-[10px] tabular-nums font-bold px-2 py-0.5 rounded-md bg-blue-50 text-[#1677E8] border border-blue-200">
                   {item.category}
                 </span>
                 <button
@@ -141,14 +141,14 @@ export default function AddonsManagementPage() {
               <h3 className="text-sm font-bold text-slate-900">{item.name}</h3>
               <p className="text-xs text-slate-500 mt-1 leading-relaxed">{item.description}</p>
 
-              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <div className="mt-4 pt-3 border-t border-[#E5E7EB] flex items-center justify-between text-xs">
                 <div>
                   <span className="text-[11px] text-slate-400 block">Quota Added</span>
-                  <span className="font-medium text-slate-800">+{item.quotaAdded} {item.unit}</span>
+                  <span className="font-semibold tabular-nums text-slate-900">+{item.quotaAdded} {item.unit}</span>
                 </div>
                 <div className="text-right">
                   <span className="text-[11px] text-slate-400 block">Price / Cycle</span>
-                  <span className="font-semibold text-[#1677E8] text-sm">
+                  <span className="font-bold tabular-nums text-[#1677E8] text-sm">
                     ₹{item.price.toLocaleString("en-IN")}{" "}
                     <span className="text-[10px] text-slate-400 font-normal">/{item.billingCycle.toLowerCase()}</span>
                   </span>
@@ -259,7 +259,7 @@ export default function AddonsManagementPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-4 py-2 text-xs font-bold text-white bg-[#1677E8] hover:bg-[#1268D3] rounded-xl cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 text-xs font-bold text-white bg-[#1677E8] hover:bg-[#1268D3] rounded-xl shadow-xs cursor-pointer disabled:opacity-50"
               >
                 {isSubmitting ? "Saving..." : "Create Add-on"}
               </button>

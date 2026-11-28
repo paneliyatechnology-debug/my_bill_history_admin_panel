@@ -52,7 +52,7 @@ export default function AnalyticsReportsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Analytics & Reports</h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-1 font-normal">
             Platform-wide monetization performance, cohort growth, and retention metrics.
           </p>
         </div>
@@ -61,7 +61,7 @@ export default function AnalyticsReportsPage() {
           <select
             value={timeframe}
             onChange={(e) => setTimeframe(e.target.value)}
-            className="px-3 py-2 text-xs bg-white border border-slate-200/90 rounded-xl text-slate-700 outline-none cursor-pointer shadow-2xs font-semibold"
+            className="px-3 py-2 text-xs bg-white border border-[#E2E8F0] rounded-xl text-slate-900 focus:border-[#1677E8] focus:ring-1 focus:ring-[#1677E8] outline-none cursor-pointer shadow-2xs font-semibold"
           >
             <option value="year">Current Fiscal Year (FY 2026-27)</option>
             <option value="quarter">Last Quarter (Q2)</option>
@@ -72,24 +72,24 @@ export default function AnalyticsReportsPage() {
 
       {/* KPI Ribbon */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs">
-          <p className="text-[11px] font-medium text-slate-500">Monthly Recurring Revenue (MRR)</p>
-          <p className="text-xl font-bold text-[#1677E8] mt-1">{formatCurrency(mrrVal)}</p>
-          <p className="text-[10px] text-emerald-600 font-bold mt-1">Settled from active subscriptions</p>
+        <div className="bg-white border border-blue-200 bg-blue-50/40 hover:border-[#1677E8] rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Monthly Recurring Revenue (MRR)</p>
+          <p className="text-xl font-bold tabular-nums text-[#1677E8] mt-1">{formatCurrency(mrrVal)}</p>
+          <p className="text-[10px] text-[#16834A] font-bold mt-1">Settled from active subscriptions</p>
         </div>
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs">
-          <p className="text-[11px] font-medium text-slate-500">Annual Run-Rate (ARR)</p>
-          <p className="text-xl font-bold text-slate-900 mt-1">{formatCurrency(arrVal)}</p>
-          <p className="text-[10px] text-emerald-600 font-bold mt-1">Annualized from active fleet</p>
+        <div className="bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Annual Run-Rate (ARR)</p>
+          <p className="text-xl font-bold tabular-nums text-slate-900 mt-1">{formatCurrency(arrVal)}</p>
+          <p className="text-[10px] text-[#16834A] font-bold mt-1">Annualized from active fleet</p>
         </div>
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs">
-          <p className="text-[11px] font-medium text-slate-500">ARPU (Avg Revenue Per User)</p>
-          <p className="text-xl font-bold text-slate-900 mt-1">{formatCurrency(arpu)} <span className="text-xs text-slate-400 font-normal">/mo</span></p>
-          <p className="text-[10px] text-emerald-600 font-bold mt-1">Based on paid tier tenants</p>
+        <div className="bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">ARPU (Avg Revenue Per User)</p>
+          <p className="text-xl font-bold tabular-nums text-slate-900 mt-1">{formatCurrency(arpu)} <span className="text-xs text-slate-400 font-sans font-normal">/mo</span></p>
+          <p className="text-[10px] text-[#16834A] font-bold mt-1">Based on paid tier tenants</p>
         </div>
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs">
-          <p className="text-[11px] font-medium text-slate-500">Net Platform Revenue</p>
-          <p className="text-xl font-bold text-emerald-600 mt-1">{formatCurrency(netRevenue)}</p>
+        <div className="bg-white border border-[#E5E7EB] hover:border-emerald-300 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Net Platform Revenue</p>
+          <p className="text-xl font-bold tabular-nums text-[#16834A] mt-1">{formatCurrency(netRevenue)}</p>
           <p className="text-[10px] text-slate-500 font-medium mt-1">Settled & verified</p>
         </div>
       </div>
@@ -97,30 +97,30 @@ export default function AnalyticsReportsPage() {
       {/* Analytics Breakdown Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Revenue Efficiency */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs space-y-4">
-          <h2 className="text-sm font-bold text-slate-900 pb-3 border-b border-slate-100">Revenue Performance</h2>
+        <div className="bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 rounded-2xl p-5 shadow-2xs hover:shadow-md transition-all duration-200 space-y-4">
+          <h2 className="text-sm font-semibold text-slate-900 pb-3 border-b border-[#E5E7EB]">Revenue Performance</h2>
           <div className="space-y-3">
             <div className="flex justify-between text-xs">
-              <span className="text-slate-600">Total Subscription Billings</span>
-              <span className="font-bold text-slate-900">{formatCurrency(subRevenue)}</span>
+              <span className="text-slate-500">Total Subscription Billings</span>
+              <span className="font-bold tabular-nums text-slate-900">{formatCurrency(subRevenue)}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span className="text-slate-600">One-Time Resource Packs & Add-ons</span>
-              <span className="font-bold text-slate-900">{formatCurrency(oneTimeRevenue)}</span>
+              <span className="text-slate-500">One-Time Resource Packs & Add-ons</span>
+              <span className="font-bold tabular-nums text-slate-900">{formatCurrency(oneTimeRevenue)}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span className="text-slate-600">Total Gateway Refunds</span>
-              <span className="font-bold text-slate-900">{formatCurrency(refundsVal)}</span>
+              <span className="text-slate-500">Total Gateway Refunds</span>
+              <span className="font-bold tabular-nums text-slate-900">{formatCurrency(refundsVal)}</span>
             </div>
-            <div className="pt-2 border-t border-slate-100 flex justify-between text-xs font-semibold">
-              <span className="text-slate-800">Net Retained Revenue</span>
-              <span className="text-[#1677E8] font-bold">{formatCurrency(netRevenue)}</span>
+            <div className="pt-2 border-t border-[#E5E7EB] flex justify-between text-xs font-semibold">
+              <span className="text-slate-900">Net Retained Revenue</span>
+              <span className="text-[#1677E8] tabular-nums font-bold">{formatCurrency(netRevenue)}</span>
             </div>
           </div>
         </div>
 
         {/* Tenant Health */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs space-y-4">
+        <div className="bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 rounded-2xl p-5 shadow-2xs hover:shadow-md transition-all duration-200 space-y-4">
           <h2 className="text-sm font-semibold text-slate-900 pb-3 border-b border-slate-100">Subscriber Health & Churn</h2>
           <div className="space-y-3">
             <div className="flex justify-between text-xs">

@@ -60,7 +60,7 @@ export default function PlatformSettingsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Platform Settings</h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-1 font-normal">
             Global corporate details, GST compliance identity, default subscription parameters, and gateway status.
           </p>
         </div>
@@ -103,7 +103,7 @@ export default function PlatformSettingsPage() {
                 type="text"
                 value={settings.gstin}
                 onChange={(e) => setSettings({ ...settings, gstin: e.target.value.toUpperCase() })}
-                className="w-full px-3 py-2 text-xs font-mono uppercase bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#1677E8]"
+                className="w-full px-3 py-2 text-xs tabular-nums uppercase bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#1677E8]"
               />
             </div>
             <div>
@@ -201,12 +201,12 @@ export default function PlatformSettingsPage() {
               className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
                 settings.bypassPlanRestrictions
                   ? "bg-amber-50 text-amber-700 border-amber-200"
-                  : "bg-blue-50 text-blue-700 border-blue-200"
+                  : "bg-blue-50 text-[#1677E8] border-blue-200"
               }`}
             >
               <span
                 className={`w-2 h-2 rounded-full ${
-                  settings.bypassPlanRestrictions ? "bg-amber-500 animate-pulse" : "bg-blue-600"
+                  settings.bypassPlanRestrictions ? "bg-amber-500 animate-pulse" : "bg-[#1677E8]"
                 }`}
               />
               {settings.bypassPlanRestrictions

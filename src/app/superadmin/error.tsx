@@ -22,16 +22,16 @@ export default function SuperAdminError({
         </svg>
       </div>
 
-      <h1 className="text-2xl font-bold text-[#202124] tracking-tight">
+      <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
         SuperAdmin Operation Error
       </h1>
 
-      <p className="text-xs text-[#667085] mt-1.5 max-w-md">
+      <p className="text-xs text-slate-500 mt-1.5 max-w-md">
         An error occurred while executing an administrative operations view. You can retry the operation or return to the business dashboard.
       </p>
 
       {error?.message && (
-        <div className="mt-4 p-3 bg-white border border-[#E5E7EB] rounded-xl text-left text-xs font-mono text-rose-600 max-w-md w-full break-words">
+        <div className="mt-4 p-3 bg-white border border-[#E5E7EB] rounded-xl text-left text-xs tabular-nums text-rose-600 max-w-md w-full break-words">
           {error.message}
         </div>
       )}
@@ -39,7 +39,7 @@ export default function SuperAdminError({
       <div className="flex items-center gap-3 mt-6">
         <button
           onClick={() => reset()}
-          className="py-2.5 px-5 bg-[#F47721] hover:bg-[#D95F12] text-white rounded-xl text-xs font-bold transition-all shadow-saffron"
+          className="py-2.5 px-5 bg-[#1677E8] hover:bg-[#1268D3] text-white rounded-xl text-xs font-bold transition-all shadow-xs"
         >
           Retry Operation
         </button>

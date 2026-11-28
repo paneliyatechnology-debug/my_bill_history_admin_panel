@@ -12,7 +12,7 @@ export default function SuperAdminSupportPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Platform Support & Diagnostics</h1>
-        <p className="text-xs text-slate-500 mt-1">
+        <p className="text-xs text-slate-500 mt-1 font-normal">
           SuperAdmin infrastructure health monitoring, tenant technical support, and session diagnostics.
         </p>
       </div>
@@ -20,8 +20,8 @@ export default function SuperAdminSupportPage() {
       {/* Support Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Helpdesk Contacts */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs space-y-4">
-          <h2 className="text-sm font-bold text-slate-900 pb-3 border-b border-slate-100">SuperAdmin Direct Channels</h2>
+        <div className="bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 rounded-2xl p-5 shadow-2xs hover:shadow-md transition-all duration-200 space-y-4">
+          <h2 className="text-sm font-semibold text-slate-900 pb-3 border-b border-[#E5E7EB]">SuperAdmin Direct Channels</h2>
           <div className="space-y-3 text-xs">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1677E8] flex items-center justify-center">
@@ -49,9 +49,9 @@ export default function SuperAdminSupportPage() {
         </div>
 
         {/* System Diagnostics Status */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h2 className="text-sm font-bold text-slate-900">Cluster Telemetry</h2>
+        <div className="bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 rounded-2xl p-5 shadow-2xs hover:shadow-md transition-all duration-200 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB]">
+            <h2 className="text-sm font-semibold text-slate-900">Cluster Telemetry</h2>
             <Link
               href="/superadmin/diagnostics"
               className="text-xs font-bold text-[#1677E8] hover:underline"
@@ -62,19 +62,19 @@ export default function SuperAdminSupportPage() {
           <div className="space-y-2.5 text-xs">
             <div className="flex justify-between items-center">
               <span className="text-slate-600">Database Engine</span>
-              <span className="font-mono font-bold text-slate-900">PostgreSQL 16 (Connected)</span>
+              <span className="tabular-nums font-bold text-slate-900">PostgreSQL 16 (Connected)</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-600">Row-Level Security (RLS)</span>
-              <span className="font-mono font-bold text-emerald-600">ENFORCED (Tenant Isolated)</span>
+              <span className="tabular-nums font-bold text-emerald-600">ENFORCED (Tenant Isolated)</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-600">Active Tenant Fleets</span>
-              <span className="font-mono font-bold text-slate-900">{stats?.tenants?.total || 43} Organizations</span>
+              <span className="tabular-nums font-bold text-slate-900">{stats?.tenants?.total || 43} Organizations</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-600">Cryptographic Audit Stream</span>
-              <span className="font-mono font-bold text-slate-900">{stats?.systemHealth?.totalAuditEvents || 45} Immutable Records</span>
+              <span className="tabular-nums font-bold text-slate-900">{stats?.systemHealth?.totalAuditEvents || 45} Immutable Records</span>
             </div>
           </div>
         </div>

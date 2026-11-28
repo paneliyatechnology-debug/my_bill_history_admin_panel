@@ -65,11 +65,11 @@ export default function SuperAdminInvoicesPage() {
                 e.stopPropagation();
                 handleOpenInvoiceDetails(inv);
               }}
-              className="font-medium text-[#1677E8] hover:text-[#1268D3] hover:underline flex items-center gap-1 cursor-pointer text-left group"
+              className="font-semibold text-[#1677E8] hover:text-[#1268D3] hover:underline flex items-center gap-1 cursor-pointer text-left group"
               title={lang === "gu" ? "વિગતો અને ડાઉનલોડ" : "View Details & Download"}
             >
               <span>{inv.invoiceNumber}</span>
-              <span className="text-[10px] text-blue-400 group-hover:translate-x-0.5 transition-transform">↗</span>
+              <span className="text-[10px] text-[#1677E8]/70 group-hover:translate-x-0.5 transition-transform">↗</span>
             </button>
             <button
               type="button"
@@ -171,7 +171,7 @@ export default function SuperAdminInvoicesPage() {
               : status === "PARTIALLY_PAID"
                 ? "bg-amber-50 text-amber-700 border-amber-200"
                 : status === "ISSUED"
-                  ? "bg-blue-50 text-blue-700 border-blue-200"
+                  ? "bg-sky-50 text-sky-700 border-sky-200"
                   : "bg-slate-100 text-slate-700 border-slate-200";
           return (
             <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium border shadow-2xs ${color}`}>
@@ -191,7 +191,7 @@ export default function SuperAdminInvoicesPage() {
             <button
               type="button"
               onClick={() => handleOpenInvoiceDetails(inv)}
-              className="px-2.5 py-1 text-xs font-medium text-[#1677E8] bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200/80 transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-2.5 py-1 text-xs font-semibold text-[#1677E8] bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors flex items-center gap-1.5 cursor-pointer"
               title={lang === "gu" ? "ઇન્વોઇસ વિગતો જુઓ" : "View Invoice Details"}
             >
               <svg className="w-3.5 h-3.5 text-[#1677E8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -231,7 +231,7 @@ export default function SuperAdminInvoicesPage() {
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             {lang === "gu" ? "બિઝનેસ ઇન્વોઇસ એક્સપ્લોરર" : "Cross-Tenant Invoices Explorer"}
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-1 font-normal">
             {lang === "gu"
               ? "તમામ રજિસ્ટર્ડ કંપનીઓ તરફથી તાજેતરના GST વેચાણ બિલનું કેન્દ્રિય રીડ-ઓન્લી નિરીક્ષણ."
               : "Centralized read-only visibility into recent GST sales transactions across all registered businesses."}
@@ -239,20 +239,20 @@ export default function SuperAdminInvoicesPage() {
         </div>
 
         <div className="flex items-center gap-3 self-start sm:self-auto">
-          <div className="bg-white border border-slate-200/90 px-3.5 py-2 rounded-xl text-right shadow-2xs">
-            <span className="text-[10px] font-medium uppercase text-slate-400 block tracking-wider">
+          <div className="bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 px-3.5 py-2 rounded-xl text-right shadow-xs transition-all">
+            <span className="text-[10px] font-semibold uppercase text-slate-500 block tracking-wider">
               Recorded Fleet Volume
             </span>
-            <span className="text-sm font-semibold text-slate-900">
+            <span className="text-sm font-bold tabular-nums text-slate-900">
               {formatInr(stats?.businessVolume?.grossVolume || 0)}
             </span>
           </div>
 
           <button
             onClick={fetchInvoices}
-            className="flex items-center gap-2 bg-white border border-slate-200/90 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-700 shadow-2xs hover:bg-slate-50 cursor-pointer"
+            className="flex items-center gap-2 bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 hover:bg-blue-50/40 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-900 shadow-xs transition-all cursor-pointer"
           >
-            <svg className={`w-4 h-4 text-slate-500 ${isLoading ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className={`w-4 h-4 text-[#1677E8] ${isLoading ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             <span>Refresh</span>

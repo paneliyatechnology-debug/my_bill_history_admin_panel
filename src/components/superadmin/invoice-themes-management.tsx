@@ -373,7 +373,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
             </span>
             <span>{lang === "gu" ? "ઇન્વૉઇસ થીમ સ્ટોર મેનેજમેન્ટ" : "Invoice Themes & Festive Store"}</span>
           </h1>
-          <p className="text-xs text-slate-500 mt-1 max-w-xl">
+          <p className="text-xs text-slate-500 mt-1 font-normal max-w-xl">
             {lang === "gu"
               ? "તહેવારોની સ્પેશિયલ બેકગ્રાઉન્ડ ઇમેજીસ, રંગો અને થીમ્સ સુપર એડમિનથી લાઇવ મેનેજ કરો. અહીંથી કરેલા ફેરફારો બધા યુઝર્સના ઇન્વૉઇસ સેટિંગ્સમાં તરત જ દેખાશે."
               : "Manage seasonal festival backgrounds, letterhead stationery artwork, and GST invoice themes in real-time. Changes configured here instantly appear in all tenants' invoice live preview studios."}
@@ -384,7 +384,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
           <button
             type="button"
             onClick={handleResetDefaults}
-            className="py-2 px-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 rounded-xl text-xs font-medium transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+            className="py-2 px-3 bg-white hover:bg-blue-50/40 text-slate-900 border border-[#E5E7EB] hover:border-[#1677E8]/60 rounded-xl text-xs font-medium transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
             title="Restore default festive themes (Navaratri, Durga Puja, Dussehra, Dhanteras, Diwali)"
           >
             <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -396,7 +396,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
           <button
             type="button"
             onClick={handleOpenAdd}
-            className="py-2 px-3.5 bg-[#1677E8] hover:bg-[#1268D3] text-white rounded-xl text-xs font-semibold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+            className="py-2 px-3.5 bg-[#1677E8] hover:bg-[#1268D3] text-white rounded-xl text-xs font-semibold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
           >
             <span className="text-sm">+</span>
             <span>{lang === "gu" ? "નવી થીમ ઉમેરો" : "Add New Theme"}</span>
@@ -405,7 +405,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
       </div>
 
       {/* Tabs Filter Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-[#E2E8F0] shadow-xs">
         <div className="flex items-center gap-2">
           {[
             { id: "all", label: "All Themes", count: themes.length },
@@ -418,11 +418,11 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === tab.id
                   ? "bg-[#1677E8] text-white shadow-xs"
-                  : "bg-slate-100/70 text-slate-600 hover:bg-slate-100"
+                  : "bg-[#F8FAFC] text-slate-500 hover:bg-blue-50 hover:text-[#1677E8]"
               }`}
             >
               <span>{tab.label}</span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${
+              <span className={`px-2 py-0.5 rounded-full text-[10px] tabular-nums ${
                 activeTab === tab.id ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"
               }`}>
                 {tab.count}
@@ -433,7 +433,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
 
         <button
           onClick={fetchThemes}
-          className="text-xs font-bold text-slate-600 hover:text-[#1677E8] flex items-center gap-1 px-3 py-1.5 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+          className="text-xs font-bold text-slate-500 hover:text-[#1677E8] flex items-center gap-1 px-3 py-1.5 rounded-xl hover:bg-blue-50 transition-colors cursor-pointer"
         >
           <span>↻ Refresh</span>
         </button>
@@ -459,8 +459,8 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
             return (
               <div
                 key={theme.id}
-                className={`group relative flex flex-col rounded-3xl border bg-white p-4 shadow-xs transition-all hover:shadow-lg ${
-                  theme.isActive ? "border-slate-200/80 hover:border-blue-300" : "border-slate-200 bg-slate-50/60 opacity-60"
+                className={`group relative flex flex-col rounded-2xl border bg-white p-4 shadow-2xs transition-all duration-200 hover:shadow-md ${
+                  theme.isActive ? "border-[#E5E7EB] hover:border-[#1677E8]/60" : "border-slate-200 bg-slate-50/60 opacity-60"
                 }`}
               >
                 {/* Badge on top right */}
@@ -513,7 +513,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
 
                   {/* Primary Color Indicator */}
                   <div
-                    className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-lg bg-white/95 px-2 py-0.5 shadow-2xs backdrop-blur-xs text-[10px] font-mono font-bold text-slate-800"
+                    className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-lg bg-white/95 px-2 py-0.5 shadow-2xs backdrop-blur-xs text-[10px] tabular-nums font-bold text-slate-800"
                   >
                     <span
                       className="h-2.5 w-2.5 rounded-full border border-black/10"
@@ -523,7 +523,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                   </div>
 
                   {hasMultipleVariants && (
-                    <div className="absolute bottom-2 right-2 rounded-lg bg-slate-900/80 backdrop-blur-xs px-2 py-0.5 text-[9px] font-mono font-bold text-white shadow-2xs">
+                    <div className="absolute bottom-2 right-2 rounded-lg bg-slate-900/80 backdrop-blur-xs px-2 py-0.5 text-[9px] tabular-nums font-bold text-white shadow-2xs">
                       {theme.variants.length} Variants
                     </div>
                   )}
@@ -533,7 +533,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 <div className="mt-4 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-semibold text-slate-800 group-hover:text-[#1677E8] transition-colors truncate">
+                      <h3 className="text-sm font-semibold text-slate-900 group-hover:text-[#1677E8] transition-colors truncate">
                         {theme.name}
                       </h3>
                       <span className="text-[10px] font-medium text-slate-400">
@@ -675,7 +675,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                       type="text"
                       value={formData.primaryColor}
                       onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
-                      className="w-full rounded-xl border border-slate-200 px-2 py-1.5 font-mono text-xs focus:border-[#1677E8] focus:ring-2 focus:ring-blue-500/20 focus:outline-none bg-slate-50 focus:bg-white font-bold"
+                      className="w-full rounded-xl border border-slate-200 px-2 py-1.5 tabular-nums text-xs focus:border-[#1677E8] focus:ring-2 focus:ring-blue-500/20 focus:outline-none bg-slate-50 focus:bg-white font-bold"
                     />
                   </div>
                 </div>
@@ -705,7 +705,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     type="button"
                     onClick={() => variant1FileRef.current?.click()}
                     disabled={uploadingField === "variant1"}
-                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-blue-600 bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 text-xs font-bold text-[#1677E8] transition-all disabled:opacity-50 cursor-pointer"
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-[#1677E8] bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 text-xs font-bold text-[#1677E8] transition-all disabled:opacity-50 cursor-pointer"
                     title="Upload image file (JPG, PNG, WebP — max 5MB)"
                   >
                     {uploadingField === "variant1" ? "Uploading…" : "Upload"}
@@ -748,7 +748,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     type="button"
                     onClick={() => variant2FileRef.current?.click()}
                     disabled={uploadingField === "variant2"}
-                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-blue-600 bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 text-xs font-bold text-[#1677E8] transition-all disabled:opacity-50 cursor-pointer"
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-[#1677E8] bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 text-xs font-bold text-[#1677E8] transition-all disabled:opacity-50 cursor-pointer"
                     title="Upload image file"
                   >
                     {uploadingField === "variant2" ? "Uploading…" : "Upload"}
@@ -791,7 +791,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     type="button"
                     onClick={() => thumbnailFileRef.current?.click()}
                     disabled={uploadingField === "thumbnail"}
-                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-blue-600 bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 text-xs font-bold text-[#1677E8] transition-all disabled:opacity-50 cursor-pointer"
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl border border-[#1677E8] bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 text-xs font-bold text-[#1677E8] transition-all disabled:opacity-50 cursor-pointer"
                     title="Upload image file"
                   >
                     {uploadingField === "thumbnail" ? "Uploading…" : "Upload"}
@@ -828,7 +828,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                     type="checkbox"
                     checked={formData.isActive}
                     onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="h-4 w-4 rounded text-[#1677E8] focus:ring-blue-500"
+                    className="h-4 w-4 rounded text-[#1677E8] accent-[#1677E8] focus:ring-[#1677E8]"
                   />
                   <span>Active & Visible to all business tenants</span>
                 </label>
@@ -844,7 +844,7 @@ export function InvoiceThemesManagement({ lang = "en" }: InvoiceThemesManagement
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-[#1677E8] hover:bg-[#1268D3] px-6 py-2.5 font-bold text-white shadow-md shadow-blue-500/20 cursor-pointer"
+                  className="rounded-xl bg-[#1677E8] hover:bg-[#1268D3] px-6 py-2.5 font-bold text-white shadow-xs cursor-pointer"
                 >
                   {editingTheme ? "Update Theme" : "Create Theme"}
                 </button>

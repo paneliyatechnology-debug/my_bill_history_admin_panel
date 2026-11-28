@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Manrope, DM_Mono } from "next/font/google";
+import { Inter, Manrope, DM_Mono, Noto_Sans_Gujarati } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../context/auth-context";
 
@@ -19,6 +19,13 @@ const dmMono = DM_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-dm-mono",
+  display: "swap",
+});
+
+const notoGujarati = Noto_Sans_Gujarati({
+  subsets: ["gujarati"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-noto-gujarati",
   display: "swap",
 });
 
@@ -43,8 +50,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${manrope.variable} ${dmMono.variable}`}>
-      <body className="antialiased min-h-screen bg-[#F8F9FB] text-[#202124]">
+    <html lang="en" className={`${inter.variable} ${manrope.variable} ${dmMono.variable} ${notoGujarati.variable}`}>
+      <body className="antialiased min-h-screen bg-[#F7F8FA] text-[#202124] font-sans">
         <AuthProvider>
           {children}
         </AuthProvider>

@@ -547,8 +547,8 @@ export default function SuperAdminHsnPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Global Default HSN / SAC Master</h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Global Default HSN / SAC Master</h1>
+          <p className="text-xs text-slate-500 mt-1 font-normal">
             Codes added here are available by default to all organizations. Organizations can also add their own custom codes.
           </p>
         </div>
@@ -559,7 +559,7 @@ export default function SuperAdminHsnPage() {
               setImportFileName("");
               setIsImportOpen(true);
             }}
-            className="px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+            className="px-3.5 py-2 rounded-xl border border-[#E5E7EB] bg-white hover:bg-blue-50/40 hover:border-[#1677E8]/60 text-slate-900 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
           >
             Import Excel / CSV
           </button>
@@ -574,26 +574,26 @@ export default function SuperAdminHsnPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="text-xs text-slate-500 font-medium">Total Default Codes</div>
-          <div className="text-2xl font-bold text-slate-900 mt-1">{counts.total}</div>
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] hover:border-[#1677E8]/60 p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Total Default Codes</div>
+          <div className="text-2xl font-bold tabular-nums text-slate-900 mt-1">{counts.total}</div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="text-xs text-slate-500 font-medium">HSN Codes</div>
-          <div className="text-2xl font-bold text-indigo-600 mt-1">{counts.hsn}</div>
+        <div className="bg-white rounded-2xl border border-blue-200 bg-blue-50/40 hover:border-[#1677E8] p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">HSN Codes</div>
+          <div className="text-2xl font-bold tabular-nums text-[#1677E8] mt-1">{counts.hsn}</div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="text-xs text-slate-500 font-medium">SAC Codes</div>
-          <div className="text-2xl font-bold text-purple-600 mt-1">{counts.sac}</div>
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] hover:border-purple-300 p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">SAC Codes</div>
+          <div className="text-2xl font-bold tabular-nums text-purple-600 mt-1">{counts.sac}</div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="text-xs text-slate-500 font-medium">Active</div>
-          <div className="text-2xl font-bold text-emerald-600 mt-1">{counts.active}</div>
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] hover:border-emerald-300 p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Active</div>
+          <div className="text-2xl font-bold tabular-nums text-[#16834A] mt-1">{counts.active}</div>
         </div>
       </div>
 
       {/* Filters & Bulk Action Bar */}
-      <div className="bg-white rounded-xl border border-slate-200 p-3.5 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+      <div className="bg-white rounded-2xl border border-[#E2E8F0] p-3.5 shadow-xs flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
         <input
           type="text"
           value={search}
@@ -602,7 +602,7 @@ export default function SuperAdminHsnPage() {
             setSearch(e.target.value);
           }}
           placeholder="Search code, description, chapter..."
-          className="flex-1 px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#1677E8]"
+          className="flex-1 px-3 py-2 text-xs bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:bg-white focus:outline-none focus:border-[#1677E8] focus:ring-1 focus:ring-[#1677E8]"
         />
         <select
           value={typeFilter}
@@ -654,10 +654,10 @@ export default function SuperAdminHsnPage() {
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+            <thead className="bg-[#FAFBFD] border-b border-[#E2E8F0] text-slate-500 font-semibold text-[11px] uppercase tracking-wider">
               <tr>
                 <th className="py-3 px-4 w-10">
                   <input
@@ -705,7 +705,7 @@ export default function SuperAdminHsnPage() {
                         className="rounded border-slate-300 cursor-pointer"
                       />
                     </td>
-                    <td className="py-3 px-4 font-mono font-semibold text-slate-900">{item.code}</td>
+                    <td className="py-3 px-4 tabular-nums font-semibold text-slate-900">{item.code}</td>
                     <td className="py-3 px-4">
                       <span
                         className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
@@ -808,8 +808,8 @@ export default function SuperAdminHsnPage() {
                   onClick={() => setPage(num)}
                   className={`px-2.5 py-1 rounded-lg border text-xs font-medium cursor-pointer ${
                     page === num
-                      ? "bg-[#1677E8] border-[#1677E8] text-white"
-                      : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                      ? "bg-[#1677E8] border-[#1677E8] text-white shadow-xs font-bold"
+                      : "bg-white border-[#E5E7EB] text-slate-900 hover:bg-[#F3F4F6]"
                   }`}
                 >
                   {num}
@@ -860,7 +860,7 @@ export default function SuperAdminHsnPage() {
                       });
                     }}
                     placeholder="e.g. 1006 or 998311"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg tabular-nums"
                   />
                 </div>
                 <div>
@@ -948,7 +948,7 @@ export default function SuperAdminHsnPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-2 rounded-lg bg-[#1677E8] hover:bg-[#1268D3] text-white font-semibold disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#1677E8] hover:bg-[#1268D3] text-white font-semibold shadow-xs disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? "Saving..." : editingItem ? "Update Code" : "Create Code"}
                 </button>
@@ -1031,7 +1031,7 @@ export default function SuperAdminHsnPage() {
                   <tbody className="divide-y divide-slate-100">
                     {importRows.slice(0, 100).map((r, idx) => (
                       <tr key={idx} className={r.valid ? "" : "bg-rose-50/50"}>
-                        <td className="py-2 px-3 font-mono font-semibold">{r.code || "—"}</td>
+                        <td className="py-2 px-3 tabular-nums font-semibold">{r.code || "—"}</td>
                         <td className="py-2 px-3">{r.type}</td>
                         <td className="py-2 px-3 truncate max-w-[200px]">{r.description || "—"}</td>
                         <td className="py-2 px-3 text-right">{r.gstRate}%</td>
@@ -1061,7 +1061,7 @@ export default function SuperAdminHsnPage() {
                 type="button"
                 disabled={isImporting || importRows.filter((r) => r.valid).length === 0}
                 onClick={handleConfirmImport}
-                className="px-4 py-2 rounded-lg bg-[#1677E8] hover:bg-[#1268D3] text-white font-semibold disabled:opacity-50 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#1677E8] hover:bg-[#1268D3] text-white font-semibold shadow-xs disabled:opacity-50 cursor-pointer"
               >
                 {isImporting
                   ? (importProgress || "Importing...")

@@ -182,6 +182,17 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
             ),
           },
           {
+            id: "themes",
+            name: "Invoice Themes",
+            href: "/superadmin/themes",
+            isActive: (p) => p.startsWith("/superadmin/themes"),
+            icon: (
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4 5 5 0 015-5c.966 0 1.867.324 2.593.874.34.257.77.376 1.196.326.685-.08 1.25-.563 1.436-1.228A6.993 6.993 0 0114 7c3.866 0 7 3.134 7 7 0 2.21-1.007 4.186-2.585 5.5" />
+              </svg>
+            ),
+          },
+          {
             id: "analytics",
             name: "Analytics",
             href: "/superadmin/analytics",
@@ -274,7 +285,7 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
-        <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-rose-600 px-3 py-1 bg-rose-50 rounded-full border border-rose-200 mb-2">
+        <span className="text-[11px] tabular-nums font-bold uppercase tracking-widest text-rose-600 px-3 py-1 bg-rose-50 rounded-full border border-rose-200 mb-2">
           Error 403 • Unauthorized Privilege
         </span>
         <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
@@ -319,10 +330,95 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F8FC] text-[#0F172A] flex antialiased selection:bg-[#1677E8] selection:text-white font-sans">
-      {/* ===================== 1. LEFT SIDEBAR ===================== */}
+    <div
+      className="min-h-screen bg-[#F5F8FC] text-[#0F172A] flex antialiased selection:bg-[#1677E8] selection:text-white font-sans"
+      style={{ fontFamily: "var(--font-inter), var(--font-noto-gujarati), sans-serif" }}
+    >
+      {/* ===================== MOBILE SIDEBAR DRAWER ===================== */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          <div
+            className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <aside className="relative z-10 w-[260px] max-w-[82vw] h-full bg-white text-[#0F172A] flex flex-col border-r border-slate-200/90 shadow-2xl">
+            <div className="h-[70px] flex items-center justify-between px-5 border-b border-slate-100">
+              <Link
+                href="/superadmin"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-3"
+              >
+                <div className="w-9 h-9 rounded-xl bg-[#1677E8] flex items-center justify-center text-white font-bold shadow-sm shrink-0">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M4 4a2 2 0 012-2h12a2 2 0 012 2v16l-7-3.5L4 20V4z" />
+                  </svg>
+                </div>
+                <div className="flex flex-col truncate">
+                  <span className="text-sm font-bold tracking-tight text-slate-900 leading-tight">
+                    MyOwn BillBook
+                  </span>
+                  <span className="text-[11px] font-medium text-slate-400">
+                    Super Admin
+                  </span>
+                </div>
+              </Link>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg"
+                aria-label="Close menu"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <nav className="flex-1 overflow-y-auto px-3.5 py-4 space-y-5">
+              {navGroups.map((group) => (
+                <div key={group.label} className="space-y-1">
+                  <p className="px-3 text-[11px] font-semibold text-slate-400 tracking-wider">
+                    {group.label}
+                  </p>
+                  <div className="space-y-1">
+                    {group.items.map((item) => {
+                      const active = item.isActive(pathname);
+                      return (
+                        <Link
+                          key={item.id}
+                          href={item.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] transition-all ${
+                            active
+                              ? "bg-[#EFF6FF] text-[#2563EB] font-semibold"
+                              : "text-slate-600 font-medium hover:bg-slate-50 hover:text-slate-900"
+                          }`}
+                        >
+                          <span className={`shrink-0 ${active ? "text-[#2563EB]" : "text-slate-400"}`}>
+                            {item.icon}
+                          </span>
+                          <span className="truncate flex-1">{item.name}</span>
+                          {item.badge && (
+                            <span
+                              className={`text-[11px] px-2 py-0.5 rounded-full tabular-nums font-semibold ${
+                                active ? "bg-blue-100 text-[#2563EB]" : "bg-slate-100 text-slate-500"
+                              }`}
+                            >
+                              {item.badge}
+                            </span>
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </nav>
+          </aside>
+        </div>
+      )}
+
+      {/* ===================== 1. LEFT LIGHTWEIGHT SIDEBAR ===================== */}
       <aside
-        className={`fixed inset-y-0 left-0 z-30 flex flex-col justify-between bg-white border-r border-slate-200/90 transition-all duration-300 ease-in-out h-screen ${
+        className={`fixed inset-y-0 left-0 z-30 flex flex-col justify-between bg-white border-r border-slate-200/90 transition-all duration-300 ease-in-out h-screen select-none ${
           isSidebarCollapsed ? "w-20" : "w-[260px]"
         } hidden lg:flex`}
       >
@@ -330,7 +426,6 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
           {/* Brand Header */}
           <div className="h-[70px] flex items-center justify-between px-5 border-b border-slate-100 bg-white">
             <Link href="/superadmin" className="flex items-center gap-3 group">
-              {/* Brand Logo Icon */}
               <div className="w-9 h-9 rounded-xl bg-[#1677E8] flex items-center justify-center text-white font-bold shadow-sm group-hover:scale-105 transition-transform shrink-0">
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M4 4a2 2 0 012-2h12a2 2 0 012 2v16l-7-3.5L4 20V4z" />
@@ -366,13 +461,13 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
                         key={item.id}
                         href={item.href}
                         title={isSidebarCollapsed ? item.name : undefined}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] transition-all cursor-pointer ${
                           active
-                            ? "bg-[#1677E8] text-white shadow-sm font-bold"
-                            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                            ? "bg-[#EFF6FF] text-[#2563EB] font-semibold"
+                            : "text-slate-600 font-medium hover:bg-slate-50 hover:text-slate-900"
                         } ${isSidebarCollapsed ? "justify-center px-0" : ""}`}
                       >
-                        <span className={`shrink-0 ${active ? "text-white" : "text-slate-400"}`}>
+                        <span className={`shrink-0 ${active ? "text-[#2563EB]" : "text-slate-400"}`}>
                           {item.icon}
                         </span>
                         {!isSidebarCollapsed && (
@@ -380,9 +475,9 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
                             <span className="truncate">{item.name}</span>
                             {item.badge && (
                               <span
-                                className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                                className={`text-[11px] px-2 py-0.5 rounded-full tabular-nums font-semibold ${
                                   active
-                                    ? "bg-white/20 text-white"
+                                    ? "bg-blue-100 text-[#2563EB]"
                                     : "bg-slate-100 text-slate-500"
                                 }`}
                               >
@@ -409,11 +504,22 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
       >
         {/* TOPBAR HEADER NAVIGATION */}
         <header className="h-[70px] bg-white border-b border-slate-200/80 px-6 sm:px-8 flex items-center justify-between sticky top-0 z-20 shadow-2xs">
-          <div className="flex items-center gap-4">
-            {/* Collapse / Expand Hamburger Toggle Button */}
+          <div className="flex items-center gap-4 min-w-0">
+            {/* Mobile Drawer Toggle */}
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="lg:hidden p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              title="Open menu"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+
+            {/* Desktop Collapse / Expand Hamburger Toggle Button */}
             <button
               onClick={() => setIsSidebarCollapsed((prev) => !prev)}
-              className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              className="hidden lg:flex p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
               title="Toggle sidebar"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -422,10 +528,10 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
             </button>
 
             {/* Breadcrumb Navigation */}
-            <nav className="flex items-center gap-2 text-xs font-medium text-slate-500" aria-label="Breadcrumb">
+            <nav className="flex items-center gap-2 text-xs font-medium text-slate-500 truncate" aria-label="Breadcrumb">
               <Link
                 href="/superadmin"
-                className="text-slate-400 hover:text-slate-700 transition-colors"
+                className="text-slate-400 hover:text-slate-700 transition-colors shrink-0"
                 title="SuperAdmin Home"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -433,15 +539,15 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
                 </svg>
               </Link>
               <span className="text-slate-300">›</span>
-              <span className="text-slate-500 font-medium">Super Admin</span>
-              <span className="text-slate-300">›</span>
-              <span className="font-bold text-slate-900">
+              <span className="text-slate-500 font-medium hidden sm:inline">Super Admin</span>
+              <span className="text-slate-300 hidden sm:inline">›</span>
+              <span className="font-bold text-slate-900 truncate">
                 {currentNav.name}
               </span>
             </nav>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 shrink-0">
             {/* Center-Right Global Search Field with Cmd+K */}
             <div className="relative hidden md:flex items-center">
               <span className="absolute left-3.5 text-slate-400">
@@ -457,7 +563,7 @@ export function SuperAdminShell({ children }: { children: React.ReactNode }) {
                 placeholder="Search organizations, plans, subscriptions..."
                 className="w-72 lg:w-96 pl-10 pr-12 py-2 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white rounded-xl border border-slate-200 focus:border-[#1677E8] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-800 placeholder:text-slate-400"
               />
-              <span className="absolute right-3 px-1.5 py-0.5 text-[10px] font-mono font-medium text-slate-400 bg-white border border-slate-200 rounded">
+              <span className="absolute right-3 px-1.5 py-0.5 text-[10px] tabular-nums font-medium text-slate-400 bg-white border border-slate-200 rounded">
                 ⌘ K
               </span>
             </div>

@@ -161,7 +161,7 @@ function SuperAdminUsersContent() {
           } else if (role === "COMPANY_ADMIN") {
             badgeColor = "bg-orange-50 text-orange-700 border-orange-200";
           } else if (role === "BRANCH_MANAGER" || role === "ACCOUNTANT") {
-            badgeColor = "bg-blue-50 text-blue-700 border-blue-200";
+            badgeColor = "bg-sky-50 text-sky-700 border-sky-200";
           }
 
           return (
@@ -224,9 +224,9 @@ function SuperAdminUsersContent() {
                 setResetPasswordUser(u);
                 setNewPasswordVal("");
               }}
-              className="px-3 py-1.5 bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-[#1677E8] rounded-xl text-xs font-bold transition-all border border-slate-200 cursor-pointer flex items-center gap-1.5"
+              className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#1677E8] rounded-xl text-xs font-semibold transition-all border border-blue-200 cursor-pointer flex items-center gap-1.5"
             >
-              <svg className="w-3.5 h-3.5 text-slate-500 hover:text-[#1677E8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3.5 h-3.5 text-[#1677E8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
               </svg>
               <span>{lang === "gu" ? "પાસવર્ડ રીસેટ" : "Reset Password"}</span>
@@ -246,7 +246,7 @@ function SuperAdminUsersContent() {
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             {lang === "gu" ? "વપરાશકર્તાઓ અને પરવાનગીઓ" : "Platform Users & Security Roles"}
           </h1>
-          <p className="text-xs text-slate-500 mt-1 max-w-xl">
+          <p className="text-xs text-slate-500 mt-1 font-normal max-w-xl">
             {lang === "gu"
               ? "એડમિનિસ્ટ્રેટર્સ, એકાઉન્ટન્ટ્સ, બ્રાન્ચ મેનેજર્સ અને ક્રેડેન્શિયલ મેનેજમેન્ટ."
               : "Manage multi-tenant administrators, accountants, branch managers, and secure authentication credentials."}
@@ -254,20 +254,20 @@ function SuperAdminUsersContent() {
         </div>
 
         <div className="flex items-center gap-3 self-start sm:self-auto">
-          <div className="bg-white border border-slate-200/90 px-3.5 py-2 rounded-xl text-right shadow-2xs">
-            <span className="text-[10px] font-medium uppercase text-slate-400 block tracking-wider">
+          <div className="bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 px-3.5 py-2 rounded-xl text-right shadow-xs transition-all">
+            <span className="text-[10px] font-semibold uppercase text-slate-500 block tracking-wider">
               Total Staff Accounts
             </span>
-            <span className="text-sm font-semibold text-slate-900">
+            <span className="text-sm font-bold tabular-nums text-slate-900">
               {stats?.users?.total || 0} Users
             </span>
           </div>
 
           <button
             onClick={fetchUsers}
-            className="flex items-center gap-2 bg-white border border-slate-200/90 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-700 shadow-2xs hover:bg-slate-50 cursor-pointer"
+            className="flex items-center gap-2 bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 hover:bg-blue-50/40 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-900 shadow-xs transition-all cursor-pointer"
           >
-            <svg className={`w-4 h-4 text-slate-500 ${isLoading ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className={`w-4 h-4 text-[#1677E8] ${isLoading ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             <span>Refresh</span>
@@ -304,7 +304,7 @@ function SuperAdminUsersContent() {
           <select
             value={userRoleFilter}
             onChange={(e) => setUserRoleFilter(e.target.value)}
-            className="bg-white border border-slate-200 text-xs font-bold rounded-xl px-3.5 py-2 text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#1677E8] shadow-2xs cursor-pointer"
+            className="bg-white border border-[#E2E8F0] text-xs font-semibold rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#1677E8] focus:border-[#1677E8] shadow-2xs cursor-pointer"
           >
             <option value="">{lang === "gu" ? "તમામ ભૂમિકાઓ (All Roles)" : "All User Roles"}</option>
             <option value="SUPER_ADMIN">Super Admin</option>
@@ -321,9 +321,9 @@ function SuperAdminUsersContent() {
       {resetPasswordUser && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
           <div className="fixed inset-0" onClick={() => setResetPasswordUser(null)} aria-hidden="true" />
-          <div className="relative z-10 bg-white border border-slate-200 rounded-3xl w-full max-w-sm p-6 space-y-5 text-slate-800 shadow-2xl animate-scaleUp max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
-              <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+          <div className="relative z-10 bg-white border border-slate-200/90 border-t-4 border-t-[#1677E8] rounded-2xl w-full max-w-sm overflow-hidden text-slate-800 shadow-2xl animate-scaleUp max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#E5E7EB] bg-gradient-to-r from-blue-50/40 via-white to-white px-6 py-4">
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <svg className="w-4 h-4 text-[#1677E8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>
@@ -339,16 +339,17 @@ function SuperAdminUsersContent() {
               </button>
             </div>
 
+            <div className="p-6 space-y-5">
             <div className="text-xs space-y-4">
-              <div className="p-3 bg-blue-50 rounded-2xl border border-blue-100">
+              <div className="p-3 bg-blue-50/40 rounded-xl border border-blue-200">
                 <span className="text-[#1677E8] font-bold block mb-0.5">Account Target:</span>
                 <span className="font-bold text-slate-900 text-sm block">{resetPasswordUser.fullName}</span>
-                <span className="text-[11px] text-slate-500 font-mono">{resetPasswordUser.phone} • {resetPasswordUser.role}</span>
+                <span className="text-[11px] text-slate-500 tabular-nums">{resetPasswordUser.phone} • {resetPasswordUser.role}</span>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-slate-800 font-bold block">
+                  <label className="text-slate-900 font-bold block">
                     New Password (min 8 chars):
                   </label>
                   <button
@@ -368,7 +369,7 @@ function SuperAdminUsersContent() {
                   value={newPasswordVal}
                   onChange={(e) => setNewPasswordVal(e.target.value)}
                   placeholder="Enter or generate new password"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#1677E8]"
+                  className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs tabular-nums font-bold focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#1677E8] focus:border-[#1677E8]"
                 />
               </div>
             </div>
@@ -385,10 +386,11 @@ function SuperAdminUsersContent() {
                 type="button"
                 disabled={isResettingPassword || newPasswordVal.length < 8}
                 onClick={handleResetPassword}
-                className="py-2.5 px-5 bg-[#1677E8] hover:bg-[#1268D3] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/20 disabled:opacity-50 cursor-pointer"
+                className="py-2.5 px-5 bg-[#1677E8] hover:bg-[#1268D3] text-white rounded-xl text-xs font-bold transition-all shadow-xs disabled:opacity-50 cursor-pointer"
               >
                 {isResettingPassword ? "Saving..." : "Update Password"}
               </button>
+            </div>
             </div>
           </div>
         </div>

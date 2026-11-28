@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useSuperAdmin } from "../../context/superadmin-context";
 import { apiClient } from "../../lib/api-client";
+import { DataTable, ColumnDef } from "../../components/ui/data-table";
 
 type ActivityCategory = "ALL" | "ORGANIZATIONS" | "SUBSCRIPTIONS" | "PAYMENTS" | "PLAN_CHANGES";
 
@@ -289,9 +290,9 @@ export default function SuperAdminOverviewPage() {
             <button
               type="button"
               onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
-              className="flex items-center gap-2 bg-white border border-slate-200/90 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-700 shadow-2xs hover:bg-slate-50 transition-all cursor-pointer"
+              className="flex items-center gap-2 bg-white border border-[#E5E7EB] rounded-xl px-3.5 py-2 text-xs font-medium text-slate-900 shadow-xs hover:border-[#1677E8]/60 hover:bg-blue-50/40 transition-all cursor-pointer"
             >
-              <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-[#1677E8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <span>{selectedDateRange}</span>
@@ -301,7 +302,7 @@ export default function SuperAdminOverviewPage() {
             </button>
 
             {isDateDropdownOpen && (
-              <div className="absolute right-0 top-full mt-1.5 w-60 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 z-40 text-xs animate-in fade-in duration-100">
+              <div className="absolute right-0 top-full mt-1.5 w-60 bg-white border border-[#E5E7EB] rounded-xl shadow-dropdown py-1.5 z-40 text-xs animate-in fade-in duration-100">
                 {[
                   "All Time (Live Database)",
                   "This Month (Nov 2026)",
@@ -318,8 +319,8 @@ export default function SuperAdminOverviewPage() {
                     }}
                     className={`w-full text-left px-3.5 py-2 transition-colors flex items-center justify-between cursor-pointer ${
                       selectedDateRange === range
-                        ? "bg-blue-50 text-[#1677E8] font-medium"
-                        : "text-slate-700 hover:bg-slate-50"
+                        ? "bg-blue-50 text-[#1677E8] font-semibold"
+                        : "text-slate-900 hover:bg-[#F7F8FA]"
                     }`}
                   >
                     <span>{range}</span>
@@ -356,18 +357,18 @@ export default function SuperAdminOverviewPage() {
       {/* ================= 2. SEVEN SUMMARY KPI CARDS (100% REAL DATABASE METRICS) ================= */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3.5">
         {/* Card 1: Total Organizations */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs hover:shadow-xs transition-shadow">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1677E8] flex items-center justify-center mb-2.5">
+        <div className="bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#1677E8] flex items-center justify-center mb-2.5">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
           </div>
-          <p className="text-[11px] font-normal text-slate-500">Total Organizations</p>
-          <p className="text-xl font-semibold text-slate-900 mt-1">
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider truncate">Total Orgs</p>
+          <p className="text-xl font-bold tabular-nums text-slate-900 mt-1 tracking-tight">
             {kpiData.totalOrganizations.toLocaleString("en-IN")}
           </p>
-          <p className="text-[11px] font-medium text-emerald-600 flex items-center gap-0.5 mt-1">
-            <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <p className="text-[11px] font-medium text-[#16834A] flex items-center gap-0.5 mt-1">
+            <svg className="w-3 h-3 text-[#16834A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
             <span>{kpiData.totalOrgsGrowth}</span>
@@ -375,18 +376,18 @@ export default function SuperAdminOverviewPage() {
         </div>
 
         {/* Card 2: Active Organizations */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs hover:shadow-xs transition-shadow">
-          <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2.5">
+        <div className="bg-white border border-[#E5E7EB] hover:border-emerald-300 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <div className="w-9 h-9 rounded-xl bg-emerald-50 text-[#16834A] flex items-center justify-center mb-2.5">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </div>
-          <p className="text-[11px] font-normal text-slate-500">Active Organizations</p>
-          <p className="text-xl font-semibold text-slate-900 mt-1">
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider truncate">Active Orgs</p>
+          <p className="text-xl font-bold tabular-nums text-slate-900 mt-1 tracking-tight">
             {kpiData.activeOrganizations.toLocaleString("en-IN")}
           </p>
-          <p className="text-[11px] font-medium text-emerald-600 flex items-center gap-0.5 mt-1">
-            <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <p className="text-[11px] font-medium text-[#16834A] flex items-center gap-0.5 mt-1">
+            <svg className="w-3 h-3 text-[#16834A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
             <span>{kpiData.activeOrgsGrowth}</span>
@@ -394,18 +395,18 @@ export default function SuperAdminOverviewPage() {
         </div>
 
         {/* Card 3: Active Subscriptions */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs hover:shadow-xs transition-shadow">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1677E8] flex items-center justify-center mb-2.5">
+        <div className="bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#1677E8] flex items-center justify-center mb-2.5">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
           </div>
-          <p className="text-[11px] font-normal text-slate-500">Active Subscriptions</p>
-          <p className="text-xl font-semibold text-slate-900 mt-1">
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider truncate">Active Subs</p>
+          <p className="text-xl font-bold tabular-nums text-slate-900 mt-1 tracking-tight">
             {kpiData.activeSubscriptions.toLocaleString("en-IN")}
           </p>
-          <p className="text-[11px] font-medium text-emerald-600 flex items-center gap-0.5 mt-1">
-            <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <p className="text-[11px] font-medium text-[#16834A] flex items-center gap-0.5 mt-1">
+            <svg className="w-3 h-3 text-[#16834A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
             <span>{kpiData.activeSubsGrowth}</span>
@@ -413,14 +414,14 @@ export default function SuperAdminOverviewPage() {
         </div>
 
         {/* Card 4: Trial Organizations */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs hover:shadow-xs transition-shadow">
-          <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center mb-2.5">
+        <div className="bg-white border border-[#E5E7EB] hover:border-amber-300 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-2.5">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <p className="text-[11px] font-normal text-slate-500">Trial Organizations</p>
-          <p className="text-xl font-semibold text-slate-900 mt-1">
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider truncate">Trial Orgs</p>
+          <p className="text-xl font-bold tabular-nums text-slate-900 mt-1 tracking-tight">
             {kpiData.trialOrganizations}
           </p>
           <p className="text-[11px] font-medium text-amber-600 flex items-center gap-0.5 mt-1">
@@ -432,20 +433,20 @@ export default function SuperAdminOverviewPage() {
         </div>
 
         {/* Card 5: MRR */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs hover:shadow-xs transition-shadow">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1677E8] flex items-center justify-center mb-2.5">
+        <div className="bg-white border border-[#E5E7EB] hover:border-[#1677E8]/60 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#1677E8] flex items-center justify-center mb-2.5">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
             </svg>
           </div>
-          <p className="text-[11px] font-normal text-slate-500 truncate" title="Monthly Recurring Revenue">
-            MRR <span className="text-slate-400 text-[10px]">(Monthly Recurring)</span>
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider truncate" title="Monthly Recurring Revenue">
+            MRR
           </p>
-          <p className="text-xl font-semibold text-slate-900 mt-1">
+          <p className="text-xl font-bold tabular-nums text-slate-900 mt-1 tracking-tight">
             {formatCurrency(kpiData.mrr)}
           </p>
-          <p className="text-[11px] font-medium text-emerald-600 flex items-center gap-0.5 mt-1">
-            <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <p className="text-[11px] font-medium text-[#16834A] flex items-center gap-0.5 mt-1">
+            <svg className="w-3 h-3 text-[#16834A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
             <span>{kpiData.mrrGrowth}</span>
@@ -453,20 +454,20 @@ export default function SuperAdminOverviewPage() {
         </div>
 
         {/* Card 6: ARR */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs hover:shadow-xs transition-shadow">
-          <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center mb-2.5">
+        <div className="bg-white border border-[#E5E7EB] hover:border-sky-300 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <div className="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center mb-2.5">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
-          <p className="text-[11px] font-normal text-slate-500 truncate" title="Annual Recurring Revenue">
-            ARR <span className="text-slate-400 text-[10px]">(Annual Recurring)</span>
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider truncate" title="Annual Recurring Revenue">
+            ARR
           </p>
-          <p className="text-xl font-semibold text-slate-900 mt-1">
+          <p className="text-xl font-bold tabular-nums text-slate-900 mt-1 tracking-tight">
             {formatCurrency(kpiData.arr)}
           </p>
-          <p className="text-[11px] font-medium text-emerald-600 flex items-center gap-0.5 mt-1">
-            <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <p className="text-[11px] font-medium text-[#16834A] flex items-center gap-0.5 mt-1">
+            <svg className="w-3 h-3 text-[#16834A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
             <span>{kpiData.arrGrowth}</span>
@@ -474,18 +475,18 @@ export default function SuperAdminOverviewPage() {
         </div>
 
         {/* Card 7: Expired Subscriptions */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs hover:shadow-xs transition-shadow">
-          <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2.5">
+        <div className="bg-white border border-[#E5E7EB] hover:border-emerald-300 rounded-2xl p-4 shadow-2xs hover:shadow-md transition-all duration-200">
+          <div className="w-9 h-9 rounded-xl bg-emerald-50 text-[#16834A] flex items-center justify-center mb-2.5">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
           </div>
-          <p className="text-[11px] font-normal text-slate-500 truncate">Expired Subscriptions</p>
-          <p className="text-xl font-semibold text-slate-900 mt-1">
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider truncate">Expired</p>
+          <p className="text-xl font-bold tabular-nums text-slate-900 mt-1 tracking-tight">
             {kpiData.expiredSubscriptions}
           </p>
-          <p className="text-[11px] font-medium text-emerald-600 flex items-center gap-0.5 mt-1">
-            <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <p className="text-[11px] font-medium text-[#16834A] flex items-center gap-0.5 mt-1">
+            <svg className="w-3 h-3 text-[#16834A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
             <span>{kpiData.expiredSubsGrowth}</span>
@@ -493,193 +494,150 @@ export default function SuperAdminOverviewPage() {
         </div>
       </div>
 
-      {/* ================= 3. RECENT ACTIVITY TABLE (100% LIVE REAL DATABASE STREAM) ================= */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs overflow-hidden">
-        {/* Table Filter Tabs Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-sm font-semibold text-slate-900 mr-2">Recent Activity</h2>
-
-            {/* Filter Pills */}
-            <button
-              type="button"
-              onClick={() => setActivityTab("ALL")}
-              className={`px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
-                activityTab === "ALL"
-                  ? "bg-[#1677E8] text-white font-medium shadow-2xs"
-                  : "bg-slate-50 text-slate-600 hover:bg-slate-100 font-normal"
-              }`}
-            >
-              All Activities ({allActivitiesList.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setActivityTab("ORGANIZATIONS")}
-              className={`px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
-                activityTab === "ORGANIZATIONS"
-                  ? "bg-[#1677E8] text-white font-medium shadow-2xs"
-                  : "bg-slate-50 text-slate-600 hover:bg-slate-100 font-normal"
-              }`}
-            >
-              Organizations ({tenantsList.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setActivityTab("SUBSCRIPTIONS")}
-              className={`px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
-                activityTab === "SUBSCRIPTIONS"
-                  ? "bg-[#1677E8] text-white font-medium shadow-2xs"
-                  : "bg-slate-50 text-slate-600 hover:bg-slate-100 font-normal"
-              }`}
-            >
-              Subscriptions ({allActivitiesList.filter(a => a.category === "SUBSCRIPTIONS").length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setActivityTab("PAYMENTS")}
-              className={`px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
-                activityTab === "PAYMENTS"
-                  ? "bg-[#1677E8] text-white font-medium shadow-2xs"
-                  : "bg-slate-50 text-slate-600 hover:bg-slate-100 font-normal"
-              }`}
-            >
-              Payments ({transactionsList.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setActivityTab("PLAN_CHANGES")}
-              className={`px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
-                activityTab === "PLAN_CHANGES"
-                  ? "bg-[#1677E8] text-white font-medium shadow-2xs"
-                  : "bg-slate-50 text-slate-600 hover:bg-slate-100 font-normal"
-              }`}
-            >
-              Plan Changes ({allActivitiesList.filter(a => a.category === "PLAN_CHANGES").length})
-            </button>
+      {/* ================= 3. RECENT ACTIVITY DATA TABLE (100% FRONTEND DESIGN & PAGINATION) ================= */}
+      <DataTable<any>
+        data={filteredActivities}
+        isLoading={isLoadingFeed}
+        keyExtractor={(row) => row.id}
+        searchPlaceholder="Search activity, organization, plan..."
+        searchKeys={["activity", "details", "org", "plan"]}
+        initialPageSize={10}
+        exportable={false}
+        themeColor="blue"
+        emptyMessage="No recent activity records found for this category."
+        filtersSlot={
+          <div className="flex flex-wrap items-center gap-1.5">
+            {(
+              [
+                { id: "ALL", label: `All (${allActivitiesList.length})` },
+                { id: "ORGANIZATIONS", label: `Orgs (${tenantsList.length})` },
+                { id: "SUBSCRIPTIONS", label: `Subs (${allActivitiesList.filter((a) => a.category === "SUBSCRIPTIONS").length})` },
+                { id: "PAYMENTS", label: `Payments (${transactionsList.length})` },
+                { id: "PLAN_CHANGES", label: `Plans (${allActivitiesList.filter((a) => a.category === "PLAN_CHANGES").length})` },
+              ] as { id: ActivityCategory; label: string }[]
+            ).map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActivityTab(tab.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs transition-all cursor-pointer ${
+                  activityTab === tab.id
+                    ? "bg-[#1677E8] text-white font-semibold shadow-xs"
+                    : "bg-[#F8FAFC] text-slate-500 border border-[#E5E7EB] hover:bg-blue-50 hover:text-[#1677E8] hover:border-blue-200"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
-
+        }
+        actionsSlot={
           <Link
             href="/superadmin/audit-logs"
-            className="text-xs font-medium text-[#1677E8] hover:text-[#1268D3] flex items-center gap-1 transition-colors self-start sm:self-auto"
+            className="text-xs font-semibold text-[#1677E8] hover:text-[#1268D3] flex items-center gap-1 px-2.5 py-1.5 rounded-xl hover:bg-blue-50 transition-colors"
           >
             <span>Full Audit Trail</span>
             <span>→</span>
           </Link>
-        </div>
-
-        {/* Activity Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-medium text-slate-500">
-                <th className="py-3 px-4 w-12 text-center font-medium">#</th>
-                <th className="py-3 px-4 font-medium">Activity</th>
-                <th className="py-3 px-4 font-medium">Details</th>
-                <th className="py-3 px-4 font-medium">Organization</th>
-                <th className="py-3 px-4 font-medium">Plan</th>
-                <th className="py-3 px-4 text-right font-medium">Amount</th>
-                <th className="py-3 px-4 text-right font-medium">Date & Time</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
-              {isLoadingFeed ? (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-400 font-normal">
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="w-4 h-4 border-2 border-[#1677E8] border-t-transparent rounded-full animate-spin" />
-                      <span>Loading real-time database activity feed...</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : filteredActivities.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-400 font-normal">
-                    No recent activity records found for this category.
-                  </td>
-                </tr>
-              ) : (
-                filteredActivities.map((row, idx) => (
-                  <tr key={row.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-3 px-4 text-center text-slate-400 text-xs font-normal">
-                      {idx + 1}
-                    </td>
-
-                    {/* Activity Icon & Title */}
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        {row.iconType === "doc" && (
-                          <div className="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                          </div>
-                        )}
-                        {row.iconType === "sync" && (
-                          <div className="w-6 h-6 rounded-md bg-blue-50 text-[#1677E8] flex items-center justify-center shrink-0">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                          </div>
-                        )}
-                        {row.iconType === "check" && (
-                          <div className="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                        )}
-                        {row.iconType === "alert" && (
-                          <div className="w-6 h-6 rounded-md bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          </div>
-                        )}
-                        {row.iconType === "upgrade" && (
-                          <div className="w-6 h-6 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                            </svg>
-                          </div>
-                        )}
-                        <span className="font-medium text-slate-900 text-xs">{row.activity}</span>
-                      </div>
-                    </td>
-
-                    <td className="py-3 px-4 text-slate-500 max-w-xs truncate text-xs font-normal">
-                      {row.details}
-                    </td>
-
-                    {/* Organization Link */}
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      <Link href={row.orgHref} className="text-[#1677E8] hover:underline font-medium text-xs">
-                        {row.org}
-                      </Link>
-                    </td>
-
-                    {/* Plan Badge */}
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium ${row.planBadgeClass}`}>
-                        {row.plan}
-                      </span>
-                    </td>
-
-                    {/* Amount */}
-                    <td className="py-3 px-4 text-right font-medium text-slate-900 text-xs whitespace-nowrap">
-                      {row.amount}
-                    </td>
-
-                    {/* Date & Time */}
-                    <td className="py-3 px-4 text-right text-slate-400 font-normal text-xs whitespace-nowrap">
-                      {row.dateStr}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        }
+        columns={[
+          {
+            id: "index",
+            header: "#",
+            align: "center",
+            className: "w-12 text-slate-400 tabular-nums",
+            cell: (_row, idx) => idx + 1,
+          },
+          {
+            id: "activity",
+            header: "Activity",
+            accessorKey: "activity",
+            sortable: true,
+            cell: (row) => (
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                {row.iconType === "doc" && (
+                  <div className="w-6 h-6 rounded-md bg-emerald-50 text-[#16834A] flex items-center justify-center shrink-0">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                )}
+                {row.iconType === "sync" && (
+                  <div className="w-6 h-6 rounded-md bg-blue-50 text-[#1677E8] flex items-center justify-center shrink-0">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  </div>
+                )}
+                {row.iconType === "check" && (
+                  <div className="w-6 h-6 rounded-md bg-emerald-50 text-[#16834A] flex items-center justify-center shrink-0">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                )}
+                {row.iconType === "alert" && (
+                  <div className="w-6 h-6 rounded-md bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                )}
+                {row.iconType === "upgrade" && (
+                  <div className="w-6 h-6 rounded-md bg-blue-50 text-[#1677E8] flex items-center justify-center shrink-0">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                    </svg>
+                  </div>
+                )}
+                <span className="font-semibold text-slate-900 text-xs">{row.activity}</span>
+              </div>
+            ),
+          },
+          {
+            id: "details",
+            header: "Details",
+            accessorKey: "details",
+            className: "text-slate-500 max-w-xs truncate",
+          },
+          {
+            id: "org",
+            header: "Organization",
+            accessorKey: "org",
+            sortable: true,
+            cell: (row) => (
+              <Link href={row.orgHref} className="text-[#1677E8] hover:underline font-semibold text-xs whitespace-nowrap">
+                {row.org}
+              </Link>
+            ),
+          },
+          {
+            id: "plan",
+            header: "Plan",
+            accessorKey: "plan",
+            sortable: true,
+            cell: (row) => (
+              <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold border whitespace-nowrap ${row.planBadgeClass}`}>
+                {row.plan}
+              </span>
+            ),
+          },
+          {
+            id: "amount",
+            header: "Amount",
+            accessorKey: "amount",
+            align: "right",
+            className: "tabular-nums font-bold text-slate-900 whitespace-nowrap",
+          },
+          {
+            id: "dateStr",
+            header: "Date & Time",
+            accessorKey: "dateStr",
+            align: "right",
+            className: "text-slate-400 whitespace-nowrap",
+          },
+        ] as ColumnDef<any>[]}
+      />
     </div>
   );
 }

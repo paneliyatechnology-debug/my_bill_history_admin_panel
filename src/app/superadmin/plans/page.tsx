@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { useSuperAdmin } from "../../../context/superadmin-context";
+import { DataTable, ColumnDef } from "../../../components/ui/data-table";
 import {
   createNewPlan,
   updateExistingPlan,
@@ -357,14 +358,14 @@ export default function SuperAdminPlansPage() {
               {plans.length} Configured Tiers
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-1 font-normal">
             Configure multi-tenant SaaS tiers, billing cycles, quotas, and granular module entitlements.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
           {/* Table / Card View Mode Toggle */}
-          <div className="flex items-center bg-white border border-slate-200/90 rounded-xl p-1 shadow-2xs">
+          <div className="flex items-center bg-white border border-[#E5E7EB] rounded-xl p-1 shadow-2xs">
             <button
               type="button"
               onClick={() => setViewMode("table")}
@@ -392,12 +393,12 @@ export default function SuperAdminPlansPage() {
           </div>
 
           {/* Billing Cycle Switcher */}
-          <div className="flex items-center bg-white border border-slate-200/90 rounded-xl p-1 shadow-2xs text-xs">
+          <div className="flex items-center bg-white border border-[#E5E7EB] rounded-xl p-1 shadow-2xs text-xs">
             <button
               type="button"
               onClick={() => setBillingCycle("monthly")}
               className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
-                billingCycle === "monthly" ? "bg-slate-100 text-slate-900 font-bold" : "text-slate-500 hover:text-slate-800"
+                billingCycle === "monthly" ? "bg-slate-100 text-slate-900 font-bold" : "text-slate-500 hover:text-slate-900"
               }`}
             >
               Monthly View
@@ -406,7 +407,7 @@ export default function SuperAdminPlansPage() {
               type="button"
               onClick={() => setBillingCycle("yearly")}
               className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
-                billingCycle === "yearly" ? "bg-[#1677E8] text-white font-bold shadow-2xs" : "text-slate-500 hover:text-slate-800"
+                billingCycle === "yearly" ? "bg-[#1677E8] text-white font-bold shadow-2xs" : "text-slate-500 hover:text-slate-900"
               }`}
             >
               <span>Annual Billing</span>
@@ -430,320 +431,342 @@ export default function SuperAdminPlansPage() {
         </div>
       </div>
 
-      {/* ================= 2. FILTER & SEARCH RIBBON ================= */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="flex flex-1 items-center gap-3 w-full sm:w-auto">
-          {/* Search Box */}
-          <div className="relative flex-1 sm:max-w-xs">
-            <svg className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search plans by name, code..."
-              className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-[#1677E8] outline-none transition-all"
-            />
+      {/* ================= 2. PLANS CONTENT (DATATABLE OR GRID) ================= */}
+      {viewMode === "table" ? (
+        <DataTable<SubscriptionPlanItem>
+          data={filteredPlans}
+          isLoading={isLoadingPlans}
+          keyExtractor={(plan) => plan.id}
+          searchPlaceholder="Search plans by name, code..."
+          searchKeys={["name", "tier", "subtitle"]}
+          themeColor="blue"
+          exportable
+          exportFileName="subscription_plans"
+          emptyMessage="No subscription plans found."
+          filtersSlot={
+            <select
+              value={statusFilter}
+              onChange={(e: any) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 text-xs font-semibold bg-white border border-[#E2E8F0] rounded-xl text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#1677E8] focus:border-[#1677E8] cursor-pointer shadow-2xs"
+            >
+              <option value="all">All Statuses</option>
+              <option value="active">Active Only</option>
+              <option value="inactive">Archived / Inactive</option>
+            </select>
+          }
+          columns={[
+            {
+              id: "name",
+              header: "Plan Name & Tier",
+              accessorKey: "name",
+              sortable: true,
+              cell: (plan) => (
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-slate-900">{plan.name}</span>
+                    {plan.isPopular && (
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        POPULAR
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[10px] tabular-nums text-slate-400 block mt-0.5">
+                    {plan.tier}
+                  </span>
+                </div>
+              ),
+            },
+            {
+              id: "price",
+              header: "Price / Cycle",
+              accessorFn: (plan) => (billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice),
+              sortable: true,
+              cell: (plan) => {
+                const displayPrice = billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
+                return displayPrice > 0 ? (
+                  <div>
+                    <span className="font-bold tabular-nums text-slate-900 text-sm">
+                      ₹{displayPrice.toLocaleString("en-IN")}
+                    </span>
+                    <span className="text-[10px] text-slate-500 block">
+                      {billingCycle === "yearly" ? "Billed annually" : "Billed monthly"}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md text-[11px] border border-amber-200">
+                    Free Trial (30d)
+                  </span>
+                );
+              },
+            },
+            {
+              id: "fleets",
+              header: "Assigned Fleets",
+              accessorFn: (plan) => tierCounts[plan.tier] || 0,
+              sortable: true,
+              cell: (plan) => {
+                const assignedCount = tierCounts[plan.tier] || 0;
+                const assignedPct = totalTenants > 0 ? Math.round((assignedCount / totalTenants) * 100) : 0;
+                return (
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-slate-900 tabular-nums">{assignedCount}</span>
+                      <span className="text-[10px] text-slate-400 tabular-nums">({assignedPct}%)</span>
+                    </div>
+                    <div className="w-24 h-1.5 bg-slate-100 rounded-full mt-1 overflow-hidden">
+                      <div style={{ width: `${assignedPct}%` }} className="h-full bg-[#1677E8] rounded-full" />
+                    </div>
+                  </div>
+                );
+              },
+            },
+            {
+              id: "limits",
+              header: "Quotas & Limits",
+              cell: (plan) => (
+                <div className="text-[11px] text-slate-500 space-y-0.5">
+                  <div className="font-medium text-slate-900">
+                    {plan.maxCompanies === 9999 ? "Unlimited" : plan.maxCompanies} Company • {plan.maxUsers} Users
+                  </div>
+                  <div className="text-slate-400 text-[10px]">
+                    {plan.maxGodowns} Godown • {plan.maxInvoicesPerYear === -1 ? "Unlimited" : plan.maxInvoicesPerYear} Inv/yr
+                  </div>
+                </div>
+              ),
+            },
+            {
+              id: "modules",
+              header: "Modules & Access",
+              cell: (plan) => {
+                const activeMods = PLATFORM_MODULE_CATALOG.filter((m) => Boolean(plan.entitlements?.[m.id])).length;
+                const totalMods = PLATFORM_MODULE_CATALOG.length;
+                const modPercent = Math.round((activeMods / totalMods) * 100);
+                return (
+                  <button
+                    type="button"
+                    onClick={() => setInspectingPlan(plan)}
+                    className="group inline-flex flex-col items-start gap-1 p-1 -m-1 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer text-left"
+                    title="Click to view full module breakdown"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-[#1677E8] border border-blue-200 group-hover:bg-[#1677E8] group-hover:text-white transition-all">
+                        {activeMods} of {totalMods} Modules ({modPercent}%)
+                      </span>
+                      <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#1677E8] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </div>
+                    <div className="flex items-center gap-1 text-[10px] text-slate-400 tabular-nums">
+                      {plan.entitlements?.salesInvoices && <span>Sales</span>}
+                      {plan.entitlements?.purchaseInvoices && <span>• Purchases</span>}
+                      {plan.entitlements?.itemsInventory && <span>• Items</span>}
+                      {plan.entitlements?.gstReports && <span>• GST</span>}
+                      {plan.entitlements?.manufacturingBom && <span>• BOM</span>}
+                    </div>
+                  </button>
+                );
+              },
+            },
+            {
+              id: "isActive",
+              header: "Status",
+              accessorKey: "isActive",
+              sortable: true,
+              align: "center",
+              cell: (plan) => (
+                <button
+                  type="button"
+                  onClick={() => handleToggleStatus(plan)}
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition-all ${
+                    plan.isActive
+                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                      : "bg-slate-100 text-slate-500 border border-slate-200"
+                  }`}
+                >
+                  {plan.isActive ? "Active" : "Archived"}
+                </button>
+              ),
+            },
+            {
+              id: "actions",
+              header: "Actions",
+              align: "right",
+              cell: (plan) => (
+                <div className="flex items-center justify-end gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenEdit(plan)}
+                    className="p-1.5 text-slate-500 hover:text-[#1677E8] hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                    title="Edit Plan & Modules"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDuplicatePlan(plan)}
+                    className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                    title="Duplicate Plan"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenDelete(plan)}
+                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                    title="Delete / Archive Plan"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              ),
+            },
+          ] as ColumnDef<SubscriptionPlanItem>[]}
+        />
+      ) : (
+        /* Card Grid View with Frontend Filter Ribbon & Card Hover */
+        <div className="space-y-4">
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-3.5 sm:p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex flex-1 items-center gap-3 w-full sm:w-auto">
+              <div className="relative flex-1 sm:max-w-xs">
+                <svg className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search plans by name, code..."
+                  className="w-full pl-8 pr-3 py-2 text-xs bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:bg-white focus:border-[#1677E8] focus:ring-1 focus:ring-[#1677E8] outline-none transition-all"
+                />
+              </div>
+              <select
+                value={statusFilter}
+                onChange={(e: any) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 text-xs font-semibold bg-white border border-[#E2E8F0] rounded-xl text-slate-900 focus:border-[#1677E8] focus:ring-1 focus:ring-[#1677E8] outline-none cursor-pointer"
+              >
+                <option value="all">All Statuses</option>
+                <option value="active">Active Only</option>
+                <option value="inactive">Archived / Inactive</option>
+              </select>
+            </div>
+            <div className="text-xs text-slate-500 font-medium">
+              Showing <span className="font-bold text-slate-900">{filteredPlans.length}</span> of {plans.length} plans
+            </div>
           </div>
 
-          {/* Status Filter */}
-          <select
-            value={statusFilter}
-            onChange={(e: any) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-700 outline-none cursor-pointer"
-          >
-            <option value="all">All Statuses</option>
-            <option value="active">Active Only</option>
-            <option value="inactive">Archived / Inactive</option>
-          </select>
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPlans.map((plan) => {
+              const assignedCount = tierCounts[plan.tier] || 0;
+              const displayPrice = billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
+              const activeMods = PLATFORM_MODULE_CATALOG.filter((m) => Boolean(plan.entitlements?.[m.id])).length;
+              const totalMods = PLATFORM_MODULE_CATALOG.length;
 
-        <div className="text-xs text-slate-500 font-medium">
-          Showing <span className="font-bold text-slate-900">{filteredPlans.length}</span> of {plans.length} plans
-        </div>
-      </div>
+              return (
+                <div
+                  key={plan.id}
+                  className={`bg-white border rounded-2xl p-6 shadow-2xs hover:shadow-md hover:border-[#1677E8]/60 transition-all duration-200 flex flex-col justify-between ${
+                    plan.isPopular ? "border-[#1677E8] ring-2 ring-blue-100" : "border-[#E5E7EB]"
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] tabular-nums font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
+                        {plan.tier}
+                      </span>
+                      <span className="text-[11px] font-bold text-slate-500 tabular-nums">
+                        {assignedCount} Assigned
+                      </span>
+                    </div>
 
-      {/* ================= 3. PLANS CONTENT (TABLE-FIRST OR GRID) ================= */}
-      {viewMode === "table" ? (
-        /* Professional Table-First Layout */
-        <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                  <th className="py-3 px-4">Plan Name & Tier</th>
-                  <th className="py-3 px-4">Price / Cycle</th>
-                  <th className="py-3 px-4">Assigned Fleets</th>
-                  <th className="py-3 px-4">Quotas & Limits</th>
-                  <th className="py-3 px-4">Modules & Access</th>
-                  <th className="py-3 px-4 text-center">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {filteredPlans.map((plan) => {
-                  const assignedCount = tierCounts[plan.tier] || 0;
-                  const assignedPct = totalTenants > 0 ? Math.round((assignedCount / totalTenants) * 100) : 0;
-                  const displayPrice = billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
-                  const activeMods = PLATFORM_MODULE_CATALOG.filter((m) => Boolean(plan.entitlements?.[m.id])).length;
-                  const totalMods = PLATFORM_MODULE_CATALOG.length;
-                  const modPercent = Math.round((activeMods / totalMods) * 100);
+                    <h3 className="text-lg font-bold text-slate-900">{plan.name}</h3>
+                    <p className="text-xs text-slate-500 mt-1">{plan.subtitle}</p>
 
-                  return (
-                    <tr key={plan.id} className="hover:bg-slate-50/70 transition-colors">
-                      {/* Plan Name & Code */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-2">
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-bold text-slate-900">{plan.name}</span>
-                              {plan.isPopular && (
-                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                  POPULAR
-                                </span>
-                              )}
-                            </div>
-                            <span className="text-[10px] font-mono text-slate-400 block mt-0.5">
-                              {plan.tier}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Pricing */}
-                      <td className="py-3.5 px-4">
-                        {displayPrice > 0 ? (
-                          <div>
-                            <span className="font-semibold text-slate-900 text-sm">
-                              ₹{displayPrice.toLocaleString("en-IN")}
-                            </span>
-                            <span className="text-[10px] text-slate-400 block">
-                              {billingCycle === "yearly" ? "Billed annually" : "Billed monthly"}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] border border-amber-200">
-                            Free Trial (30d)
+                    <div className="my-5">
+                      {displayPrice > 0 ? (
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-3xl font-bold tabular-nums text-slate-900">
+                            ₹{displayPrice.toLocaleString("en-IN")}
                           </span>
-                        )}
-                      </td>
-
-                      {/* Assigned Organizations */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-900 font-mono">{assignedCount}</span>
-                          <span className="text-[10px] text-slate-400 font-mono">({assignedPct}%)</span>
+                          <span className="text-xs text-slate-400 font-normal">/month</span>
                         </div>
-                        <div className="w-24 h-1.5 bg-slate-100 rounded-full mt-1 overflow-hidden">
-                          <div
-                            style={{ width: `${assignedPct}%` }}
-                            className="h-full bg-[#1677E8] rounded-full"
-                          />
-                        </div>
-                      </td>
+                      ) : (
+                        <span className="text-2xl font-bold text-[#1677E8]">Free Forever</span>
+                      )}
+                    </div>
 
-                      {/* Limits */}
-                      <td className="py-3.5 px-4">
-                        <div className="text-[11px] text-slate-600 space-y-0.5">
-                          <div>{plan.maxCompanies === 9999 ? "Unlimited" : plan.maxCompanies} Company • {plan.maxUsers} Users</div>
-                          <div className="text-slate-400 text-[10px]">
-                            {plan.maxGodowns} Godown • {plan.maxInvoicesPerYear === -1 ? "Unlimited" : plan.maxInvoicesPerYear} Inv/yr
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Modules & Access */}
-                      <td className="py-3.5 px-4">
+                    <div className="space-y-2 py-4 border-t border-[#E5E7EB] text-xs">
+                      <div className="flex justify-between text-slate-500">
+                        <span>Max Companies:</span>
+                        <span className="font-bold tabular-nums text-slate-900">{plan.maxCompanies}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-500">
+                        <span>Max Staff Users:</span>
+                        <span className="font-bold tabular-nums text-slate-900">{plan.maxUsers}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-500">
+                        <span>Max Warehouses:</span>
+                        <span className="font-bold tabular-nums text-slate-900">{plan.maxGodowns}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-500">
+                        <span>Invoices Limit:</span>
+                        <span className="font-bold tabular-nums text-slate-900">
+                          {plan.maxInvoicesPerYear === -1 ? "Unlimited" : plan.maxInvoicesPerYear}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center text-slate-500 pt-1">
+                        <span>Module Access:</span>
                         <button
                           type="button"
                           onClick={() => setInspectingPlan(plan)}
-                          className="group inline-flex flex-col items-start gap-1 p-1 -m-1 rounded-lg hover:bg-blue-50/50 transition-colors cursor-pointer text-left"
-                          title="Click to view full module breakdown"
+                          className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-[#1677E8] border border-blue-200 hover:bg-[#1677E8] hover:text-white transition-all cursor-pointer"
                         >
-                          <div className="flex items-center gap-1.5">
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-[#1677E8] border border-blue-200 group-hover:bg-[#1677E8] group-hover:text-white transition-all">
-                              {activeMods} of {totalMods} Modules ({modPercent}%)
-                            </span>
-                            <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#1677E8] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                          </div>
-                          <div className="flex items-center gap-1 text-[10px] text-slate-400 font-mono">
-                            {plan.entitlements?.salesInvoices && <span>Sales</span>}
-                            {plan.entitlements?.purchaseInvoices && <span>• Purchases</span>}
-                            {plan.entitlements?.itemsInventory && <span>• Items</span>}
-                            {plan.entitlements?.gstReports && <span>• GST</span>}
-                            {plan.entitlements?.manufacturingBom && <span>• BOM</span>}
-                          </div>
+                          {activeMods} of {totalMods} Active
                         </button>
-                      </td>
-
-                      {/* Status */}
-                      <td className="py-3.5 px-4 text-center">
-                        <button
-                          type="button"
-                          onClick={() => handleToggleStatus(plan)}
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition-all ${
-                            plan.isActive
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                              : "bg-slate-100 text-slate-500 border border-slate-200"
-                          }`}
-                        >
-                          {plan.isActive ? "Active" : "Archived"}
-                        </button>
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => handleOpenEdit(plan)}
-                            className="p-1.5 text-slate-500 hover:text-[#1677E8] hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-                            title="Edit Plan & Modules"
-                          >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDuplicatePlan(plan)}
-                            className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-                            title="Duplicate Plan"
-                          >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleOpenDelete(plan)}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                            title="Delete / Archive Plan"
-                          >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : (
-        /* Card Grid View */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPlans.map((plan) => {
-            const assignedCount = tierCounts[plan.tier] || 0;
-            const displayPrice = billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
-            const activeMods = PLATFORM_MODULE_CATALOG.filter((m) => Boolean(plan.entitlements?.[m.id])).length;
-            const totalMods = PLATFORM_MODULE_CATALOG.length;
-
-            return (
-              <div
-                key={plan.id}
-                className={`bg-white border rounded-2xl p-6 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between ${
-                  plan.isPopular ? "border-[#1677E8] ring-2 ring-blue-100" : "border-slate-200/90"
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
-                      {plan.tier}
-                    </span>
-                    <span className="text-[11px] font-bold text-slate-500 font-mono">
-                      {assignedCount} Assigned
-                    </span>
-                  </div>
-
-                  <h3 className="text-lg font-bold text-slate-900">{plan.name}</h3>
-                  <p className="text-xs text-slate-500 mt-1">{plan.subtitle}</p>
-
-                  <div className="my-5">
-                    {displayPrice > 0 ? (
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-bold text-slate-900">
-                          ₹{displayPrice.toLocaleString("en-IN")}
-                        </span>
-                        <span className="text-xs text-slate-400 font-normal">/month</span>
                       </div>
-                    ) : (
-                      <span className="text-2xl font-bold text-amber-600">Free Forever</span>
-                    )}
+                    </div>
                   </div>
 
-                  <div className="space-y-2 py-4 border-t border-slate-100 text-xs">
-                    <div className="flex justify-between text-slate-600">
-                      <span>Max Companies:</span>
-                      <span className="font-bold text-slate-900">{plan.maxCompanies}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>Max Staff Users:</span>
-                      <span className="font-bold text-slate-900">{plan.maxUsers}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>Max Warehouses:</span>
-                      <span className="font-bold text-slate-900">{plan.maxGodowns}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>Invoices Limit:</span>
-                      <span className="font-bold text-slate-900">
-                        {plan.maxInvoicesPerYear === -1 ? "Unlimited" : plan.maxInvoicesPerYear}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center text-slate-600 pt-1">
-                      <span>Module Access:</span>
+                  <div className="pt-4 border-t border-[#E5E7EB] flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleStatus(plan)}
+                      className={`text-xs font-semibold px-2.5 py-1 rounded-lg cursor-pointer ${
+                        plan.isActive ? "text-emerald-700 bg-emerald-50" : "text-slate-500 bg-slate-100"
+                      }`}
+                    >
+                      {plan.isActive ? "Active" : "Archived"}
+                    </button>
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => setInspectingPlan(plan)}
-                        className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-[#1677E8] border border-blue-200 hover:bg-[#1677E8] hover:text-white transition-all cursor-pointer"
+                        onClick={() => handleOpenEdit(plan)}
+                        className="px-3 py-1.5 text-xs font-bold text-white bg-[#1677E8] hover:bg-[#1268D3] rounded-xl shadow-xs cursor-pointer"
                       >
-                        {activeMods} of {totalMods} Active
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDuplicatePlan(plan)}
+                        className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl cursor-pointer"
+                        title="Duplicate"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
                       </button>
                     </div>
                   </div>
                 </div>
-
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={() => handleToggleStatus(plan)}
-                    className={`text-xs font-semibold px-2.5 py-1 rounded-lg cursor-pointer ${
-                      plan.isActive ? "text-emerald-700 bg-emerald-50" : "text-slate-500 bg-slate-100"
-                    }`}
-                  >
-                    {plan.isActive ? "Active" : "Archived"}
-                  </button>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleOpenEdit(plan)}
-                      className="px-3 py-1.5 text-xs font-bold text-white bg-[#1677E8] hover:bg-[#1268D3] rounded-xl shadow-xs cursor-pointer"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDuplicatePlan(plan)}
-                      className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl cursor-pointer"
-                      title="Duplicate"
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -755,7 +778,7 @@ export default function SuperAdminPlansPage() {
             className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col animate-fadeIn overflow-hidden my-auto"
           >
             {/* Modal Header */}
-            <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
+            <div className="p-4 sm:p-5 border-b border-[#E5E7EB] border-t-4 border-t-[#1677E8] flex items-center justify-between shrink-0 bg-gradient-to-r from-blue-50/40 via-white to-white">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-[#1677E8]">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -789,7 +812,7 @@ export default function SuperAdminPlansPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-md bg-blue-100 text-[#1677E8] text-[10px] font-bold flex items-center justify-center">1</span>
+                    <span className="w-5 h-5 rounded-md bg-blue-50 text-[#1677E8] text-[10px] font-bold flex items-center justify-center">1</span>
                     Basic Information
                   </h4>
                 </div>
@@ -814,7 +837,7 @@ export default function SuperAdminPlansPage() {
                       disabled={Boolean(editingPlan)}
                       value={formData.tier}
                       onChange={(e) => setFormData({ ...formData, tier: e.target.value.toUpperCase().replace(/\s+/g, "_") })}
-                      className="w-full px-3 py-2 text-xs font-mono uppercase bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#1677E8] disabled:bg-slate-100 transition-colors"
+                      className="w-full px-3 py-2 text-xs tabular-nums uppercase bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#1677E8] disabled:bg-slate-100 transition-colors"
                     />
                   </div>
                 </div>
@@ -846,7 +869,7 @@ export default function SuperAdminPlansPage() {
               {/* SECTION 2: PRICING & BILLING */}
               <div className="space-y-3 pt-4 border-t border-slate-100">
                 <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-md bg-blue-100 text-[#1677E8] text-[10px] font-bold flex items-center justify-center">2</span>
+                  <span className="w-5 h-5 rounded-md bg-blue-50 text-[#1677E8] text-[10px] font-bold flex items-center justify-center">2</span>
                   Pricing & Currency (INR ₹)
                 </h4>
 
@@ -860,7 +883,7 @@ export default function SuperAdminPlansPage() {
                         min={0}
                         value={formData.monthlyPrice}
                         onChange={(e) => setFormData({ ...formData, monthlyPrice: Number(e.target.value) })}
-                        className="w-full pl-7 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none font-mono focus:bg-white focus:border-[#1677E8]"
+                        className="w-full pl-7 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none tabular-nums focus:bg-white focus:border-[#1677E8]"
                       />
                     </div>
                   </div>
@@ -873,13 +896,13 @@ export default function SuperAdminPlansPage() {
                         min={0}
                         value={formData.yearlyPrice}
                         onChange={(e) => setFormData({ ...formData, yearlyPrice: Number(e.target.value) })}
-                        className="w-full pl-7 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none font-mono focus:bg-white focus:border-[#1677E8]"
+                        className="w-full pl-7 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none tabular-nums focus:bg-white focus:border-[#1677E8]"
                       />
                     </div>
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">Annual Billed Total</label>
-                    <div className="px-3 py-2 text-xs bg-blue-50/60 border border-blue-200 rounded-xl font-mono text-[#1677E8] font-bold flex items-center justify-between">
+                    <div className="px-3 py-2 text-xs bg-blue-50/40 border border-blue-200 rounded-xl tabular-nums text-[#1677E8] font-bold flex items-center justify-between">
                       <span>₹{(formData.yearlyPrice * 12).toLocaleString("en-IN")} / yr</span>
                       <span className="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
                         {formData.monthlyPrice > formData.yearlyPrice
@@ -894,7 +917,7 @@ export default function SuperAdminPlansPage() {
               {/* SECTION 3: FLEET RESOURCE QUOTAS */}
               <div className="space-y-3 pt-4 border-t border-slate-100">
                 <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-md bg-blue-100 text-[#1677E8] text-[10px] font-bold flex items-center justify-center">3</span>
+                  <span className="w-5 h-5 rounded-md bg-blue-50 text-[#1677E8] text-[10px] font-bold flex items-center justify-center">3</span>
                   Fleet Resource Quotas
                 </h4>
 
@@ -906,7 +929,7 @@ export default function SuperAdminPlansPage() {
                       min={1}
                       value={formData.maxCompanies}
                       onChange={(e) => setFormData({ ...formData, maxCompanies: Number(e.target.value) })}
-                      className="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none font-mono focus:bg-white focus:border-[#1677E8]"
+                      className="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none tabular-nums focus:bg-white focus:border-[#1677E8]"
                     />
                   </div>
                   <div>
@@ -916,7 +939,7 @@ export default function SuperAdminPlansPage() {
                       min={1}
                       value={formData.maxUsers}
                       onChange={(e) => setFormData({ ...formData, maxUsers: Number(e.target.value) })}
-                      className="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none font-mono focus:bg-white focus:border-[#1677E8]"
+                      className="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none tabular-nums focus:bg-white focus:border-[#1677E8]"
                     />
                   </div>
                   <div>
@@ -926,7 +949,7 @@ export default function SuperAdminPlansPage() {
                       min={1}
                       value={formData.maxGodowns}
                       onChange={(e) => setFormData({ ...formData, maxGodowns: Number(e.target.value) })}
-                      className="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none font-mono focus:bg-white focus:border-[#1677E8]"
+                      className="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none tabular-nums focus:bg-white focus:border-[#1677E8]"
                     />
                   </div>
                   <div>
@@ -935,7 +958,7 @@ export default function SuperAdminPlansPage() {
                       type="number"
                       value={formData.maxInvoicesPerYear}
                       onChange={(e) => setFormData({ ...formData, maxInvoicesPerYear: Number(e.target.value) })}
-                      className="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none font-mono focus:bg-white focus:border-[#1677E8]"
+                      className="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none tabular-nums focus:bg-white focus:border-[#1677E8]"
                     />
                     <span className="text-[9px] text-slate-400 block mt-0.5">-1 for unlimited</span>
                   </div>
@@ -948,7 +971,7 @@ export default function SuperAdminPlansPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-md bg-blue-100 text-[#1677E8] text-[10px] font-bold flex items-center justify-center">4</span>
+                      <span className="w-5 h-5 rounded-md bg-blue-50 text-[#1677E8] text-[10px] font-bold flex items-center justify-center">4</span>
                       Module & Menu Access Entitlements
                     </h4>
                     <p className="text-[11px] text-slate-500 mt-0.5">
@@ -1063,7 +1086,7 @@ export default function SuperAdminPlansPage() {
                               isSelected
                                 ? "bg-white/20 text-white"
                                 : activeInCat > 0
-                                ? "bg-blue-100 text-[#1677E8]"
+                                ? "bg-blue-50 text-[#1677E8]"
                                 : "bg-slate-200 text-slate-500"
                             }`}
                           >
@@ -1087,7 +1110,7 @@ export default function SuperAdminPlansPage() {
                         className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 select-none ${
                           isEnabled
                             ? "bg-blue-50/40 border-blue-300 ring-1 ring-blue-200/60 shadow-2xs"
-                            : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/50"
+                            : "bg-white border-slate-200 hover:border-[#1677E8]/50 hover:bg-slate-50/50"
                         }`}
                       >
                         {/* Custom Toggle Switch */}
@@ -1115,7 +1138,7 @@ export default function SuperAdminPlansPage() {
                             >
                               {module.name}
                             </span>
-                            <span className="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200/60 shrink-0">
+                            <span className="text-[9px] tabular-nums font-semibold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200/60 shrink-0">
                               {module.route}
                             </span>
                           </div>
@@ -1154,7 +1177,7 @@ export default function SuperAdminPlansPage() {
               {/* SECTION 5: MARKETING BULLETS */}
               <div className="space-y-3 pt-4 border-t border-slate-100">
                 <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-md bg-blue-100 text-[#1677E8] text-[10px] font-bold flex items-center justify-center">5</span>
+                  <span className="w-5 h-5 rounded-md bg-blue-50 text-[#1677E8] text-[10px] font-bold flex items-center justify-center">5</span>
                   Marketing Feature Bullets (Displayed to Clients)
                 </h4>
                 <p className="text-[11px] text-slate-500">
@@ -1172,7 +1195,7 @@ export default function SuperAdminPlansPage() {
               {/* SECTION 6: STATUS & BADGES */}
               <div className="space-y-3 pt-4 border-t border-slate-100">
                 <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-md bg-blue-100 text-[#1677E8] text-[10px] font-bold flex items-center justify-center">6</span>
+                  <span className="w-5 h-5 rounded-md bg-blue-50 text-[#1677E8] text-[10px] font-bold flex items-center justify-center">6</span>
                   Visibility & Badges
                 </h4>
 
@@ -1182,7 +1205,7 @@ export default function SuperAdminPlansPage() {
                       type="checkbox"
                       checked={formData.isActive}
                       onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                      className="rounded text-[#1677E8] w-4 h-4"
+                      className="rounded text-[#1677E8] accent-[#1677E8] w-4 h-4"
                     />
                     <div>
                       <span className="text-xs font-bold text-slate-800 block">Plan Active</span>
@@ -1195,7 +1218,7 @@ export default function SuperAdminPlansPage() {
                       type="checkbox"
                       checked={formData.isPopular}
                       onChange={(e) => setFormData({ ...formData, isPopular: e.target.checked })}
-                      className="rounded text-[#1677E8] w-4 h-4"
+                      className="rounded text-[#1677E8] accent-[#1677E8] w-4 h-4"
                     />
                     <div>
                       <span className="text-xs font-bold text-slate-800 block">Featured Tier</span>
@@ -1210,7 +1233,7 @@ export default function SuperAdminPlansPage() {
                       value={formData.badge}
                       onChange={(e) => setFormData({ ...formData, badge: e.target.value.toUpperCase() })}
                       placeholder="e.g. POPULAR, BEST VALUE"
-                      className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none font-mono focus:bg-white focus:border-[#1677E8]"
+                      className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none tabular-nums focus:bg-white focus:border-[#1677E8]"
                     />
                   </div>
                 </div>
@@ -1254,7 +1277,7 @@ export default function SuperAdminPlansPage() {
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col animate-fadeIn overflow-hidden">
             {/* Header */}
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <div className="p-5 border-b border-[#E5E7EB] border-t-4 border-t-[#1677E8] flex items-center justify-between bg-gradient-to-r from-blue-50/40 via-white to-white">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-[#1677E8]">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1266,7 +1289,7 @@ export default function SuperAdminPlansPage() {
                     {inspectingPlan.name} • Entitlement Breakdown
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Tier: <span className="font-mono font-bold text-slate-700">{inspectingPlan.tier}</span> • Complete module catalog status.
+                    Tier: <span className="tabular-nums font-bold text-slate-700">{inspectingPlan.tier}</span> • Complete module catalog status.
                   </p>
                 </div>
               </div>
@@ -1284,7 +1307,7 @@ export default function SuperAdminPlansPage() {
 
             {/* Body */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              <div className="flex items-center justify-between p-3 bg-blue-50/50 rounded-2xl border border-blue-100">
+              <div className="flex items-center justify-between p-3 bg-blue-50/40 rounded-2xl border border-blue-200">
                 <span className="text-xs font-semibold text-[#1677E8]">Active Modules Summary:</span>
                 <span className="text-xs font-bold text-[#1677E8]">
                   {PLATFORM_MODULE_CATALOG.filter((m) => Boolean(inspectingPlan.entitlements?.[m.id])).length} of {PLATFORM_MODULE_CATALOG.length} Modules Active
@@ -1322,7 +1345,7 @@ export default function SuperAdminPlansPage() {
                           <span className={`font-semibold block truncate ${isEnabled ? "text-slate-900" : "text-slate-500"}`}>
                             {mod.name}
                           </span>
-                          <span className="text-[10px] text-slate-400 block font-mono">{mod.route}</span>
+                          <span className="text-[10px] text-slate-400 block tabular-nums">{mod.route}</span>
                         </div>
                       </div>
 
