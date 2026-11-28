@@ -556,52 +556,9 @@ function AccountSettingsView() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              <tr className="hover:bg-slate-50/80 transition-colors">
-                <td className="py-3 px-4 text-slate-700 font-medium">19 Oct 2026</td>
-                <td className="py-3 px-4 font-bold text-slate-900">Platinum</td>
-                <td className="py-3 px-4 font-mono text-slate-600">MBB/26-27/233808</td>
-                <td className="py-3 px-4">
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    Success
-                  </span>
-                </td>
-                <td className="py-3 px-4 font-bold text-slate-900">₹ 2</td>
-                <td className="py-3 px-4 text-right">
-                  <button
-                    type="button"
-                    onClick={() => setReceiptModal({ id: "MBB/26-27/233808", plan: "Platinum", date: "19 Oct 2026", amount: "₹ 2" })}
-                    className="inline-flex items-center gap-1 text-[#6366F1] hover:text-[#4F46E5] font-semibold text-xs transition-colors cursor-pointer"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    <span>Download Receipt</span>
-                  </button>
-                </td>
-              </tr>
-              <tr className="hover:bg-slate-50/80 transition-colors">
-                <td className="py-3 px-4 text-slate-700 font-medium">15 Apr 2026</td>
-                <td className="py-3 px-4 font-bold text-slate-900">Wholesale Pro (Annual)</td>
-                <td className="py-3 px-4 font-mono text-slate-600">MBB/26-27/109412</td>
-                <td className="py-3 px-4">
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    Success
-                  </span>
-                </td>
-                <td className="py-3 px-4 font-bold text-slate-900">₹ 2,999</td>
-                <td className="py-3 px-4 text-right">
-                  <button
-                    type="button"
-                    onClick={() => setReceiptModal({ id: "MBB/26-27/109412", plan: "Wholesale Pro (Annual)", date: "15 Apr 2026", amount: "₹ 2,999" })}
-                    className="inline-flex items-center gap-1 text-[#6366F1] hover:text-[#4F46E5] font-semibold text-xs transition-colors cursor-pointer"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    <span>Download Receipt</span>
-                  </button>
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-slate-400">
+                  No subscription billing records found.
                 </td>
               </tr>
             </tbody>

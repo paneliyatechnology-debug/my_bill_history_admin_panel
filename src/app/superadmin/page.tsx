@@ -199,7 +199,7 @@ export default function SuperAdminOverviewPage() {
           orgHref: "/superadmin/subscriptions",
           plan: t.subscriptionTier.replace(/_/g, " "),
           planBadgeClass: "bg-blue-50 text-[#1677E8] border border-blue-200",
-          amount: t.subscriptionTier === "DISTRIBUTION_ENTERPRISE" ? "₹19,188" : "₹9,588",
+          amount: "—",
           dateStr: formattedDate,
           timestamp: new Date(t.createdAt).getTime() + 1000,
         });
